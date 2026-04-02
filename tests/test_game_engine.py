@@ -61,7 +61,7 @@ class TestGameEngine:
         """测试获取菜单选项"""
         options = self.engine.get_menu_options()
 
-        assert len(options) == 9
+        assert len(options) == 14  # 更新：添加了签到、装备、商店、副本、帮助菜单
         option_ids = [opt["id"] for opt in options]
         assert "story" in option_ids
         assert "practice" in option_ids

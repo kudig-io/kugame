@@ -10,6 +10,9 @@ from dataclasses import dataclass
 from .player import Player, Sect
 from .story import StoryManager, Chapter
 from .kubernetes_commands import KubernetesCommandManager
+from .equipment import EquipmentManager, Equipment, EquipmentType
+from .dungeon import DungeonManager, Dungeon
+from .tower import ChallengeTower, TowerProgress
 import random
 import os
 import json
@@ -96,6 +99,15 @@ class GameEngine:
         # 战斗系统属性
         self.current_monster: Optional[Any] = None
         self.monster_current_health: int = 0
+        
+        # 装备系统
+        self.equipment_manager = EquipmentManager()
+        self.shop_refresh_count = 0  # 商店刷新次数
+        
+        # 副本系统（延迟初始化，需要玩家数据）
+        self.dungeon_manager: Optional[DungeonManager] = None
+        self.challenge_tower = ChallengeTower()
+        self.tower_progress: Optional[TowerProgress] = None
 
     def initialize_player(self, name: str, sect: Sect) -> Player:
         """初始化玩家
@@ -117,6 +129,11 @@ class GameEngine:
 
         self.player = Player(name=name, sect=sect)
         self.player.save()
+        
+        # 初始化副本系统
+        self.dungeon_manager = DungeonManager()
+        self.tower_progress = TowerProgress()
+        
         return self.player
 
     def load_player(self, filepath: str = "player_save.json") -> Optional[Player]:
@@ -137,7 +154,54 @@ class GameEngine:
                 self.story_manager.current_chapter = Chapter(self.player.current_chapter)
             except ValueError:
                 self.story_manager.current_chapter = Chapter.序章
+            
+            # 初始化副本系统
+            self.dungeon_manager = DungeonManager()
+            if self.player.dungeon_manager_data:
+                self.dungeon_manager = DungeonManager.from_dict(self.player.dungeon_manager_data)
+            
+            # 初始化挑战塔进度
+            if self.player.tower_progress_data:
+                self.tower_progress = TowerProgress.from_dict(self.player.tower_progress_data)
+            else:
+                self.tower_progress = TowerProgress()
+        
         return self.player
+
+    def save_game(self, save_name: Optional[str] = None) -> bool:
+        """保存游戏
+
+        保存当前玩家的游戏进度到本地文件。
+
+        Args:
+            save_name: 存档名称，不包含文件扩展名
+
+        Returns:
+            如果保存成功则返回True，否则返回False
+        """
+        if not self.player:
+            return False
+
+        try:
+            # 保存副本系统数据
+            if self.dungeon_manager:
+                self.player.dungeon_manager_data = self.dungeon_manager.to_dict()
+            if self.tower_progress:
+                self.player.tower_progress_data = self.tower_progress.to_dict()
+            
+            # 如果提供了存档名称，使用自定义名称，否则使用默认名称
+            if save_name:
+                # 确保文件扩展名是.json
+                if not save_name.endswith('.json'):
+                    save_name += '.json'
+                self.player.save(save_name)
+            else:
+                self.player.save()
+            return True
+        except Exception as e:
+            # 记录保存失败日志
+            print(f"保存游戏失败: {str(e)}")
+            return False
 
     def get_menu_options(self) -> List[Dict[str, str]]:
         """获取菜单选项
@@ -154,6 +218,11 @@ class GameEngine:
             {"id": "quiz", "name": "📝 知识问答", "description": "测试你的知识"},
             {"id": "progress", "name": "📊 修炼进度", "description": "查看学习进度"},
             {"id": "commands", "name": "📚 命令手册", "description": "查看所有命令"},
+            {"id": "equipment", "name": "🎒 装备管理", "description": "查看、装备、强化装备"},
+            {"id": "shop", "name": "🏪 仙缘商店", "description": "购买装备、出售物品"},
+            {"id": "dungeon", "name": "🏰 副本挑战", "description": "每日副本、无尽之塔"},
+            {"id": "checkin", "name": "📅 每日签到", "description": "领取每日签到奖励"},
+            {"id": "help", "name": "❓ 帮助指南", "description": "游戏帮助和系统说明"},
             {"id": "save", "name": "💾 保存进度", "description": "保存当前进度"},
             {"id": "save_manager", "name": "📁 档案管理", "description": "管理游戏存档"},
             {"id": "quit", "name": "🚪 退出游戏", "description": "退出游戏"},
@@ -488,35 +557,6 @@ class GameEngine:
         commands_info.sort(key=lambda x: x["category"])
         return commands_info
 
-    def save_game(self, save_name: Optional[str] = None) -> bool:
-        """保存游戏
-
-        保存当前玩家的游戏进度到本地文件。
-
-        Args:
-            save_name: 存档名称，不包含文件扩展名
-
-        Returns:
-            如果保存成功则返回True，否则返回False
-        """
-        if not self.player:
-            return False
-
-        try:
-            # 如果提供了存档名称，使用自定义名称，否则使用默认名称
-            if save_name:
-                # 确保文件扩展名是.json
-                if not save_name.endswith('.json'):
-                    save_name += '.json'
-                self.player.save(save_name)
-            else:
-                self.player.save()
-            return True
-        except Exception as e:
-            # 记录保存失败日志（实际项目中可以使用日志系统）
-            print(f"保存游戏失败: {str(e)}")
-            return False
-
     def get_save_list(self) -> List[Dict[str, Any]]:
         """获取所有存档列表
 
@@ -594,7 +634,300 @@ class GameEngine:
         """
         self.streak = 0
 
-    # 战斗系统相关方法
+    # ==================== 装备系统方法 ====================
+    
+    def handle_equipment_drop(self, monster_level: int) -> Optional[Equipment]:
+        """处理装备掉落
+        
+        战斗胜利后调用，根据怪物等级生成装备。
+        
+        Args:
+            monster_level: 怪物等级
+            
+        Returns:
+            Optional[Equipment]: 掉落的装备，如果没有掉落则返回None
+        """
+        if not self.player:
+            return None
+        
+        equipment = self.equipment_manager.generate_drop(
+            monster_level=monster_level,
+            player_level=self.player.level
+        )
+        
+        if equipment:
+            self.player.add_to_inventory(equipment)
+        
+        return equipment
+    
+    def get_shop_items(self) -> List[Equipment]:
+        """获取商店物品
+        
+        Returns:
+            List[Equipment]: 商店装备列表
+        """
+        if not self.player:
+            return []
+        
+        return self.equipment_manager.get_shop_equipment(self.player.level)
+    
+    def buy_equipment(self, equipment: Equipment) -> Dict[str, Any]:
+        """购买装备
+        
+        Args:
+            equipment: 要购买的装备
+            
+        Returns:
+            Dict[str, Any]: 购买结果
+        """
+        if not self.player:
+            return {"success": False, "message": "玩家未初始化"}
+        
+        price = self.equipment_manager.calculate_buy_price(equipment)
+        
+        # 检查是否买得起（使用经验值作为货币）
+        if self.player.experience < price:
+            return {
+                "success": False, 
+                "message": f"经验值不足！需要{price}经验值，当前{self.player.experience}"
+            }
+        
+        # 扣除经验值
+        self.player.experience -= price
+        # 添加装备到背包
+        self.player.add_to_inventory(equipment)
+        
+        return {
+            "success": True,
+            "message": f"成功购买 {equipment.display_name}！",
+            "equipment": equipment,
+            "remaining_exp": self.player.experience
+        }
+    
+    def sell_equipment(self, equipment: Equipment) -> Dict[str, Any]:
+        """出售装备
+        
+        Args:
+            equipment: 要出售的装备
+            
+        Returns:
+            Dict[str, Any]: 出售结果
+        """
+        if not self.player:
+            return {"success": False, "message": "玩家未初始化"}
+        
+        # 检查装备是否在背包中
+        if equipment not in self.player.inventory:
+            return {"success": False, "message": "该装备不在背包中"}
+        
+        price = self.equipment_manager.calculate_sell_price(equipment)
+        
+        # 移除装备
+        self.player.remove_from_inventory(equipment)
+        # 获得经验值
+        self.player.experience += price
+        
+        return {
+            "success": True,
+            "message": f"成功出售 {equipment.display_name}，获得{price}经验值！",
+            "gained_exp": price,
+            "total_exp": self.player.experience
+        }
+    
+    def equip_item(self, equipment: Equipment) -> Dict[str, Any]:
+        """装备物品
+        
+        Args:
+            equipment: 要装备的装备
+            
+        Returns:
+            Dict[str, Any]: 装备结果
+        """
+        if not self.player:
+            return {"success": False, "message": "玩家未初始化"}
+        
+        # 检查装备是否在背包中
+        if equipment not in self.player.inventory:
+            return {"success": False, "message": "该装备不在背包中"}
+        
+        # 装备物品
+        self.player.equip_item(equipment)
+        
+        return {
+            "success": True,
+            "message": f"成功装备 {equipment.display_name}！",
+            "equipment": equipment
+        }
+    
+    def unequip_item(self, equipment_type: EquipmentType) -> Dict[str, Any]:
+        """卸下装备
+        
+        Args:
+            equipment_type: 装备类型
+            
+        Returns:
+            Dict[str, Any]: 卸下结果
+        """
+        if not self.player:
+            return {"success": False, "message": "玩家未初始化"}
+        
+        unequipped = self.player.unequip_item(equipment_type)
+        
+        if unequipped:
+            return {
+                "success": True,
+                "message": f"成功卸下 {unequipped.display_name}！",
+                "equipment": unequipped
+            }
+        
+        return {"success": False, "message": "该位置没有装备"}
+    
+    def upgrade_equipment(self, equipment: Equipment) -> Dict[str, Any]:
+        """强化装备
+        
+        Args:
+            equipment: 要强化的装备
+            
+        Returns:
+            Dict[str, Any]: 强化结果
+        """
+        if not self.player:
+            return {"success": False, "message": "玩家未初始化"}
+        
+        # 检查装备是否属于玩家
+        in_inventory = equipment in self.player.inventory
+        is_equipped = (
+            self.player.equipped_weapon == equipment or
+            self.player.equipped_armor == equipment or
+            self.player.equipped_accessory == equipment
+        )
+        
+        if not in_inventory and not is_equipped:
+            return {"success": False, "message": "该装备不属于你"}
+        
+        cost = equipment.get_upgrade_cost()
+        
+        # 检查经验值是否足够
+        if self.player.experience < cost:
+            return {
+                "success": False,
+                "message": f"经验值不足！需要{cost}经验值"
+            }
+        
+        # 尝试强化
+        if equipment.upgrade():
+            self.player.experience -= cost
+            return {
+                "success": True,
+                "message": f"强化成功！{equipment.display_name} 升级到 +{equipment.level - 1}",
+                "new_level": equipment.level,
+                "remaining_exp": self.player.experience
+            }
+        else:
+            return {
+                "success": False,
+                "message": "该装备已达到最高强化等级"
+            }
+    
+    def get_equipment_summary(self) -> Dict[str, Any]:
+        """获取装备汇总信息
+        
+        Returns:
+            Dict[str, Any]: 装备汇总信息
+        """
+        if not self.player:
+            return {"error": "玩家未初始化"}
+        
+        return self.player.get_equipment_summary()
+
+    # ==================== 副本和挑战塔方法 ====================
+    
+    def get_available_dungeons(self) -> List[Dungeon]:
+        """获取可用的副本列表"""
+        if not self.player or not self.dungeon_manager:
+            return []
+        return self.dungeon_manager.get_available_dungeons(self.player.level)
+    
+    def start_dungeon(self, dungeon_id: str) -> Dict[str, Any]:
+        """开始副本"""
+        if not self.player or not self.dungeon_manager:
+            return {"success": False, "message": "副本系统未初始化"}
+        
+        result = self.dungeon_manager.start_dungeon(dungeon_id, self.player.stamina)
+        
+        if result["success"]:
+            # 扣除体力
+            self.player.stamina -= result["stamina_cost"]
+        
+        return result
+    
+    def get_tower_level(self, level: int) -> Optional[Dict[str, Any]]:
+        """获取挑战塔层信息"""
+        tower_level = self.challenge_tower.get_level(level)
+        if not tower_level:
+            return None
+        
+        status = self.challenge_tower.get_level_status(level, self.tower_progress) if self.tower_progress else "✗ 未解锁"
+        
+        return {
+            "level": tower_level.level,
+            "monster_name": tower_level.monster_name,
+            "recommended_cultivation": tower_level.recommended_cultivation,
+            "status": status,
+            "experience_reward": tower_level.experience_reward,
+        }
+    
+    def start_tower_challenge(self, level: int) -> Dict[str, Any]:
+        """开始挑战塔挑战"""
+        if not self.player or not self.tower_progress:
+            return {"success": False, "message": "挑战塔系统未初始化"}
+        
+        return self.challenge_tower.start_challenge(level, self.tower_progress)
+    
+    def complete_tower_level(self) -> Dict[str, Any]:
+        """完成挑战塔层"""
+        if not self.tower_progress:
+            return {"success": False, "message": "挑战塔系统未初始化"}
+        
+        result = self.challenge_tower.complete_level(self.tower_progress)
+        
+        if result["success"] and self.player:
+            # 给予奖励
+            rewards = result["rewards"]
+            self.player.gain_experience(rewards["experience"])
+            
+            # 更新最高挑战塔层数
+            current_level = self.tower_progress.get("current_level", 0)
+            if current_level > self.player.highest_tower_level:
+                self.player.highest_tower_level = current_level
+                # 检查挑战塔成就
+                self.player.check_tower_achievements(self.player.highest_tower_level)
+            
+            # 装备掉落
+            equipment = self.equipment_manager.generate_equipment(
+                player_level=self.player.level,
+                quality=self._get_quality_from_level(rewards["equipment_quality"])
+            )
+            if equipment:
+                self.player.add_to_inventory(equipment)
+                result["equipment_dropped"] = equipment.to_dict()
+        
+        return result
+    
+    def _get_quality_from_level(self, level: int):
+        """根据等级获取装备品质"""
+        from .equipment import EquipmentQuality
+        qualities = [EquipmentQuality.普通, EquipmentQuality.精良, EquipmentQuality.稀有, 
+                     EquipmentQuality.史诗, EquipmentQuality.传说]
+        return qualities[min(len(qualities) - 1, level - 1)]
+    
+    def get_tower_ranking(self) -> str:
+        """获取挑战塔排名"""
+        if not self.tower_progress:
+            return "💫 初入塔门"
+        return self.challenge_tower.get_ranking(self.tower_progress)
+
+    # ==================== 战斗系统方法 ====================
     def start_combat(self, monster: Any) -> Dict[str, Any]:
         """开始战斗
 
@@ -616,8 +949,8 @@ class GameEngine:
             "monster_health": self.monster_current_health,
             "monster_name": monster.name,
             "monster_description": monster.description,
-            "player_attack": self.player.attack,
-            "player_defense": self.player.defense,
+            "player_attack": self.player.total_attack if hasattr(self.player, 'total_attack') else self.player.attack,
+            "player_defense": self.player.total_defense if hasattr(self.player, 'total_defense') else self.player.defense,
             "monster_attack": monster.attack,
             "monster_defense": monster.defense,
             "round": 1,
@@ -637,15 +970,28 @@ class GameEngine:
         if not self.player:
             raise ValueError("玩家未初始化，无法进行攻击")
 
-        # 根据回答正确性调整攻击力
+        # 获取基础属性
+        player_attack = self.player.total_attack if hasattr(self.player, 'total_attack') else self.player.attack
+        player_defense = self.player.total_defense if hasattr(self.player, 'total_defense') else self.player.defense
+        
+        # 应用天赋加成
+        talent_bonuses = self.player.get_talent_bonuses()
+        player_attack += int(talent_bonuses.get("attack", 0))
+        player_defense += int(talent_bonuses.get("defense", 0))
+        
+        # 炼狱门：狂暴技能 - 攻击力翻倍
+        if hasattr(self.player, 'skill_manager') and self.player.skill_manager:
+            if self.player.skill_manager.has_active_effect("liyu_berserk"):
+                player_attack *= 2
+        
         if answer_correct:
             # 回答正确，攻击力翻倍
-            damage = max(1, self.player.attack * 2 - monster.defense)
+            damage = max(1, player_attack * 2 - monster.defense)
             self.streak += 1
             attack_message = "你回答正确！发动了强力攻击！"
         else:
             # 回答错误，攻击力减半
-            damage = max(1, self.player.attack // 2 - monster.defense)
+            damage = max(1, player_attack // 2 - monster.defense)
             self.streak = 0
             attack_message = "你回答错误！攻击威力大减！"
 
@@ -675,14 +1021,72 @@ class GameEngine:
             raise ValueError("玩家未初始化，无法进行怪物反击")
 
         # 计算怪物造成的伤害
-        monster_damage = max(1, monster.attack - self.player.defense)
+        player_defense = self.player.total_defense if hasattr(self.player, 'total_defense') else self.player.defense
+        
+        # 应用天赋防御加成
+        talent_bonuses = self.player.get_talent_bonuses()
+        player_defense += int(talent_bonuses.get("defense", 0))
+        
+        monster_damage = max(1, monster.attack - player_defense)
+        
+        # 应用技能减伤效果
+        skill_bonuses = self.player.get_skill_bonuses()
+        damage_reduction = skill_bonuses.get("damage_reduction", 0.0)
+        if damage_reduction > 0:
+            monster_damage = int(monster_damage * (1 - damage_reduction))
+        
+        # 玄天宗：变化莫测 - 闪避概率
+        dodge_chance = skill_bonuses.get("dodge_chance", 0.0)
+        if hasattr(self.player, 'skill_manager') and self.player.skill_manager:
+            if self.player.skill_manager.has_active_effect("xuantian_dodge"):
+                dodge_chance = 0.5  # 50%闪避
+        
+        import random
+        if random.random() < dodge_chance:
+            # 闪避成功
+            return {
+                "player_health": self.player.health,
+                "monster_health": self.monster_current_health,
+                "damage": player_damage,
+                "monster_damage": 0,
+                "message": f"{attack_message}\n你对{monster.name}造成了{player_damage}点伤害！\n你成功闪避了{monster.name}的攻击！",
+                "status": "combat_ongoing",
+                "streak": self.streak,
+                "dodged": True
+            }
 
         # 对玩家造成伤害
         self.player.health = max(0, self.player.health - monster_damage)
+        
+        # 炼狱门：嗜血 - 吸血效果
+        lifesteal = skill_bonuses.get("lifesteal", 0.0)
+        if lifesteal > 0 and player_damage > 0:
+            heal_amount = int(player_damage * lifesteal)
+            self.player.health = min(self.player.total_max_health, self.player.health + heal_amount)
 
         # 检查玩家是否被击败
         if self.player.health <= 0:
+            # 炼狱门：不屈 - 复活效果
+            if random.random() < 0.3:  # 30%概率复活
+                self.player.health = int(self.player.total_max_health * 0.3)
+                return {
+                    "player_health": self.player.health,
+                    "monster_health": self.monster_current_health,
+                    "damage": player_damage,
+                    "monster_damage": monster_damage,
+                    "message": f"{attack_message}\n{monster.name}对你造成了{monster_damage}点伤害！\n[炼狱门·不屈]触发！你以30%生命值复活！",
+                    "status": "combat_ongoing",
+                    "streak": self.streak,
+                    "resurrected": True
+                }
+            
             # 战斗失败
+            # 更新战斗统计
+            self.player.total_combats += 1
+            self.player.combats_lost += 1
+            # 清除当前怪物
+            self.current_monster = None
+            
             return {
                 "player_health": self.player.health,
                 "monster_health": self.monster_current_health,
@@ -694,12 +1098,17 @@ class GameEngine:
             }
 
         # 战斗继续
+        message = f"{attack_message}\n你对{monster.name}造成了{player_damage}点伤害！\n{monster.name}对你造成了{monster_damage}点伤害！"
+        if lifesteal > 0 and player_damage > 0:
+            heal_amount = int(player_damage * lifesteal)
+            message += f"\n[炼狱门·嗜血]你恢复了{heal_amount}点生命！"
+        
         return {
             "player_health": self.player.health,
             "monster_health": self.monster_current_health,
             "damage": player_damage,
             "monster_damage": monster_damage,
-            "message": f"{attack_message}\n你对{monster.name}造成了{player_damage}点伤害！\n{monster.name}对你造成了{monster_damage}点伤害！",
+            "message": message,
             "status": "combat_ongoing",
             "streak": self.streak
         }
@@ -721,19 +1130,92 @@ class GameEngine:
         # 战斗胜利，获得经验值
         exp_gained = monster.experience_reward
         self.player.gain_experience(exp_gained)
+        
+        # 更新战斗统计
+        self.player.total_combats += 1
+        self.player.combats_won += 1
+        
+        # 检查战斗成就
+        self.player.check_combat_achievements(
+            self.player.total_combats, 
+            self.player.combats_won
+        )
+        
+        # 装备掉落
+        dropped_equipment = self.handle_equipment_drop(monster.level)
+        
+        # 检查装备成就
+        if dropped_equipment:
+            has_orange = any(
+                eq.quality.value == "传说" 
+                for eq in self.player.inventory + [
+                    self.player.equipped_weapon,
+                    self.player.equipped_armor, 
+                    self.player.equipped_accessory
+                ] if eq
+            )
+            self.player.check_equipment_achievements(
+                len(self.player.inventory),
+                has_orange
+            )
 
         # 清除当前怪物
         self.current_monster = None
+        
+        # 构建详细的结果消息
+        message_lines = [
+            attack_message,
+            f"你对{monster.name}造成了{damage}点伤害！",
+            f"{monster.name}被击败了！",
+            f"你获得了{exp_gained}经验值！"
+        ]
+        
+        # 添加装备掉落信息（详细版）
+        equipment_info = None
+        if dropped_equipment:
+            eq = dropped_equipment
+            message_lines.append(f"\n🎁 掉落装备：{eq.display_name}")
+            
+            # 添加装备属性信息
+            attr_parts = []
+            if eq.total_attack > 0:
+                attr_parts.append(f"攻击+{eq.total_attack}")
+            if eq.total_defense > 0:
+                attr_parts.append(f"防御+{eq.total_defense}")
+            if eq.total_health > 0:
+                attr_parts.append(f"生命+{eq.total_health}")
+            if eq.exp_bonus > 0:
+                attr_parts.append(f"经验+{int(eq.exp_bonus*100)}%")
+            if eq.streak_bonus > 0:
+                attr_parts.append(f"连击+{int(eq.streak_bonus*100)}%")
+            
+            if attr_parts:
+                message_lines.append(f"   属性：{' | '.join(attr_parts)}")
+            
+            message_lines.append(f"   已自动存入背包！")
+            
+            equipment_info = {
+                "name": eq.name,
+                "display_name": eq.display_name,
+                "quality": eq.quality.name,
+                "type": eq.equipment_type.value,
+                "attack": eq.total_attack,
+                "defense": eq.total_defense,
+                "health": eq.total_health,
+                "exp_bonus": eq.exp_bonus,
+                "streak_bonus": eq.streak_bonus,
+            }
 
         return {
             "player_health": self.player.health,
             "monster_health": 0,
             "damage": damage,
             "monster_damage": 0,
-            "message": f"{attack_message}\n你对{monster.name}造成了{damage}点伤害！\n{monster.name}被击败了！\n你获得了{exp_gained}经验值！",
+            "message": "\n".join(message_lines),
             "status": "combat_won",
             "exp_gained": exp_gained,
-            "streak": self.streak
+            "streak": self.streak,
+            "dropped_equipment": dropped_equipment.to_dict() if dropped_equipment else None
         }
 
     def flee_combat(self, monster: Any) -> Dict[str, Any]:
@@ -761,7 +1243,8 @@ class GameEngine:
                 raise ValueError("玩家未初始化，无法处理逃跑失败")
 
             # 怪物造成的伤害翻倍
-            monster_damage = max(1, monster.attack * 2 - self.player.defense)
+            player_defense = self.player.total_defense if hasattr(self.player, 'total_defense') else self.player.defense
+            monster_damage = max(1, monster.attack * 2 - player_defense)
             self.player.health = max(0, self.player.health - monster_damage)
 
             return {

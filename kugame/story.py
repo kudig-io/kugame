@@ -386,6 +386,107 @@ class StoryManager:
                     "1": {"experience": 80},
                     "2": {"experience": 50}
                 }
+            ),
+            
+            # 新增事件
+            StoryEvent(
+                event_id="alchemy_accident",
+                title="炼丹意外",
+                description="四师妹在炼丹时不小心炸炉，需要你帮忙清理",
+                choices=["帮忙清理", "提供建议", "避开危险"],
+                consequences=[
+                    "你帮忙清理了现场，四师妹感激不尽，送你一枚恢复丹药！生命值恢复50！",
+                    "你提供了改进建议，四师妹受益匪浅，奖励你30经验值！",
+                    "你选择避开，但听说后来大师兄去帮忙了"
+                ],
+                required_level=4,
+                rewards={
+                    "0": {"health": 50},
+                    "1": {"experience": 30}
+                }
+            ),
+            StoryEvent(
+                event_id="ancient_scroll",
+                title="古籍发现",
+                description="你在藏经阁发现了一本残缺的古籍，似乎是关于Kubernetes的秘籍",
+                choices=["尝试修复", "请教三师姐", "自己研究"],
+                consequences=[
+                    "你成功修复了古籍，学会了一个新命令！",
+                    "三师姐帮你解读，你们共同获得了80经验值！",
+                    "你自己研究有所收获，获得了40经验值！"
+                ],
+                required_level=6,
+                rewards={
+                    "1": {"experience": 80},
+                    "2": {"experience": 40}
+                }
+            ),
+            StoryEvent(
+                event_id="com petition",
+                title="宗门大比",
+                description="宗门举办Kubernetes命令大赛，你是否参加？",
+                choices=["参加初赛", "参加决赛", "旁观学习"],
+                consequences=[
+                    "你在初赛中脱颖而出，获得了60经验值！",
+                    "你在决赛中夺得冠军！获得了200经验值和稀有装备！",
+                    "你旁观学习，获得了20经验值和一些技巧"
+                ],
+                required_level=10,
+                rewards={
+                    "0": {"experience": 60},
+                    "1": {"experience": 200},
+                    "2": {"experience": 20}
+                }
+            ),
+            StoryEvent(
+                event_id="elder_guidance",
+                title="前辈指点",
+                description="一位隐世前辈路过宗门，愿意指点你修炼",
+                choices=["请教攻击技巧", "请教防御心法", "请教学习效率"],
+                consequences=[
+                    "前辈传授你攻击技巧，攻击力永久+2！",
+                    "前辈传授你防御心法，防御力永久+2！",
+                    "前辈传授你学习方法，获得100经验值！"
+                ],
+                required_level=12,
+                rewards={
+                    "0": {"attack": 2},
+                    "1": {"defense": 2},
+                    "2": {"experience": 100}
+                }
+            ),
+            StoryEvent(
+                event_id="stray_pet",
+                title="走失的灵兽",
+                description="一只可爱的ConfigMap小精灵在宗门走失了",
+                choices=["帮忙寻找主人", "喂食安抚", "带它游览宗门"],
+                consequences=[
+                    "你找到了主人，获得50经验值和一件随机装备！",
+                    "你安抚了小精灵，它送你一颗灵珠，生命值上限+10！",
+                    "你带它游览宗门，度过了愉快的时光，获得30经验值！"
+                ],
+                required_level=3,
+                rewards={
+                    "0": {"experience": 50},
+                    "1": {"max_health": 10},
+                    "2": {"experience": 30}
+                }
+            ),
+            StoryEvent(
+                event_id="night_mission",
+                title="夜间巡逻",
+                description="大师兄邀请你一起进行夜间巡逻",
+                choices=["欣然接受", "询问详情", "婉言谢绝"],
+                consequences=[
+                    "巡逻中发现潜入者，成功击退！获得120经验值！",
+                    "了解详情后做好准备，巡逻顺利，获得60经验值！",
+                    "你谢绝了邀请，但听说那晚很平静"
+                ],
+                required_level=7,
+                rewards={
+                    "0": {"experience": 120},
+                    "1": {"experience": 60}
+                }
             )
         ]
 
@@ -446,4 +547,107 @@ class StoryManager:
                 └─────────────────────────────────────────────────────────┘
                 """
             )
+        }
+
+    def get_current_chapter(self) -> StoryChapter:
+        """获取当前章节
+        
+        Returns:
+            StoryChapter: 当前章节对象
+        """
+        return self.chapters[self.current_chapter]
+    
+    def get_chapter(self, chapter: Chapter) -> Optional[StoryChapter]:
+        """获取指定章节
+        
+        Args:
+            chapter: 章节枚举
+            
+        Returns:
+            Optional[StoryChapter]: 章节对象，如果不存在返回None
+        """
+        return self.chapters.get(chapter)
+    
+    def advance_chapter(self) -> bool:
+        """推进到下一章节
+        
+        Returns:
+            bool: 成功推进返回True，已到终章返回False
+        """
+        chapters_list = list(Chapter)
+        current_idx = chapters_list.index(self.current_chapter)
+        
+        if current_idx < len(chapters_list) - 1:
+            self.current_chapter = chapters_list[current_idx + 1]
+            return True
+        return False
+    
+    def get_all_commands(self) -> List[str]:
+        """获取所有章节的命令
+        
+        Returns:
+            List[str]: 所有命令列表
+        """
+        commands = []
+        for chapter in self.chapters.values():
+            commands.extend(chapter.commands_to_learn)
+        return commands
+    
+    def get_chapter_commands(self, chapter: Chapter) -> List[str]:
+        """获取指定章节的命令
+        
+        Args:
+            chapter: 章节枚举
+            
+        Returns:
+            List[str]: 命令列表
+        """
+        ch = self.chapters.get(chapter)
+        return ch.commands_to_learn if ch else []
+    
+    def get_total_chapters(self) -> int:
+        """获取总章节数
+        
+        Returns:
+            int: 章节总数
+        """
+        return len(self.chapters)
+    
+    def get_completed_chapters(self, current_chapter_value: str) -> int:
+        """获取已完成章节数
+        
+        Args:
+            current_chapter_value: 当前章节的值
+            
+        Returns:
+            int: 已完成章节数
+        """
+        try:
+            current = Chapter(current_chapter_value)
+            chapters_list = list(Chapter)
+            return chapters_list.index(current)
+        except ValueError:
+            return 0
+    
+    def get_story_progress(self, player) -> Dict[str, Any]:
+        """获取故事进度
+        
+        Args:
+            player: 玩家对象
+            
+        Returns:
+            Dict[str, Any]: 故事进度信息
+        """
+        current = self.get_current_chapter()
+        total_chapters = self.get_total_chapters()
+        completed = self.get_completed_chapters(player.current_chapter)
+        
+        return {
+            "current_chapter": player.current_chapter,
+            "current_title": current.title,
+            "total_chapters": total_chapters,
+            "completed_chapters": completed,
+            "progress_percentage": round(completed / total_chapters * 100, 1) if total_chapters > 0 else 0,
+            "mastered_commands": len(player.kubectl_commands_mastered),
+            "all_commands": len(self.get_all_commands()),
         }

@@ -150,6 +150,16 @@ class CLI:
             self.show_progress()
         elif action == "commands":
             self.show_commands()
+        elif action == "equipment":
+            self.manage_equipment()
+        elif action == "shop":
+            self.visit_shop()
+        elif action == "dungeon":
+            self.dungeon_menu()
+        elif action == "checkin":
+            self.daily_checkin()
+        elif action == "help":
+            self.show_help()
         elif action == "save":
             self.save_game()
         elif action == "save_manager":
@@ -897,12 +907,797 @@ class CLI:
 
         input("按回车键继续...")
 
+    def manage_equipment(self) -> None:
+        """装备管理界面"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  🎒  装备管理  🎒  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+        
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+        
+        # 显示当前装备
+        self.console.print("[bold cyan]当前装备：[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        
+        table = Table(show_header=True, header_style="bold green")
+        table.add_column("部位", width=10)
+        table.add_column("装备", width=25)
+        table.add_column("属性", width=30)
+        
+        # 武器
+        if player.equipped_weapon:
+            w = player.equipped_weapon
+            table.add_row(
+                "武器",
+                w.display_name,
+                f"攻击+{w.total_attack} 经验+{int(w.exp_bonus*100)}%"
+            )
+        else:
+            table.add_row("武器", "[dim]无[/dim]", "-")
+        
+        # 护甲
+        if player.equipped_armor:
+            a = player.equipped_armor
+            table.add_row(
+                "护甲",
+                a.display_name,
+                f"防御+{a.total_defense} 生命+{a.total_health}"
+            )
+        else:
+            table.add_row("护甲", "[dim]无[/dim]", "-")
+        
+        # 饰品
+        if player.equipped_accessory:
+            acc = player.equipped_accessory
+            table.add_row(
+                "饰品",
+                acc.display_name,
+                f"攻击+{acc.total_attack} 防御+{acc.total_defense}"
+            )
+        else:
+            table.add_row("饰品", "[dim]无[/dim]", "-")
+        
+        self.console.print(table)
+        self.console.print()
+        
+        # 显示总属性
+        self.console.print(f"[bold]总攻击：[/bold]{player.total_attack} (基础{player.attack})")
+        self.console.print(f"[bold]总防御：[/bold]{player.total_defense} (基础{player.defense})")
+        self.console.print(f"[bold]总生命：[/bold]{player.total_max_health} (基础{player.max_health})")
+        self.console.print(f"[bold]经验加成：[/bold]+{int(player.exp_bonus * 100)}%")
+        self.console.print()
+        
+        # 装备管理选项
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print("1. 查看背包")
+        self.console.print("2. 装备物品")
+        self.console.print("3. 卸下装备")
+        self.console.print("4. 强化装备")
+        self.console.print("5. 返回主菜单")
+        self.console.print()
+        
+        choice = Prompt.ask("请选择操作", default="5")
+        
+        if choice == "1":
+            self.show_inventory()
+        elif choice == "2":
+            self.equip_from_inventory()
+        elif choice == "3":
+            self.unequip_item()
+        elif choice == "4":
+            self.upgrade_equipment()
+    
+    def show_inventory(self) -> None:
+        """显示背包"""
+        self.clear_screen()
+        self.console.print("[bold cyan]🎒 背包物品[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        player = self.engine.player
+        if not player or not player.inventory:
+            self.console.print("[yellow]背包是空的[/yellow]")
+            input("按回车键继续...")
+            return
+        
+        table = Table(show_header=True, header_style="bold green")
+        table.add_column("编号", justify="right", width=5)
+        table.add_column("名称", width=20)
+        table.add_column("类型", width=8)
+        table.add_column("属性", width=25)
+        
+        for idx, eq in enumerate(player.inventory, 1):
+            eq_type = "武器" if eq.equipment_type.value == "weapon" else "护甲" if eq.equipment_type.value == "armor" else "饰品"
+            attrs = []
+            if eq.attack_bonus > 0:
+                attrs.append(f"攻+{eq.total_attack}")
+            if eq.defense_bonus > 0:
+                attrs.append(f"防+{eq.total_defense}")
+            if eq.health_bonus > 0:
+                attrs.append(f"血+{eq.total_health}")
+            if eq.exp_bonus > 0:
+                attrs.append(f"经验+{int(eq.exp_bonus*100)}%")
+            
+            table.add_row(str(idx), eq.display_name, eq_type, " ".join(attrs))
+        
+        self.console.print(table)
+        input("按回车键继续...")
+    
+    def equip_from_inventory(self) -> None:
+        """从背包装备物品"""
+        player = self.engine.player
+        if not player or not player.inventory:
+            self.console.print("[yellow]背包是空的[/yellow]")
+            return
+        
+        self.show_inventory()
+        
+        choice = Prompt.ask("请输入要装备的编号（输入0取消）", default="0")
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(player.inventory):
+                equipment = player.inventory[idx]
+                result = self.engine.equip_item(equipment)
+                if result["success"]:
+                    self.console.print(f"[green]{result['message']}[/green]")
+                else:
+                    self.console.print(f"[red]{result['message']}[/red]")
+            elif idx != -1:
+                self.console.print("[red]无效的编号[/red]")
+        except ValueError:
+            self.console.print("[red]请输入数字[/red]")
+        
+        input("按回车键继续...")
+    
+    def unequip_item(self) -> None:
+        """卸下装备"""
+        self.clear_screen()
+        self.console.print("[bold cyan]选择要卸下的装备：[/bold cyan]")
+        self.console.print("1. 武器")
+        self.console.print("2. 护甲")
+        self.console.print("3. 饰品")
+        self.console.print("4. 取消")
+        
+        from .equipment import EquipmentType
+        choice = Prompt.ask("请选择", default="4")
+        
+        eq_type_map = {
+            "1": EquipmentType.武器,
+            "2": EquipmentType.护甲,
+            "3": EquipmentType.饰品
+        }
+        
+        if choice in eq_type_map:
+            result = self.engine.unequip_item(eq_type_map[choice])
+            if result["success"]:
+                self.console.print(f"[green]{result['message']}[/green]")
+            else:
+                self.console.print(f"[yellow]{result['message']}[/yellow]")
+            input("按回车键继续...")
+    
+    def upgrade_equipment(self) -> None:
+        """强化装备"""
+        self.clear_screen()
+        self.console.print("[bold cyan]选择要强化的装备：[/bold cyan]")
+        self.console.print()
+        
+        player = self.engine.player
+        if not player:
+            return
+        
+        # 显示所有可强化的装备（已装备 + 背包）
+        all_equipment = []
+        if player.equipped_weapon:
+            all_equipment.append(player.equipped_weapon)
+        if player.equipped_armor:
+            all_equipment.append(player.equipped_armor)
+        if player.equipped_accessory:
+            all_equipment.append(player.equipped_accessory)
+        all_equipment.extend(player.inventory)
+        
+        if not all_equipment:
+            self.console.print("[yellow]没有可强化的装备[/yellow]")
+            input("按回车键继续...")
+            return
+        
+        table = Table(show_header=True, header_style="bold green")
+        table.add_column("编号", justify="right", width=5)
+        table.add_column("名称", width=20)
+        table.add_column("当前等级", width=10)
+        table.add_column("强化费用", width=12)
+        
+        for idx, eq in enumerate(all_equipment, 1):
+            cost = eq.get_upgrade_cost()
+            table.add_row(str(idx), eq.display_name, f"+{eq.level - 1}", str(cost))
+        
+        self.console.print(table)
+        self.console.print(f"\n当前经验值：{player.experience}")
+        
+        choice = Prompt.ask("请输入要强化的装备编号（输入0取消）", default="0")
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(all_equipment):
+                equipment = all_equipment[idx]
+                result = self.engine.upgrade_equipment(equipment)
+                if result["success"]:
+                    self.console.print(f"[green]{result['message']}[/green]")
+                else:
+                    self.console.print(f"[red]{result['message']}[/red]")
+            elif idx != -1:
+                self.console.print("[red]无效的编号[/red]")
+        except ValueError:
+            self.console.print("[red]请输入数字[/red]")
+        
+        input("按回车键继续...")
+    
+    def visit_shop(self) -> None:
+        """商店界面"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  🏪  仙缘商店  🏪  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+        
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+        
+        self.console.print(f"[bold]当前经验值：[/bold]{player.experience}")
+        self.console.print()
+        
+        # 获取商店物品
+        shop_items = self.engine.get_shop_items()
+        
+        table = Table(show_header=True, header_style="bold green")
+        table.add_column("编号", justify="right", width=5)
+        table.add_column("名称", width=20)
+        table.add_column("类型", width=8)
+        table.add_column("属性", width=20)
+        table.add_column("价格", width=10)
+        
+        for idx, item in enumerate(shop_items, 1):
+            eq_type = "武器" if item.equipment_type.value == "weapon" else "护甲" if item.equipment_type.value == "armor" else "饰品"
+            price = self.engine.equipment_manager.calculate_buy_price(item)
+            
+            attrs = []
+            if item.attack_bonus > 0:
+                attrs.append(f"攻+{item.attack_bonus}")
+            if item.defense_bonus > 0:
+                attrs.append(f"防+{item.defense_bonus}")
+            if item.health_bonus > 0:
+                attrs.append(f"血+{item.health_bonus}")
+            
+            table.add_row(str(idx), item.display_name, eq_type, " ".join(attrs), str(price))
+        
+        self.console.print(table)
+        self.console.print()
+        
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print("1-6. 购买对应编号装备")
+        self.console.print("7. 出售背包物品")
+        self.console.print("8. 刷新商店（消耗100经验）")
+        self.console.print("9. 返回主菜单")
+        
+        choice = Prompt.ask("请选择操作", default="9")
+        
+        if choice in ["1", "2", "3", "4", "5", "6"]:
+            idx = int(choice) - 1
+            if 0 <= idx < len(shop_items):
+                result = self.engine.buy_equipment(shop_items[idx])
+                if result["success"]:
+                    self.console.print(f"[green]{result['message']}[/green]")
+                else:
+                    self.console.print(f"[red]{result['message']}[/red]")
+                input("按回车键继续...")
+        elif choice == "7":
+            self.sell_equipment()
+        elif choice == "8":
+            if player.experience >= 100:
+                player.experience -= 100
+                self.console.print("[green]商店已刷新！[/green]")
+            else:
+                self.console.print("[red]经验值不足！需要100经验值[/red]")
+            input("按回车键继续...")
+    
+    def sell_equipment(self) -> None:
+        """出售装备"""
+        self.clear_screen()
+        self.console.print("[bold cyan]选择要出售的物品：[/bold cyan]")
+        
+        player = self.engine.player
+        if not player or not player.inventory:
+            self.console.print("[yellow]背包是空的[/yellow]")
+            input("按回车键继续...")
+            return
+        
+        table = Table(show_header=True, header_style="bold green")
+        table.add_column("编号", justify="right", width=5)
+        table.add_column("名称", width=20)
+        table.add_column("出售价格", width=12)
+        
+        for idx, eq in enumerate(player.inventory, 1):
+            price = self.engine.equipment_manager.calculate_sell_price(eq)
+            table.add_row(str(idx), eq.display_name, str(price))
+        
+        self.console.print(table)
+        
+        choice = Prompt.ask("请输入要出售的物品编号（输入0取消）", default="0")
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(player.inventory):
+                equipment = player.inventory[idx]
+                result = self.engine.sell_equipment(equipment)
+                if result["success"]:
+                    self.console.print(f"[green]{result['message']}[/green]")
+                else:
+                    self.console.print(f"[red]{result['message']}[/red]")
+            elif idx != -1:
+                self.console.print("[red]无效的编号[/red]")
+        except ValueError:
+            self.console.print("[red]请输入数字[/red]")
+        
+        input("按回车键继续...")
+
+    def dungeon_menu(self) -> None:
+        """副本菜单"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  🏰  副本挑战  🏰  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+        
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+        
+        self.console.print(f"[bold]当前体力：[/bold]{player.stamina}/{player.max_stamina}")
+        self.console.print(f"[bold]挑战塔最高层：[/bold]{self.engine.tower_progress.highest_level if self.engine.tower_progress else 0}")
+        self.console.print(f"[bold]排名：[/bold]{self.engine.get_tower_ranking()}")
+        self.console.print()
+        
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print("1. 每日副本")
+        self.console.print("2. 挑战之塔")
+        self.console.print("3. 返回主菜单")
+        self.console.print()
+        
+        choice = Prompt.ask("请选择", default="3")
+        
+        if choice == "1":
+            self.daily_dungeon_menu()
+        elif choice == "2":
+            self.challenge_tower_menu()
+    
+    def daily_dungeon_menu(self) -> None:
+        """每日副本菜单"""
+        self.clear_screen()
+        self.console.print("[bold cyan]📅 每日副本[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        dungeons = self.engine.get_available_dungeons()
+        
+        if not dungeons:
+            self.console.print("[yellow]暂无可用副本[/yellow]")
+            input("按回车键继续...")
+            return
+        
+        table = Table(show_header=True, header_style="bold green")
+        table.add_column("编号", justify="right", width=5)
+        table.add_column("名称", width=15)
+        table.add_column("类型", width=10)
+        table.add_column("推荐等级", width=10)
+        table.add_column("体力消耗", width=10)
+        table.add_column("状态", width=10)
+        
+        for idx, dungeon in enumerate(dungeons, 1):
+            status = "✓ 已完成" if dungeon.completed else "○ 可挑战"
+            dtype = "经验" if dungeon.dungeon_type.value == "exp" else "装备" if dungeon.dungeon_type.value == "equipment" else "极限"
+            table.add_row(str(idx), dungeon.name, dtype, str(dungeon.recommended_level), 
+                         str(dungeon.stamina_cost), status)
+        
+        self.console.print(table)
+        self.console.print()
+        
+        choice = Prompt.ask("请选择要挑战的副本（输入0取消）", default="0")
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(dungeons):
+                result = self.engine.start_dungeon(dungeons[idx].id)
+                if result["success"]:
+                    self.console.print(f"[green]{result['message']}[/green]")
+                    # 简化：直接给奖励
+                    self.console.print("[yellow]副本功能开发中，直接给予奖励...[/yellow]")
+                else:
+                    self.console.print(f"[red]{result['message']}[/red]")
+            elif idx != -1:
+                self.console.print("[red]无效的编号[/red]")
+        except ValueError:
+            self.console.print("[red]请输入数字[/red]")
+        
+        input("按回车键继续...")
+    
+    def challenge_tower_menu(self) -> None:
+        """挑战之塔菜单"""
+        self.clear_screen()
+        self.console.print("[bold cyan]🏰 挑战之塔[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        if not self.engine.tower_progress:
+            self.console.print("[red]挑战塔系统未初始化[/red]")
+            input("按回车键继续...")
+            return
+        
+        highest = self.engine.tower_progress.highest_level
+        self.console.print(f"[bold]最高通关层：[/bold]{highest}")
+        self.console.print(f"[bold]当前排名：[/bold]{self.engine.get_tower_ranking()}")
+        self.console.print()
+        
+        # 显示可选层数
+        start_level = max(1, highest - 2)
+        end_level = min(100, highest + 3)
+        
+        self.console.print(f"[bold]可选层数（{start_level}-{end_level}）：[/bold]")
+        for level in range(start_level, end_level + 1):
+            info = self.engine.get_tower_level(level)
+            if info:
+                marker = "→ " if level == highest + 1 else "   "
+                self.console.print(f"{marker}第{level:3d}层 - {info['monster_name']:15s} [{info['status']}]")
+        
+        self.console.print()
+        choice = Prompt.ask("请输入要挑战的层数（输入0取消）", default="0")
+        try:
+            level = int(choice)
+            if 1 <= level <= 100:
+                result = self.engine.start_tower_challenge(level)
+                if result["success"]:
+                    self.console.print(f"[green]{result['message']}[/green]")
+                    # 简化处理：直接通关给奖励
+                    complete_result = self.engine.complete_tower_level()
+                    if complete_result["success"]:
+                        self.console.print(f"[bold green]🎉 {complete_result['message']}[/bold green]")
+                        rewards = complete_result["rewards"]
+                        self.console.print(f"获得经验值：{rewards['experience']}")
+                        if "equipment_dropped" in complete_result:
+                            self.console.print(f"掉落装备：[{complete_result['equipment_dropped']['quality']}]{complete_result['equipment_dropped']['name']}")
+                else:
+                    self.console.print(f"[red]{result['message']}[/red]")
+            elif level != 0:
+                self.console.print("[red]无效的层数[/red]")
+        except ValueError:
+            self.console.print("[red]请输入数字[/red]")
+        
+        input("按回车键继续...")
+
+    def show_help(self) -> None:
+        """显示帮助菜单"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 60)
+        self.console.print("[bold magenta]│  ❓  帮助指南  ❓  │")
+        self.console.print("[bold magenta]" + "═" * 60)
+        self.console.print()
+        
+        help_options = [
+            {"id": "basics", "name": "🎮 基础操作", "desc": "游戏基本操作和流程"},
+            {"id": "combat", "name": "⚔️ 战斗系统", "desc": "战斗机制和技巧"},
+            {"id": "equipment", "name": "🎒 装备系统", "desc": "装备获取和强化"},
+            {"id": "skills", "name": "⚡ 技能天赋", "desc": "门派技能和天赋树"},
+            {"id": "dungeon", "name": "🏰 副本挑战", "desc": "副本和挑战塔"},
+            {"id": "commands", "name": "📚 命令学习", "desc": "Kubernetes命令学习建议"},
+            {"id": "back", "name": "🔙 返回主菜单", "desc": ""},
+        ]
+        
+        table = Table(box=box.ROUNDED, show_header=False)
+        table.add_column("选项", style="cyan", justify="right")
+        table.add_column("名称", style="green")
+        table.add_column("说明", style="white")
+        
+        for idx, opt in enumerate(help_options, 1):
+            table.add_row(f"[{idx}]", opt["name"], opt["desc"])
+        
+        self.console.print(table)
+        self.console.print()
+        
+        choice = Prompt.ask("请选择帮助主题", default="7")
+        
+        if choice == "1":
+            self._show_help_basics()
+        elif choice == "2":
+            self._show_help_combat()
+        elif choice == "3":
+            self._show_help_equipment()
+        elif choice == "4":
+            self._show_help_skills()
+        elif choice == "5":
+            self._show_help_dungeon()
+        elif choice == "6":
+            self._show_help_commands()
+    
+    def _show_help_basics(self) -> None:
+        """基础操作帮助"""
+        self.clear_screen()
+        self.console.print("[bold cyan]🎮 基础操作指南[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        self.console.print("[bold]1. 创建角色[/bold]")
+        self.console.print("   首次进入游戏需要创建角色，选择门派：")
+        self.console.print("   • 青云宗：经验+10%，适合新手")
+        self.console.print("   • 炼狱门：经验+20%，攻击凶猛")
+        self.console.print("   • 玄天宗：平衡发展，策略性强")
+        self.console.print("   • 逍遥派：经验+15%，自由灵活")
+        self.console.print()
+        
+        self.console.print("[bold]2. 主要玩法[/bold]")
+        self.console.print("   • 📖 开始故事：学习新的Kubernetes命令")
+        self.console.print("   • ⚔️ 修炼场：练习已学命令")
+        self.console.print("   • 🏆 挑战关卡：完成挑战获得经验")
+        self.console.print("   • 📝 知识问答：测试知识掌握")
+        self.console.print()
+        
+        self.console.print("[bold]3. 修炼境界[/bold]")
+        self.console.print("   凡人 → 练气期 → 筑基期 → 金丹期 → 元婴期")
+        self.console.print("   → 化神期 → 大乘期 → 渡劫期 → 散仙 → 金仙")
+        self.console.print()
+        
+        self.console.print("[bold]4. 经验获取[/bold]")
+        self.console.print("   • 学习命令：+50经验")
+        self.console.print("   • 完成挑战：+100经验")
+        self.console.print("   • 通关章节：+500经验")
+        self.console.print("   • 副本/挑战塔：大量经验")
+        self.console.print()
+        
+        input("按回车键继续...")
+    
+    def _show_help_combat(self) -> None:
+        """战斗系统帮助"""
+        self.clear_screen()
+        self.console.print("[bold cyan]⚔️ 战斗系统指南[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        self.console.print("[bold]战斗流程：[/bold]")
+        self.console.print("1. 遭遇怪物 → 2. 回答问题 → 3. 造成伤害 → 4. 怪物反击")
+        self.console.print()
+        
+        self.console.print("[bold]攻击机制：[/bold]")
+        self.console.print("   • 回答正确：攻击力 ×2")
+        self.console.print("   • 回答错误：攻击力 ÷2")
+        self.console.print("   • 实际伤害 = 攻击 - 怪物防御")
+        self.console.print()
+        
+        self.console.print("[bold]连击系统：[/bold]")
+        self.console.print("   连续答对可获得经验加成：")
+        self.console.print("   • 1-2连击：+10%")
+        self.console.print("   • 3-4连击：+20%")
+        self.console.print("   • 5-9连击：+30%")
+        self.console.print("   • 10+连击：+50%")
+        self.console.print()
+        
+        self.console.print("[bold]战斗技巧：[/bold]")
+        self.console.print("   • 观察敌人属性，评估实力")
+        self.console.print("   • 合理使用门派技能")
+        self.console.print("   • 打不过时及时逃跑")
+        self.console.print("   • 保持连击获得加成")
+        self.console.print()
+        
+        input("按回车键继续...")
+    
+    def _show_help_equipment(self) -> None:
+        """装备系统帮助"""
+        self.clear_screen()
+        self.console.print("[bold cyan]🎒 装备系统指南[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        self.console.print("[bold]装备类型：[/bold]")
+        self.console.print("   • 武器：提升攻击力")
+        self.console.print("   • 护甲：提升防御和生命值")
+        self.console.print("   • 饰品：提供特殊加成")
+        self.console.print()
+        
+        self.console.print("[bold]装备品质：[/bold]")
+        self.console.print("   普通(白) < 精良(绿) < 稀有(蓝) < 史诗(紫) < 传说(橙)")
+        self.console.print()
+        
+        self.console.print("[bold]获取途径：[/bold]")
+        self.console.print("   • 战斗掉落：击败怪物有概率掉落")
+        self.console.print("   • 商店购买：使用经验值购买")
+        self.console.print("   • 副本奖励：通关副本获得")
+        self.console.print("   • 挑战塔：高层奖励")
+        self.console.print()
+        
+        self.console.print("[bold]装备强化：[/bold]")
+        self.console.print("   • 消耗经验值强化装备")
+        self.console.print("   • 每级提升10%属性")
+        self.console.print("   • 品质越高，可强化等级越高")
+        self.console.print()
+        
+        input("按回车键继续...")
+    
+    def _show_help_skills(self) -> None:
+        """技能天赋帮助"""
+        self.clear_screen()
+        self.console.print("[bold cyan]⚡ 技能天赋指南[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        self.console.print("[bold]门派技能（每个门派3个）：[/bold]")
+        self.console.print()
+        self.console.print("[green]青云宗：[/green]")
+        self.console.print("   • 稳如泰山（被动）：减伤20%")
+        self.console.print("   • 道法自然（主动）：3场战斗经验+30%")
+        self.console.print("   • 以柔克刚（主动）：反弹下次伤害")
+        self.console.print()
+        self.console.print("[red]炼狱门：[/red]")
+        self.console.print("   • 狂暴（主动）：本回合攻击翻倍")
+        self.console.print("   • 嗜血（被动）：吸血20%")
+        self.console.print("   • 不屈（被动）：30%概率复活")
+        self.console.print()
+        
+        self.console.print("[bold]天赋树：[/bold]")
+        self.console.print("   • 攻击分支：提升输出能力")
+        self.console.print("   • 防御分支：提升生存能力")
+        self.console.print("   • 辅助分支：提升效率收益")
+        self.console.print("   升级获得天赋点，自由分配")
+        self.console.print()
+        
+        input("按回车键继续...")
+    
+    def _show_help_dungeon(self) -> None:
+        """副本挑战帮助"""
+        self.clear_screen()
+        self.console.print("[bold cyan]🏰 副本挑战指南[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        self.console.print("[bold]每日副本：[/bold]")
+        self.console.print("   • 修炼秘境：消耗10体力，获得1000经验")
+        self.console.print("   • 藏宝洞窟：消耗15体力，获得装备")
+        self.console.print("   • 绝境试炼：消耗20体力，获得大量奖励")
+        self.console.print()
+        
+        self.console.print("[bold]体力系统：[/bold]")
+        self.console.print("   • 最大体力：100点")
+        self.console.print("   • 恢复速度：每6分钟恢复1点")
+        self.console.print("   • 体力用于挑战副本")
+        self.console.print()
+        
+        self.console.print("[bold]挑战之塔：[/bold]")
+        self.console.print("   • 共100层，难度递增")
+        self.console.print("   • 每10层是BOSS层")
+        self.console.print("   • 高层奖励更丰厚")
+        self.console.print("   • 根据最高层数获得排名")
+        self.console.print()
+        
+        input("按回车键继续...")
+    
+    def _show_help_commands(self) -> None:
+        """命令学习帮助"""
+        self.clear_screen()
+        self.console.print("[bold cyan]📚 Kubernetes命令学习建议[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+        
+        self.console.print("[bold]学习路径：[/bold]")
+        self.console.print("1. 跟随故事模式逐步学习")
+        self.console.print("2. 在修炼场反复练习")
+        self.console.print("3. 通过挑战检验掌握程度")
+        self.console.print("4. 使用错题集针对性复习")
+        self.console.print()
+        
+        self.console.print("[bold]命令分类：[/bold]")
+        self.console.print("   • 基础操作：run, get, describe, delete")
+        self.console.print("   • 部署管理：create deployment, scale")
+        self.console.print("   • 服务发现：expose, services")
+        self.console.print("   • 配置管理：configmap, secret")
+        self.console.print("   • 故障排查：logs, exec, port-forward")
+        self.console.print()
+        
+        self.console.print("[bold]实用建议：[/bold]")
+        self.console.print("   • 理解命令背后的概念")
+        self.console.print("   • 多做练习加深记忆")
+        self.console.print("   • 尝试在实际环境使用")
+        self.console.print("   • 建立个人命令速查表")
+        self.console.print()
+        
+        input("按回车键继续...")
+
     def quit_game(self) -> None:
         """退出游戏"""
         if Confirm.ask("\n确定要退出游戏吗？"):
             self.running = False
             self.console.print("\n[bold]感谢游玩KuGame！[/bold]")
             self.console.print("[italic]愿你在Kubernetes之道上一帆风顺！[/italic]\n")
+
+    def daily_checkin(self) -> None:
+        """每日签到"""
+        self.clear_screen()
+        self.console.print("\n[bold yellow]📅 每日签到 📅[/bold yellow]\n")
+        
+        if not self.engine.player:
+            self.console.print("[red]请先创建角色[/red]")
+            return
+        
+        # 获取签到状态
+        status = self.engine.player.get_checkin_status()
+        
+        if not status["can_checkin"]:
+            self.console.print("[yellow]今天已经签到过了，明天再来吧！[/yellow]")
+            self.console.print(f"[dim]连续签到: {status['consecutive_days']} 天[/dim]")
+            self.console.print(f"[dim]总签到次数: {status['total_checkins']} 次[/dim]")
+            return
+        
+        # 显示签到信息
+        self.console.print("[green]✨ 签到可获奖励 ✨[/green]\n")
+        
+        next_reward = status["next_reward"]
+        table = Table(box=box.ROUNDED)
+        table.add_column("项目", style="cyan")
+        table.add_column("数值", style="green")
+        
+        table.add_row("下次签到天数", f"第 {next_reward['day']} 天")
+        table.add_row("经验奖励", str(next_reward["experience"]))
+        table.add_row("体力奖励", str(next_reward["stamina"]))
+        if next_reward["has_equipment"]:
+            table.add_row("额外奖励", "🎁 装备")
+        
+        self.console.print(table)
+        self.console.print()
+        
+        # 显示连续进度
+        weekly_progress = status["weekly_progress"]
+        progress_bar = "█" * weekly_progress + "░" * (7 - weekly_progress)
+        self.console.print(f"[cyan]本周进度: [{progress_bar}] {weekly_progress}/7[/cyan]")
+        self.console.print()
+        
+        # 确认签到
+        if Confirm.ask("[bold yellow]是否进行今日签到？[/bold yellow]"):
+            result = self.engine.player.checkin()
+            
+            if result["success"]:
+                self.console.print(f"\n[bold green]✓ {result['message']}[/bold green]\n")
+                
+                # 显示奖励详情
+                rewards = result["rewards"]
+                reward_table = Table(box=box.ROUNDED, title="获得奖励")
+                reward_table.add_column("类型", style="cyan")
+                reward_table.add_column("数值", style="yellow")
+                
+                reward_table.add_row("经验", f"+{rewards.get('experience', 0)}")
+                reward_table.add_row("体力", f"+{rewards.get('stamina', 0)}")
+                
+                if "equipment_quality" in rewards:
+                    quality_names = {2: "精良", 3: "稀有", 4: "史诗"}
+                    quality_name = quality_names.get(rewards["equipment_quality"], "装备")
+                    reward_table.add_row("装备", f"🎁 {quality_name}装备")
+                
+                if "bonus_experience" in rewards:
+                    reward_table.add_row("额外经验", f"+{rewards['bonus_experience']}")
+                
+                self.console.print(reward_table)
+                self.console.print()
+                
+                # 显示当前状态
+                self.console.print(f"[dim]当前等级: {result['current_level']} | "
+                                 f"经验: {result['current_exp']} | "
+                                 f"体力: {result['current_stamina']}/"
+                                 f"{self.engine.player.max_stamina}[/dim]")
+            else:
+                self.console.print(f"[red]{result['message']}[/red]")
+        else:
+            self.console.print("[dim]已取消签到[/dim]")
+        
+        self.console.print()
+        Prompt.ask("[dim]按回车键返回主菜单[/dim]")
 
 
 def main() -> None:

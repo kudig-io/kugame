@@ -7,8 +7,21 @@
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
 from enum import Enum
+from datetime import datetime
 import json
 import os
+
+# 导入装备系统
+from .equipment import Equipment, EquipmentType
+
+# 导入每日签到系统
+from .daily_checkin import DailyCheckin
+
+# 前向声明（避免循环导入）
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .skills import SkillManager
+    from .talent_tree import TalentTree
 
 
 class AchievementType(Enum):
@@ -21,6 +34,11 @@ class AchievementType(Enum):
     挑战完成 = "challenge_completion"  # 挑战完成相关成就
     连续成功 = "streak_success"     # 连续成功相关成就
     门派专精 = "sect_specialization"  # 门派专精相关成就
+    收集成就 = "collection"         # 装备收集相关成就
+    等级成就 = "level_achievement"  # 等级相关成就
+    挑战塔成就 = "tower_achievement" # 挑战塔相关成就
+    战斗成就 = "combat_achievement" # 战斗相关成就
+    特殊成就 = "special_achievement" # 特殊成就
 
 
 class Achievement:
@@ -110,6 +128,12 @@ class Player:
 
         # 答题系统
         wrong_commands: 答错的命令列表
+        
+        # 装备系统
+        equipped_weapon: 已装备武器
+        equipped_armor: 已装备护甲
+        equipped_accessory: 已装备饰品
+        inventory: 背包中的装备列表
     """
     name: str
     sect: Sect
@@ -139,9 +163,40 @@ class Player:
     max_health: int = 100
     attack: int = 10
     defense: int = 5
+    
+    # 战斗统计
+    total_combats: int = 0
+    combats_won: int = 0
+    combats_lost: int = 0
+    highest_tower_level: int = 0
 
     # 答题系统
     wrong_commands: List[str] = field(default_factory=list)
+    
+    # 装备系统
+    equipped_weapon: Optional[Equipment] = None
+    equipped_armor: Optional[Equipment] = None
+    equipped_accessory: Optional[Equipment] = None
+    inventory: List[Equipment] = field(default_factory=list)
+    
+    # 技能和天赋系统（延迟初始化）
+    skill_manager_data: Optional[Dict[str, Any]] = None
+    talent_tree_data: Optional[Dict[str, Any]] = None
+    
+    # 副本系统
+    dungeon_manager_data: Optional[Dict[str, Any]] = None
+    tower_progress_data: Optional[Dict[str, Any]] = None
+    
+    # 体力系统
+    stamina: int = 100
+    max_stamina: int = 100
+    last_stamina_refresh: Optional[str] = None
+    
+    # 每日签到系统
+    checkin_data: Optional[Dict[str, Any]] = None
+    
+    # 任务系统
+    quest_data: Optional[Dict[str, Any]] = None
 
     def __post_init__(self) -> None:
         """初始化后处理
@@ -198,6 +253,14 @@ class Player:
 
         if not isinstance(self.total_attempts, int) or self.total_attempts < 0:
             self.total_attempts = 0
+        
+        # 装备系统初始化
+        if not isinstance(self.inventory, list):
+            self.inventory = []
+
+        # 技能和天赋系统初始化
+        self._initialize_skill_manager()
+        self._initialize_talent_tree()
 
         # 初始化成就系统
         self._initialize_achievements()
@@ -208,6 +271,15 @@ class Player:
         # 确保生命值不超过最大值
         if self.health > self.max_health:
             self.health = self.max_health
+            
+        # 初始化签到系统
+        if self.checkin_data is None:
+            self.checkin_data = DailyCheckin().to_dict()
+            
+        # 初始化任务系统
+        if self.quest_data is None:
+            from .quest_system import QuestManager
+            self.quest_data = QuestManager().to_dict()
 
     def _initialize_achievements(self) -> None:
         """初始化成就系统
@@ -322,6 +394,128 @@ class Player:
                 achievement_type=AchievementType.连续成功,
                 condition=20,
                 reward={"experience": 2000, "title": "连击王者"}
+            ),
+            
+            # 装备收集类成就
+            Achievement(
+                id="equipment_10",
+                name="装备收集者",
+                description="收集10件装备",
+                achievement_type=AchievementType.收集成就,
+                condition=10,
+                reward={"experience": 500, "title": "装备收集者"}
+            ),
+            Achievement(
+                id="equipment_50",
+                name="装备收藏家",
+                description="收集50件装备",
+                achievement_type=AchievementType.收集成就,
+                condition=50,
+                reward={"experience": 2000, "title": "装备收藏家"}
+            ),
+            Achievement(
+                id="equipment_orange",
+                name="传说装备",
+                description="获得一件传说品质装备",
+                achievement_type=AchievementType.收集成就,
+                condition=1,
+                reward={"experience": 3000, "title": "传说拥有者"}
+            ),
+            
+            # 等级类成就
+            Achievement(
+                id="level_10",
+                name="初出茅庐",
+                description="达到10级",
+                achievement_type=AchievementType.等级成就,
+                condition=10,
+                reward={"experience": 300, "title": "初入江湖"}
+            ),
+            Achievement(
+                id="level_30",
+                name="小有所成",
+                description="达到30级",
+                achievement_type=AchievementType.等级成就,
+                condition=30,
+                reward={"experience": 1000, "title": "江湖少侠"}
+            ),
+            Achievement(
+                id="level_50",
+                name="一代宗师",
+                description="达到50级",
+                achievement_type=AchievementType.等级成就,
+                condition=50,
+                reward={"experience": 3000, "title": "一代宗师"}
+            ),
+            Achievement(
+                id="level_100",
+                name="修仙巅峰",
+                description="达到100级",
+                achievement_type=AchievementType.等级成就,
+                condition=100,
+                reward={"experience": 10000, "title": "修仙巅峰"}
+            ),
+            
+            # 挑战塔类成就
+            Achievement(
+                id="tower_10",
+                name="塔之新人",
+                description="挑战之塔达到10层",
+                achievement_type=AchievementType.挑战塔成就,
+                condition=10,
+                reward={"experience": 500, "title": "塔之新人"}
+            ),
+            Achievement(
+                id="tower_50",
+                name="塔之勇士",
+                description="挑战之塔达到50层",
+                achievement_type=AchievementType.挑战塔成就,
+                condition=50,
+                reward={"experience": 3000, "title": "塔之勇士"}
+            ),
+            Achievement(
+                id="tower_100",
+                name="通天塔主",
+                description="挑战之塔达到100层",
+                achievement_type=AchievementType.挑战塔成就,
+                condition=100,
+                reward={"experience": 10000, "title": "通天塔主"}
+            ),
+            
+            # 战斗类成就
+            Achievement(
+                id="combat_100",
+                name="百战老兵",
+                description="参加100场战斗",
+                achievement_type=AchievementType.战斗成就,
+                condition=100,
+                reward={"experience": 1000, "title": "百战老兵"}
+            ),
+            Achievement(
+                id="combat_win_50",
+                name="常胜将军",
+                description="赢得50场战斗",
+                achievement_type=AchievementType.战斗成就,
+                condition=50,
+                reward={"experience": 2000, "title": "常胜将军"}
+            ),
+            
+            # 特殊成就
+            Achievement(
+                id="first_login",
+                name="初入仙门",
+                description="第一次登录游戏",
+                achievement_type=AchievementType.特殊成就,
+                condition=1,
+                reward={"experience": 100, "title": "初入仙门"}
+            ),
+            Achievement(
+                id="perfect_answer",
+                name="完美答题",
+                description="单次答对10道题",
+                achievement_type=AchievementType.特殊成就,
+                condition=1,
+                reward={"experience": 500, "title": "完美答题"}
             ),
         ]
 
@@ -471,7 +665,7 @@ class Player:
         """获得经验值，可能升级
 
         增加玩家经验值，如果达到升级条件则自动升级。
-        应用门派加成。
+        应用门派加成和装备加成。
 
         Args:
             exp: 获得的经验值
@@ -482,8 +676,9 @@ class Player:
         if not isinstance(exp, (int, float)) or exp < 0:
             raise ValueError("经验值必须是非负数")
 
-        # 应用门派加成
-        exp_with_bonus = int(exp * self.sect_bonus)
+        # 应用门派加成和装备加成
+        total_bonus = self.sect_bonus + self.exp_bonus
+        exp_with_bonus = int(exp * total_bonus)
         self.experience += exp_with_bonus
         required_exp = self._calculate_required_exp()
 
@@ -612,6 +807,21 @@ class Player:
             "total_attempts": self.total_attempts,
             "custom_titles": self.custom_titles,
             "sect_bonus": self.sect_bonus,
+            # 装备系统
+            "equipped_weapon": self.equipped_weapon.to_dict() if self.equipped_weapon else None,
+            "equipped_armor": self.equipped_armor.to_dict() if self.equipped_armor else None,
+            "equipped_accessory": self.equipped_accessory.to_dict() if self.equipped_accessory else None,
+            "inventory": [eq.to_dict() for eq in self.inventory],
+            # 技能和天赋系统
+            "skill_manager_data": self.skill_manager.to_dict() if hasattr(self, '_skill_manager') and self._skill_manager else None,
+            "talent_tree_data": self.talent_tree.to_dict() if hasattr(self, '_talent_tree') and self._talent_tree else None,
+            # 副本系统
+            "dungeon_manager_data": self.dungeon_manager_data,
+            "tower_progress_data": self.tower_progress_data,
+            # 体力系统
+            "stamina": self.stamina,
+            "max_stamina": self.max_stamina,
+            "last_stamina_refresh": self.last_stamina_refresh,
         }
 
     def save(self, filepath: str = "player_save.json") -> bool:
@@ -736,6 +946,21 @@ class Player:
                 total_attempts=data.get("total_attempts", 0),
                 custom_titles=data.get("custom_titles", []),
                 sect_bonus=data.get("sect_bonus", 1.0),
+                # 装备系统
+                equipped_weapon=Equipment.from_dict(data["equipped_weapon"]) if data.get("equipped_weapon") else None,
+                equipped_armor=Equipment.from_dict(data["equipped_armor"]) if data.get("equipped_armor") else None,
+                equipped_accessory=Equipment.from_dict(data["equipped_accessory"]) if data.get("equipped_accessory") else None,
+                inventory=[Equipment.from_dict(eq) for eq in data.get("inventory", [])],
+                # 技能和天赋系统
+                skill_manager_data=data.get("skill_manager_data"),
+                talent_tree_data=data.get("talent_tree_data"),
+                # 副本系统
+                dungeon_manager_data=data.get("dungeon_manager_data"),
+                tower_progress_data=data.get("tower_progress_data"),
+                # 体力系统
+                stamina=data.get("stamina", 100),
+                max_stamina=data.get("max_stamina", 100),
+                last_stamina_refresh=data.get("last_stamina_refresh"),
             )
 
             # 加载成就对象
@@ -821,3 +1046,855 @@ class Player:
         self.current_chapter = "序章"
         self.kubectl_commands_mastered = []
         self.challenges_completed = []
+
+    # ==================== 装备系统方法 ====================
+    
+    @property
+    def total_attack(self) -> int:
+        """计算总攻击力（基础属性 + 装备加成）
+        
+        Returns:
+            int: 总攻击力
+        """
+        equipment_bonus = 0
+        if self.equipped_weapon:
+            equipment_bonus += self.equipped_weapon.total_attack
+        if self.equipped_accessory:
+            equipment_bonus += self.equipped_accessory.total_attack
+        return self.attack + equipment_bonus
+    
+    @property
+    def total_defense(self) -> int:
+        """计算总防御力（基础属性 + 装备加成）
+        
+        Returns:
+            int: 总防御力
+        """
+        equipment_bonus = 0
+        if self.equipped_armor:
+            equipment_bonus += self.equipped_armor.total_defense
+        if self.equipped_accessory:
+            equipment_bonus += self.equipped_accessory.total_defense
+        return self.defense + equipment_bonus
+    
+    @property
+    def total_max_health(self) -> int:
+        """计算最大生命值（基础属性 + 装备加成）
+        
+        Returns:
+            int: 最大生命值
+        """
+        equipment_bonus = 0
+        if self.equipped_armor:
+            equipment_bonus += self.equipped_armor.total_health
+        if self.equipped_accessory:
+            equipment_bonus += self.equipped_accessory.total_health
+        return self.max_health + equipment_bonus
+    
+    @property
+    def exp_bonus(self) -> float:
+        """计算经验值加成
+        
+        Returns:
+            float: 经验值加成百分比
+        """
+        bonus = 0.0
+        if self.equipped_weapon:
+            bonus += self.equipped_weapon.exp_bonus
+        if self.equipped_armor:
+            bonus += self.equipped_armor.exp_bonus
+        if self.equipped_accessory:
+            bonus += self.equipped_accessory.exp_bonus
+        return bonus
+    
+    @property
+    def streak_bonus(self) -> float:
+        """计算连击加成
+        
+        Returns:
+            float: 连击加成百分比
+        """
+        bonus = 0.0
+        if self.equipped_weapon:
+            bonus += self.equipped_weapon.streak_bonus
+        if self.equipped_armor:
+            bonus += self.equipped_armor.streak_bonus
+        if self.equipped_accessory:
+            bonus += self.equipped_accessory.streak_bonus
+        return bonus
+    
+    def equip_item(self, equipment: Equipment) -> bool:
+        """装备物品
+        
+        将装备放入对应的装备槽，原来的装备（如果有）会回到背包。
+        
+        Args:
+            equipment: 要装备的装备
+            
+        Returns:
+            bool: 装备成功返回True
+        """
+        # 从背包中移除
+        if equipment in self.inventory:
+            self.inventory.remove(equipment)
+        
+        # 根据装备类型放入对应槽位
+        if equipment.equipment_type == EquipmentType.武器:
+            if self.equipped_weapon:
+                self.unequip_item(EquipmentType.武器)
+            self.equipped_weapon = equipment
+            equipment.equipped = True
+            
+        elif equipment.equipment_type == EquipmentType.护甲:
+            if self.equipped_armor:
+                self.unequip_item(EquipmentType.护甲)
+            self.equipped_armor = equipment
+            equipment.equipped = True
+            
+        elif equipment.equipment_type == EquipmentType.饰品:
+            if self.equipped_accessory:
+                self.unequip_item(EquipmentType.饰品)
+            self.equipped_accessory = equipment
+            equipment.equipped = True
+        
+        # 更新生命值上限
+        new_max_health = self.total_max_health
+        health_ratio = self.health / self.max_health if self.max_health > 0 else 1
+        self.max_health = new_max_health
+        self.health = int(self.max_health * health_ratio)
+        
+        return True
+    
+    def unequip_item(self, equipment_type: EquipmentType) -> Optional[Equipment]:
+        """卸下装备
+        
+        将指定类型的装备卸下，放回背包。
+        
+        Args:
+            equipment_type: 装备类型
+            
+        Returns:
+            Optional[Equipment]: 卸下的装备，如果没有则返回None
+        """
+        unequipped = None
+        
+        if equipment_type == EquipmentType.武器 and self.equipped_weapon:
+            unequipped = self.equipped_weapon
+            self.equipped_weapon.equipped = False
+            self.equipped_weapon = None
+            
+        elif equipment_type == EquipmentType.护甲 and self.equipped_armor:
+            unequipped = self.equipped_armor
+            self.equipped_armor.equipped = False
+            self.equipped_armor = None
+            
+        elif equipment_type == EquipmentType.饰品 and self.equipped_accessory:
+            unequipped = self.equipped_accessory
+            self.equipped_accessory.equipped = False
+            self.equipped_accessory = None
+        
+        # 放回背包
+        if unequipped:
+            self.inventory.append(unequipped)
+        
+        return unequipped
+    
+    def add_to_inventory(self, equipment: Equipment) -> None:
+        """添加装备到背包
+        
+        Args:
+            equipment: 要添加的装备
+        """
+        self.inventory.append(equipment)
+    
+    def remove_from_inventory(self, equipment: Equipment) -> bool:
+        """从背包移除装备
+        
+        Args:
+            equipment: 要移除的装备
+            
+        Returns:
+            bool: 移除成功返回True
+        """
+        if equipment in self.inventory:
+            self.inventory.remove(equipment)
+            return True
+        return False
+    
+    def get_equipment_summary(self) -> Dict[str, Any]:
+        """获取装备汇总信息
+        
+        Returns:
+            Dict[str, Any]: 装备汇总信息
+        """
+        return {
+            "weapon": self.equipped_weapon.to_dict() if self.equipped_weapon else None,
+            "armor": self.equipped_armor.to_dict() if self.equipped_armor else None,
+            "accessory": self.equipped_accessory.to_dict() if self.equipped_accessory else None,
+            "inventory_count": len(self.inventory),
+            "total_attack": self.total_attack,
+            "total_defense": self.total_defense,
+            "total_max_health": self.total_max_health,
+            "exp_bonus": self.exp_bonus,
+            "streak_bonus": self.streak_bonus,
+        }
+
+    # ==================== 技能和天赋系统方法 ====================
+    
+    def _initialize_skill_manager(self) -> None:
+        """初始化技能管理器"""
+        if not hasattr(self, '_skill_manager'):
+            from .skills import SkillManager
+            if self.skill_manager_data:
+                self._skill_manager = SkillManager.from_dict(self.skill_manager_data)
+            else:
+                self._skill_manager = SkillManager(sect=self.sect)
+    
+    @property
+    def skill_manager(self):
+        """获取技能管理器"""
+        if not hasattr(self, '_skill_manager') or self._skill_manager is None:
+            self._initialize_skill_manager()
+        return self._skill_manager
+    
+    def _initialize_talent_tree(self) -> None:
+        """初始化天赋树"""
+        if not hasattr(self, '_talent_tree'):
+            from .talent_tree import TalentTree
+            if self.talent_tree_data:
+                self._talent_tree = TalentTree.from_dict(self.talent_tree_data)
+            else:
+                self._talent_tree = TalentTree(sect=self.sect)
+    
+    @property
+    def talent_tree(self):
+        """获取天赋树"""
+        if not hasattr(self, '_talent_tree') or self._talent_tree is None:
+            self._initialize_talent_tree()
+        return self._talent_tree
+    
+    def get_skill_bonuses(self) -> Dict[str, float]:
+        """获取技能加成
+        
+        Returns:
+            Dict[str, float]: 各种加成值
+        """
+        bonuses = {
+            "damage_reduction": 0.0,
+            "lifesteal": 0.0,
+            "exp_bonus": 0.0,
+            "dodge_chance": 0.0,
+        }
+        
+        if hasattr(self, '_skill_manager') and self._skill_manager:
+            # 青云宗：稳如泰山 - 减伤20%
+            if "qingyun_steady" in self._skill_manager.skills:
+                bonuses["damage_reduction"] += 0.2
+            
+            # 炼狱门：嗜血 - 吸血20%
+            if "liyu_lifesteal" in self._skill_manager.skills:
+                bonuses["lifesteal"] += 0.2
+            
+            # 逍遥派：因材施教 - 经验+50%
+            if "xiaoyao_teach" in self._skill_manager.skills:
+                bonuses["exp_bonus"] += 0.5
+        
+        return bonuses
+    
+    def get_talent_bonuses(self) -> Dict[str, float]:
+        """获取天赋加成
+        
+        Returns:
+            Dict[str, float]: 各种加成值
+        """
+        bonuses = {
+            "attack": 0.0,
+            "defense": 0.0,
+            "health": 0.0,
+            "exp_bonus": 0.0,
+        }
+        
+        if hasattr(self, '_talent_tree') and self._talent_tree:
+            # 攻击天赋加成
+            bonuses["attack"] = self._talent_tree.get_total_bonus("atk")
+            # 防御天赋加成
+            bonuses["defense"] = self._talent_tree.get_total_bonus("def")
+            # 辅助天赋的经验加成
+            bonuses["exp_bonus"] = self._talent_tree.get_total_bonus("exp")
+        
+        return bonuses
+    
+    def on_level_up(self) -> None:
+        """升级时的额外处理"""
+        # 天赋树获得天赋点
+        if hasattr(self, '_talent_tree') and self._talent_tree:
+            self._talent_tree.on_level_up()
+
+    # ==================== 体力系统方法 ====================
+    
+    def recover_stamina(self) -> int:
+        """恢复体力
+        
+        根据时间自动恢复体力，每6分钟恢复1点。
+        
+        Returns:
+            int: 实际恢复的体力点数
+        """
+        if not self.last_stamina_refresh:
+            self.last_stamina_refresh = datetime.now().isoformat()
+            return 0
+        
+        try:
+            last = datetime.fromisoformat(self.last_stamina_refresh)
+            now = datetime.now()
+            elapsed_minutes = (now - last).total_seconds() / 60
+            
+            # 每6分钟恢复1点
+            recovery = int(elapsed_minutes / 6)
+            
+            if recovery > 0:
+                old_stamina = self.stamina
+                self.stamina = min(self.max_stamina, self.stamina + recovery)
+                self.last_stamina_refresh = now.isoformat()
+                return self.stamina - old_stamina
+            
+            return 0
+        except (ValueError, TypeError):
+            # 如果解析失败，重置时间戳
+            self.last_stamina_refresh = datetime.now().isoformat()
+            return 0
+    
+    def consume_stamina(self, amount: int) -> bool:
+        """消耗体力
+        
+        Args:
+            amount: 消耗的体力点数
+            
+        Returns:
+            bool: 消耗成功返回True，体力不足返回False
+        """
+        # 先尝试恢复体力
+        self.recover_stamina()
+        
+        if self.stamina >= amount:
+            self.stamina -= amount
+            return True
+        return False
+    
+    def get_stamina_status(self) -> Dict[str, Any]:
+        """获取体力状态
+        
+        Returns:
+            Dict[str, Any]: 体力状态信息
+        """
+        # 先恢复体力以获取最新状态
+        recovered = self.recover_stamina()
+        
+        # 计算下次恢复时间
+        time_to_next = 0
+        if self.stamina < self.max_stamina:
+            try:
+                last = datetime.fromisoformat(self.last_stamina_refresh) if self.last_stamina_refresh else datetime.now()
+                now = datetime.now()
+                elapsed_seconds = (now - last).total_seconds()
+                time_to_next = max(0, 360 - int(elapsed_seconds))  # 6分钟 = 360秒
+            except (ValueError, TypeError):
+                pass
+        
+        return {
+            "stamina": self.stamina,
+            "max_stamina": self.max_stamina,
+            "percentage": int(self.stamina / self.max_stamina * 100),
+            "recovered": recovered,
+            "time_to_next_recovery": time_to_next,
+            "is_full": self.stamina >= self.max_stamina
+        }
+
+    # ==================== 成就系统扩展方法 ====================
+    
+    def check_level_achievements(self) -> List[str]:
+        """检查等级相关成就
+        
+        Returns:
+            List[str]: 解锁的成就名称列表
+        """
+        unlocked = []
+        level_achievements = {
+            "level_10": 10,
+            "level_30": 30,
+            "level_50": 50,
+            "level_100": 100,
+        }
+        
+        for ach_id, required_level in level_achievements.items():
+            if self.level >= required_level:
+                for achievement in self.achievement_objects:
+                    if achievement.id == ach_id and not achievement.unlocked:
+                        achievement.unlocked = True
+                        self.achievements.append(achievement.id)
+                        # 应用奖励
+                        if "experience" in achievement.reward:
+                            self.gain_experience(achievement.reward["experience"])
+                        unlocked.append(achievement.name)
+        
+        return unlocked
+    
+    def check_equipment_achievements(self, equipment_count: int, has_orange: bool = False) -> List[str]:
+        """检查装备收集成就
+        
+        Args:
+            equipment_count: 收集的装备数量
+            has_orange: 是否拥有传说装备
+            
+        Returns:
+            List[str]: 解锁的成就名称列表
+        """
+        unlocked = []
+        
+        # 装备数量成就
+        count_achievements = {
+            "equipment_10": 10,
+            "equipment_50": 50,
+        }
+        
+        for ach_id, required_count in count_achievements.items():
+            if equipment_count >= required_count:
+                for achievement in self.achievement_objects:
+                    if achievement.id == ach_id and not achievement.unlocked:
+                        achievement.unlocked = True
+                        self.achievements.append(achievement.id)
+                        if "experience" in achievement.reward:
+                            self.gain_experience(achievement.reward["experience"])
+                        unlocked.append(achievement.name)
+        
+        # 传说装备成就
+        if has_orange:
+            for achievement in self.achievement_objects:
+                if achievement.id == "equipment_orange" and not achievement.unlocked:
+                    achievement.unlocked = True
+                    self.achievements.append(achievement.id)
+                    if "experience" in achievement.reward:
+                        self.gain_experience(achievement.reward["experience"])
+                    unlocked.append(achievement.name)
+        
+        return unlocked
+    
+    def check_tower_achievements(self, highest_level: int) -> List[str]:
+        """检查挑战塔成就
+        
+        Args:
+            highest_level: 最高通关层数
+            
+        Returns:
+            List[str]: 解锁的成就名称列表
+        """
+        unlocked = []
+        tower_achievements = {
+            "tower_10": 10,
+            "tower_50": 50,
+            "tower_100": 100,
+        }
+        
+        for ach_id, required_level in tower_achievements.items():
+            if highest_level >= required_level:
+                for achievement in self.achievement_objects:
+                    if achievement.id == ach_id and not achievement.unlocked:
+                        achievement.unlocked = True
+                        self.achievements.append(achievement.id)
+                        if "experience" in achievement.reward:
+                            self.gain_experience(achievement.reward["experience"])
+                        unlocked.append(achievement.name)
+        
+        return unlocked
+    
+    def check_combat_achievements(self, total_combats: int, wins: int) -> List[str]:
+        """检查战斗成就
+        
+        Args:
+            total_combats: 总战斗次数
+            wins: 胜利次数
+            
+        Returns:
+            List[str]: 解锁的成就名称列表
+        """
+        unlocked = []
+        
+        if total_combats >= 100:
+            for achievement in self.achievement_objects:
+                if achievement.id == "combat_100" and not achievement.unlocked:
+                    achievement.unlocked = True
+                    self.achievements.append(achievement.id)
+                    if "experience" in achievement.reward:
+                        self.gain_experience(achievement.reward["experience"])
+                    unlocked.append(achievement.name)
+        
+        if wins >= 50:
+            for achievement in self.achievement_objects:
+                if achievement.id == "combat_win_50" and not achievement.unlocked:
+                    achievement.unlocked = True
+                    self.achievements.append(achievement.id)
+                    if "experience" in achievement.reward:
+                        self.gain_experience(achievement.reward["experience"])
+                    unlocked.append(achievement.name)
+        
+        return unlocked
+    
+    def unlock_first_login(self) -> bool:
+        """解锁首次登录成就
+        
+        Returns:
+            bool: 是否成功解锁
+        """
+        for achievement in self.achievement_objects:
+            if achievement.id == "first_login" and not achievement.unlocked:
+                achievement.unlocked = True
+                self.achievements.append(achievement.id)
+                if "experience" in achievement.reward:
+                    self.gain_experience(achievement.reward["experience"])
+                return True
+        return False
+    
+    def check_perfect_answer(self, correct_count: int) -> List[str]:
+        """检查完美答题成就
+        
+        Args:
+            correct_count: 连续答对题数
+            
+        Returns:
+            List[str]: 解锁的成就名称列表
+        """
+        unlocked = []
+        
+        if correct_count >= 10:
+            for achievement in self.achievement_objects:
+                if achievement.id == "perfect_answer" and not achievement.unlocked:
+                    achievement.unlocked = True
+                    self.achievements.append(achievement.id)
+                    if "experience" in achievement.reward:
+                        self.gain_experience(achievement.reward["experience"])
+                    unlocked.append(achievement.name)
+        
+        return unlocked
+    
+    def get_achievement_stats(self) -> Dict[str, Any]:
+        """获取成就统计
+        
+        Returns:
+            Dict[str, Any]: 成就统计信息
+        """
+        total = len(self.achievement_objects)
+        unlocked = sum(1 for a in self.achievement_objects if a.unlocked)
+        
+        by_type = {}
+        for ach_type in AchievementType:
+            type_achievements = [a for a in self.achievement_objects if a.type == ach_type]
+            type_unlocked = sum(1 for a in type_achievements if a.unlocked)
+            by_type[ach_type.value] = {
+                "total": len(type_achievements),
+                "unlocked": type_unlocked,
+                "percentage": round(type_unlocked / len(type_achievements) * 100, 1) if type_achievements else 0
+            }
+        
+        return {
+            "total_achievements": total,
+            "unlocked_count": unlocked,
+            "locked_count": total - unlocked,
+            "completion_percentage": round(unlocked / total * 100, 1) if total else 0,
+            "by_type": by_type,
+            "recent_unlocked": [
+                {"id": a.id, "name": a.name, "description": a.description}
+                for a in self.achievement_objects
+                if a.unlocked
+            ][-5:]  # 最近5个解锁的成就
+        }
+
+    # ==================== 每日签到系统 ====================
+    
+    def get_checkin_manager(self) -> DailyCheckin:
+        """获取签到管理器
+        
+        Returns:
+            DailyCheckin: 签到管理器对象
+        """
+        return DailyCheckin.from_dict(self.checkin_data or {})
+    
+    def checkin(self) -> Dict[str, Any]:
+        """执行每日签到
+        
+        Returns:
+            Dict[str, Any]: 签到结果
+        """
+        checkin_manager = self.get_checkin_manager()
+        
+        result = checkin_manager.checkin()
+        
+        if result["success"]:
+            # 更新签到数据
+            self.checkin_data = checkin_manager.to_dict()
+            
+            # 应用奖励
+            rewards = result["rewards"]
+            
+            # 经验奖励
+            if "experience" in rewards:
+                self.gain_experience(rewards["experience"])
+            
+            # 体力奖励
+            if "stamina" in rewards:
+                self.stamina = min(self.max_stamina, self.stamina + rewards["stamina"])
+            
+            # 添加结果信息
+            result["current_exp"] = self.experience
+            result["current_level"] = self.level
+            result["current_stamina"] = self.stamina
+        
+        return result
+    
+    def get_checkin_status(self) -> Dict[str, Any]:
+        """获取签到状态
+        
+        Returns:
+            Dict[str, Any]: 签到状态信息
+        """
+        checkin_manager = self.get_checkin_manager()
+        return checkin_manager.get_checkin_status()
+    
+    def get_monthly_checkin_status(self) -> Dict[str, Any]:
+        """获取月度签到状态
+        
+        Returns:
+            Dict[str, Any]: 月度签到状态
+        """
+        checkin_manager = self.get_checkin_manager()
+        return checkin_manager.get_monthly_reward_status()
+
+    # ==================== 任务系统 ====================
+    
+    def get_quest_manager(self) -> "QuestManager":
+        """获取任务管理器
+        
+        Returns:
+            QuestManager: 任务管理器对象
+        """
+        from .quest_system import QuestManager
+        return QuestManager.from_dict(self.quest_data or {})
+    
+    def refresh_daily_quests(self) -> List[str]:
+        """刷新每日任务
+        
+        Returns:
+            List[str]: 新增任务名称列表
+        """
+        quest_manager = self.get_quest_manager()
+        
+        if quest_manager.check_and_reset_daily_quests():
+            self.quest_data = quest_manager.to_dict()
+            return [q.name for q in quest_manager.active_quests if q.quest_type.value == "daily"]
+        return []
+    
+    def refresh_weekly_quests(self) -> List[str]:
+        """刷新每周任务
+        
+        Returns:
+            List[str]: 新增任务名称列表
+        """
+        quest_manager = self.get_quest_manager()
+        
+        if quest_manager.check_and_reset_weekly_quests():
+            self.quest_data = quest_manager.to_dict()
+            return [q.name for q in quest_manager.active_quests if q.quest_type.value == "weekly"]
+        return []
+    
+    def update_quest_progress(self, objective_type_str: str, value: int = 1) -> List[Dict[str, Any]]:
+        """更新任务进度
+        
+        Args:
+            objective_type_str: 目标类型字符串
+            value: 增加的值
+            
+        Returns:
+            List[Dict]: 刚完成的任务信息列表
+        """
+        from .quest_system import QuestObjectiveType
+        
+        quest_manager = self.get_quest_manager()
+        
+        try:
+            objective_type = QuestObjectiveType(objective_type_str)
+        except ValueError:
+            return []
+        
+        completed = quest_manager.update_quest_progress(objective_type, value)
+        
+        if completed:
+            self.quest_data = quest_manager.to_dict()
+            return [
+                {
+                    "id": q.id,
+                    "name": q.name,
+                    "rewards": q.rewards
+                }
+                for q in completed
+            ]
+        return []
+    
+    def get_available_main_quests(self) -> List[Dict[str, Any]]:
+        """获取可接受的主线任务
+        
+        Returns:
+            List[Dict]: 任务信息列表
+        """
+        from .main_quests import get_available_main_quests
+        
+        quest_manager = self.get_quest_manager()
+        quests = get_available_main_quests(quest_manager.completed_quests, self.level)
+        
+        return [
+            {
+                "id": q.id,
+                "name": q.name,
+                "description": q.description,
+                "level_requirement": q.level_requirement,
+                "rewards": q.rewards,
+                "prerequisites": q.prerequisite_quests,
+            }
+            for q in quests
+        ]
+    
+    def get_available_side_quests(self) -> List[Dict[str, Any]]:
+        """获取可接受的支线任务
+        
+        Returns:
+            List[Dict]: 任务信息列表
+        """
+        from .main_quests import get_available_side_quests
+        
+        quest_manager = self.get_quest_manager()
+        quests = get_available_side_quests(quest_manager.completed_quests, self.level)
+        
+        return [
+            {
+                "id": q.id,
+                "name": q.name,
+                "description": q.description,
+                "level_requirement": q.level_requirement,
+                "rewards": q.rewards,
+            }
+            for q in quests
+        ]
+    
+    def accept_quest(self, quest_id: str) -> bool:
+        """接受任务
+        
+        Args:
+            quest_id: 任务ID
+            
+        Returns:
+            bool: 是否成功接受
+        """
+        from .main_quests import create_main_quests, create_side_quests
+        
+        quest_manager = self.get_quest_manager()
+        
+        # 查找任务
+        all_quests = create_main_quests() + create_side_quests()
+        quest = None
+        for q in all_quests:
+            if q.id == quest_id:
+                quest = q
+                break
+        
+        if quest is None:
+            return False
+        
+        # 检查是否已接受或已完成
+        if any(q.id == quest_id for q in quest_manager.active_quests):
+            return False
+        
+        if quest_id in quest_manager.completed_quests:
+            return False
+        
+        # 接受任务
+        quest.status = QuestStatus.进行中
+        quest_manager.active_quests.append(quest)
+        self.quest_data = quest_manager.to_dict()
+        
+        return True
+    
+    def claim_quest_reward(self, quest_id: str) -> Optional[Dict[str, Any]]:
+        """领取任务奖励
+        
+        Args:
+            quest_id: 任务ID
+            
+        Returns:
+            Optional[Dict]: 奖励字典
+        """
+        quest_manager = self.get_quest_manager()
+        
+        rewards = quest_manager.claim_reward(quest_id)
+        
+        if rewards:
+            self.quest_data = quest_manager.to_dict()
+            
+            # 应用奖励
+            if "experience" in rewards:
+                self.gain_experience(rewards["experience"])
+            if "stamina" in rewards:
+                self.stamina = min(self.max_stamina, self.stamina + rewards["stamina"])
+            if "title" in rewards:
+                self.custom_titles.append(rewards["title"])
+        
+        return rewards
+    
+    def get_quest_summary(self) -> Dict[str, Any]:
+        """获取任务摘要
+        
+        Returns:
+            Dict: 任务统计信息
+        """
+        quest_manager = self.get_quest_manager()
+        summary = quest_manager.get_quest_summary()
+        
+        # 添加主线和支线任务统计
+        main_available = len(self.get_available_main_quests())
+        side_available = len(self.get_available_side_quests())
+        
+        return {
+            **summary,
+            "main_available": main_available,
+            "side_available": side_available,
+            "daily_active": len([q for q in quest_manager.active_quests if q.quest_type.value == "daily" and q.status.value in ["not_accepted", "in_progress"]]),
+            "weekly_active": len([q for q in quest_manager.active_quests if q.quest_type.value == "weekly" and q.status.value in ["not_accepted", "in_progress"]]),
+        }
+    
+    def get_active_quests_info(self) -> List[Dict[str, Any]]:
+        """获取进行中的任务信息
+        
+        Returns:
+            List[Dict]: 任务信息列表
+        """
+        quest_manager = self.get_quest_manager()
+        
+        return [
+            {
+                "id": q.id,
+                "name": q.name,
+                "description": q.description,
+                "type": q.quest_type.value,
+                "status": q.status.value,
+                "progress": q.overall_progress,
+                "objectives": [
+                    {
+                        "description": obj.description,
+                        "current": obj.current_value,
+                        "target": obj.target_value,
+                        "completed": obj.is_completed,
+                    }
+                    for obj in q.objectives
+                ],
+                "rewards": q.rewards,
+            }
+            for q in quest_manager.active_quests
+            if q.status.value in ["not_accepted", "in_progress", "completed"]
+        ]

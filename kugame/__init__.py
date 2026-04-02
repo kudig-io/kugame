@@ -10,6 +10,11 @@ from .player import Player
 from .game_engine import GameEngine
 from .story import StoryManager
 from .kubernetes_commands import KubernetesCommandManager
+from .equipment import Equipment, EquipmentType, EquipmentQuality, EquipmentManager
+from .skills import Skill, SkillType, SkillManager, SECT_SKILLS
+from .talent_tree import Talent, TalentBranch, TalentTree, TALENT_TEMPLATES
+from .dungeon import Dungeon, DungeonType, DungeonManager, DAILY_DUNGEONS
+from .tower import TowerLevel, TowerProgress, ChallengeTower
 
 __all__ = [
     "__version__",
@@ -17,4 +22,23 @@ __all__ = [
     "GameEngine",
     "StoryManager",
     "KubernetesCommandManager",
+    "Equipment",
+    "EquipmentType",
+    "EquipmentQuality",
+    "EquipmentManager",
+    "Skill",
+    "SkillType",
+    "SkillManager",
+    "SECT_SKILLS",
+    "Talent",
+    "TalentBranch",
+    "TalentTree",
+    "TALENT_TEMPLATES",
+    "Dungeon",
+    "DungeonType",
+    "DungeonManager",
+    "DAILY_DUNGEONS",
+    "TowerLevel",
+    "TowerProgress",
+    "ChallengeTower",
 ]

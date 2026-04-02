@@ -1,0 +1,838 @@
+{
+  "version": "1.0",
+  "total": 35,
+  "questions": [
+    {
+      "id": "q001",
+      "type": "single_choice",
+      "difficulty": 1,
+      "category": "concepts",
+      "question": "Kubernetes中，最小的部署单元是什么？",
+      "options": [
+        "A. Node",
+        "B. Pod",
+        "C. Container",
+        "D. Cluster"
+      ],
+      "correct_answer": "B",
+      "explanation": "Pod是Kubernetes中最小的部署单元，一个Pod可以包含一个或多个容器。",
+      "tags": [
+        "基础",
+        "概念"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:05:08.845340"
+    },
+    {
+      "id": "q002",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "pod",
+      "question": "查看所有Pod的命令是什么？",
+      "options": [
+        "A. kubectl get nodes",
+        "B. kubectl get pods",
+        "C. kubectl list pods",
+        "D. kubectl show pods"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get pods 是查看所有Pod的标准命令。",
+      "tags": [
+        "命令",
+        "查询"
+      ],
+      "related_commands": [
+        "kubectl get pods",
+        "kubectl get pods -o wide"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:05:08.845350"
+    },
+    {
+      "id": "q003",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "Deployment可以实现哪些功能？（多选）",
+      "options": [
+        "A. 应用部署",
+        "B. 滚动更新",
+        "C. 自动扩缩容",
+        "D. 服务发现"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "explanation": "Deployment主要负责应用部署、滚动更新和自动扩缩容，服务发现是Service的功能。",
+      "tags": [
+        "Deployment",
+        "功能"
+      ],
+      "related_commands": [
+        "kubectl create deployment",
+        "kubectl rollout"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:05:08.845352"
+    },
+    {
+      "id": "q004",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "service",
+      "question": "Service可以直接访问容器内部的端口。",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "Service访问的是Pod的端口，而不是直接访问容器内部端口。",
+      "tags": [
+        "Service",
+        "网络"
+      ],
+      "related_commands": [
+        "kubectl expose",
+        "kubectl get svc"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:05:08.845355"
+    },
+    {
+      "id": "q005",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "创建ConfigMap的命令是：kubectl ______ configmap",
+      "options": null,
+      "correct_answer": [
+        "create",
+        "apply"
+      ],
+      "explanation": "可以使用 kubectl create configmap 或 kubectl apply -f configmap.yaml 创建ConfigMap。",
+      "tags": [
+        "ConfigMap",
+        "命令"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:05:08.845357"
+    },
+    {
+      "id": "q006",
+      "type": "command_complete",
+      "difficulty": 4,
+      "category": "troubleshooting",
+      "question": "查看Pod日志并实时跟踪的命令：kubectl logs ______",
+      "options": null,
+      "correct_answer": "-f",
+      "explanation": "-f 参数表示follow，实时跟踪日志输出。",
+      "tags": [
+        "日志",
+        "排查"
+      ],
+      "related_commands": [
+        "kubectl logs",
+        "kubectl logs -f"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:05:08.845358"
+    },
+    {
+      "id": "pod_001",
+      "type": "single_choice",
+      "difficulty": 1,
+      "category": "pod",
+      "question": "一个Pod可以包含几个容器？",
+      "options": [
+        "A. 只能1个",
+        "B. 1个或多个",
+        "C. 只能2个",
+        "D. 没有限制"
+      ],
+      "correct_answer": "B",
+      "explanation": "一个Pod可以包含一个或多个容器，它们共享网络和存储资源。",
+      "tags": [
+        "Pod",
+        "基础"
+      ],
+      "related_commands": [
+        "kubectl get pods",
+        "kubectl describe pod"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845374"
+    },
+    {
+      "id": "pod_002",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "pod",
+      "question": "Pod的默认重启策略是什么？",
+      "options": [
+        "A. Never",
+        "B. OnFailure",
+        "C. Always",
+        "D. UnlessStopped"
+      ],
+      "correct_answer": "C",
+      "explanation": "Always表示无论容器退出状态码如何，都会重启容器。",
+      "tags": [
+        "Pod",
+        "重启策略"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845379"
+    },
+    {
+      "id": "pod_003",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "category": "pod",
+      "question": "Pod中的容器可以共享哪些资源？",
+      "options": [
+        "A. IP地址",
+        "B. 存储卷",
+        "C. 进程命名空间",
+        "D. 端口空间"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "explanation": "Pod中的容器共享IP地址、存储卷和端口空间，但有独立的进程命名空间。",
+      "tags": [
+        "Pod",
+        "容器"
+      ],
+      "related_commands": [
+        "kubectl describe pod"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845383"
+    },
+    {
+      "id": "pod_004",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "pod",
+      "question": "Pod是Kubernetes中最小的可部署单元。",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "Pod确实是K8s中最小的部署单元，容器必须运行在Pod中。",
+      "tags": [
+        "Pod",
+        "概念"
+      ],
+      "related_commands": [],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845387"
+    },
+    {
+      "id": "pod_005",
+      "type": "fill_blank",
+      "difficulty": 2,
+      "category": "pod",
+      "question": "查看Pod详细信息的命令：kubectl ______ pod-name",
+      "options": null,
+      "correct_answer": [
+        "describe",
+        "get pod"
+      ],
+      "explanation": "describe命令显示资源的详细信息，包括事件、配置等。",
+      "tags": [
+        "命令",
+        "查询"
+      ],
+      "related_commands": [
+        "kubectl describe pod"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845391"
+    },
+    {
+      "id": "deploy_001",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "Deployment通过什么对象来管理Pod？",
+      "options": [
+        "A. Service",
+        "B. ReplicaSet",
+        "C. ConfigMap",
+        "D. 直接管理"
+      ],
+      "correct_answer": "B",
+      "explanation": "Deployment通过创建和管理ReplicaSet来间接管理Pod。",
+      "tags": [
+        "Deployment",
+        "架构"
+      ],
+      "related_commands": [
+        "kubectl get rs",
+        "kubectl get deployment"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845395"
+    },
+    {
+      "id": "deploy_002",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "执行滚动更新的命令是？",
+      "options": [
+        "A. kubectl update deployment",
+        "B. kubectl rollout deployment",
+        "C. kubectl set image deployment/xxx",
+        "D. kubectl apply -f deployment.yaml"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl set image 可以更新Deployment的镜像，触发滚动更新。",
+      "tags": [
+        "Deployment",
+        "更新"
+      ],
+      "related_commands": [
+        "kubectl set image",
+        "kubectl rollout status"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845399"
+    },
+    {
+      "id": "deploy_003",
+      "type": "command_complete",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "查看Deployment滚动更新状态的命令：kubectl rollout ______ deployment/nginx",
+      "options": null,
+      "correct_answer": "status",
+      "explanation": "rollout status 用于查看滚动更新的进度和状态。",
+      "tags": [
+        "命令",
+        "Deployment",
+        "更新"
+      ],
+      "related_commands": [
+        "kubectl rollout status",
+        "kubectl rollout history"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845403"
+    },
+    {
+      "id": "deploy_004",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "category": "deployment",
+      "question": "以下哪些是Deployment的优势？",
+      "options": [
+        "A. 声明式配置",
+        "B. 滚动更新",
+        "C. 自动回滚",
+        "D. 负载均衡"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "explanation": "Deployment提供声明式配置、滚动更新和自动回滚。负载均衡是Service的功能。",
+      "tags": [
+        "Deployment",
+        "优势"
+      ],
+      "related_commands": [
+        "kubectl rollout"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845407"
+    },
+    {
+      "id": "deploy_005",
+      "type": "short_answer",
+      "difficulty": 4,
+      "category": "deployment",
+      "question": "解释RollingUpdate和Recreate两种更新策略的区别和适用场景。",
+      "options": null,
+      "correct_answer": "RollingUpdate是滚动更新，逐步替换旧Pod，保证服务不中断；Recreate是先删除所有旧Pod再创建新Pod，会有短暂中断但资源占用少。",
+      "explanation": "RollingUpdate适合生产环境保证高可用，Recreate适合开发测试环境或资源受限场景。",
+      "tags": [
+        "Deployment",
+        "策略",
+        "面试"
+      ],
+      "related_commands": [
+        "kubectl rollout"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845411"
+    },
+    {
+      "id": "svc_001",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "service",
+      "question": "Service的默认类型是什么？",
+      "options": [
+        "A. NodePort",
+        "B. LoadBalancer",
+        "C. ClusterIP",
+        "D. ExternalName"
+      ],
+      "correct_answer": "C",
+      "explanation": "ClusterIP是默认类型，只在集群内部暴露服务。",
+      "tags": [
+        "Service",
+        "类型"
+      ],
+      "related_commands": [
+        "kubectl get svc"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845415"
+    },
+    {
+      "id": "svc_002",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "Service可以通过哪些方式暴露到集群外部？",
+      "options": [
+        "A. NodePort",
+        "B. LoadBalancer",
+        "C. ClusterIP",
+        "D. Ingress"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "explanation": "NodePort和LoadBalancer可以直接暴露，Ingress通过路由规则暴露。ClusterIP只能在集群内访问。",
+      "tags": [
+        "Service",
+        "网络"
+      ],
+      "related_commands": [
+        "kubectl expose"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845419"
+    },
+    {
+      "id": "svc_003",
+      "type": "true_false",
+      "difficulty": 3,
+      "category": "service",
+      "question": "Service通过Label Selector来选择后端的Pod。",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "Service使用selector字段匹配Pod的labels，实现服务发现和负载均衡。",
+      "tags": [
+        "Service",
+        "Label"
+      ],
+      "related_commands": [
+        "kubectl get svc -o yaml"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845422"
+    },
+    {
+      "id": "cm_001",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "configmap",
+      "question": "ConfigMap最适合存储什么类型的数据？",
+      "options": [
+        "A. 数据库密码",
+        "B. 应用配置文件",
+        "C. TLS证书",
+        "D. API密钥"
+      ],
+      "correct_answer": "B",
+      "explanation": "ConfigMap适合存储非敏感的配置数据，如配置文件、环境变量等。",
+      "tags": [
+        "ConfigMap",
+        "配置"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845426"
+    },
+    {
+      "id": "secret_001",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "Secret的数据默认是如何存储的？",
+      "options": [
+        "A. 明文存储",
+        "B. Base64编码",
+        "C. AES加密",
+        "D. TLS加密"
+      ],
+      "correct_answer": "B",
+      "explanation": "Secret数据默认使用Base64编码（不是加密），etcd中可配置加密。",
+      "tags": [
+        "Secret",
+        "安全"
+      ],
+      "related_commands": [
+        "kubectl create secret"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845430"
+    },
+    {
+      "id": "cm_002",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "从文件创建ConfigMap的命令：kubectl create configmap my-config ______ config.properties",
+      "options": null,
+      "correct_answer": [
+        "--from-file",
+        "--from-file="
+      ],
+      "explanation": "--from-file参数指定从文件创建ConfigMap。",
+      "tags": [
+        "命令",
+        "ConfigMap"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845434"
+    },
+    {
+      "id": "storage_001",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "PV和PVC的关系是？",
+      "options": [
+        "A. PV申请PVC",
+        "B. PVC申请PV",
+        "C. 没有关系",
+        "D. PV包含PVC"
+      ],
+      "correct_answer": "B",
+      "explanation": "PVC（PersistentVolumeClaim）是申请，PV（PersistentVolume）是实际的存储资源。",
+      "tags": [
+        "存储",
+        "PV",
+        "PVC"
+      ],
+      "related_commands": [
+        "kubectl get pv",
+        "kubectl get pvc"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845439"
+    },
+    {
+      "id": "storage_002",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "category": "storage",
+      "question": "Kubernetes支持哪些访问模式？",
+      "options": [
+        "A. ReadWriteOnce",
+        "B. ReadOnlyMany",
+        "C. ReadWriteMany",
+        "D. ReadWriteOncePod"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "explanation": "四种访问模式：RWO、ROX、RWX、RWOP（1.22+）。",
+      "tags": [
+        "存储",
+        "访问模式"
+      ],
+      "related_commands": [
+        "kubectl get pv"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845444"
+    },
+    {
+      "id": "net_001",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "network",
+      "question": "NetworkPolicy的默认行为是？",
+      "options": [
+        "A. 拒绝所有流量",
+        "B. 允许所有流量",
+        "C. 只允许同命名空间",
+        "D. 只允许内部访问"
+      ],
+      "correct_answer": "B",
+      "explanation": "如果没有NetworkPolicy，默认允许所有入站和出站流量。",
+      "tags": [
+        "网络",
+        "安全",
+        "NetworkPolicy"
+      ],
+      "related_commands": [
+        "kubectl get networkpolicy"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845448"
+    },
+    {
+      "id": "net_002",
+      "type": "command_complete",
+      "difficulty": 2,
+      "category": "network",
+      "question": "查看Service的Endpoint列表：kubectl get ______ my-service",
+      "options": null,
+      "correct_answer": "endpoints",
+      "explanation": "endpoints资源显示Service后端关联的Pod IP和端口。",
+      "tags": [
+        "命令",
+        "Service",
+        "网络"
+      ],
+      "related_commands": [
+        "kubectl get endpoints"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845453"
+    },
+    {
+      "id": "debug_001",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "troubleshooting",
+      "question": "Pod处于CrashLoopBackOff状态通常是什么原因？",
+      "options": [
+        "A. 镜像拉取失败",
+        "B. 容器启动后崩溃",
+        "C. 资源不足",
+        "D. 网络不通"
+      ],
+      "correct_answer": "B",
+      "explanation": "CrashLoopBackOff表示容器启动后崩溃，kubelet不断尝试重启。",
+      "tags": [
+        "排查",
+        "Pod状态"
+      ],
+      "related_commands": [
+        "kubectl logs",
+        "kubectl describe pod"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845458"
+    },
+    {
+      "id": "debug_002",
+      "type": "command_complete",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "进入Pod容器执行命令：kubectl ______ my-pod -- /bin/sh",
+      "options": null,
+      "correct_answer": "exec",
+      "explanation": "kubectl exec用于在容器中执行命令，-it参数可进入交互式终端。",
+      "tags": [
+        "命令",
+        "调试"
+      ],
+      "related_commands": [
+        "kubectl exec",
+        "kubectl logs"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845463"
+    },
+    {
+      "id": "debug_003",
+      "type": "short_answer",
+      "difficulty": 4,
+      "category": "troubleshooting",
+      "question": "Pod状态为ImagePullBackOff，列出可能的原因和排查步骤。",
+      "options": null,
+      "correct_answer": "可能原因：1)镜像名称错误 2)镜像不存在 3)私有仓库无权限 4)网络不通。排查：kubectl describe pod查看Events，检查imagePullSecrets，验证镜像可访问性。",
+      "explanation": "ImagePullBackOff表示拉取镜像失败，需要根据具体错误信息排查。",
+      "tags": [
+        "排查",
+        "镜像",
+        "面试"
+      ],
+      "related_commands": [
+        "kubectl describe pod",
+        "kubectl get events"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845469"
+    },
+    {
+      "id": "debug_004",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "排查Pod启动问题，应该查看哪些信息？",
+      "options": [
+        "A. kubectl describe pod",
+        "B. kubectl logs",
+        "C. kubectl get events",
+        "D. kubectl top pod"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "explanation": "describe查看状态和事件，logs查看容器日志，events查看集群事件。top用于资源使用，不是排查启动问题的首选。",
+      "tags": [
+        "排查",
+        "命令"
+      ],
+      "related_commands": [
+        "kubectl describe",
+        "kubectl logs",
+        "kubectl get events"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845474"
+    },
+    {
+      "id": "sched_001",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "scheduling",
+      "question": "Pod一直处于Pending状态，最可能的原因是？",
+      "options": [
+        "A. 镜像拉取失败",
+        "B. 没有合适的节点",
+        "C. 健康检查失败",
+        "D. 存储挂载失败"
+      ],
+      "correct_answer": "B",
+      "explanation": "Pending表示等待调度，通常是没有满足条件的节点或资源不足。",
+      "tags": [
+        "调度",
+        "Pod状态"
+      ],
+      "related_commands": [
+        "kubectl describe pod",
+        "kubectl get nodes"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845479"
+    },
+    {
+      "id": "sched_002",
+      "type": "true_false",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "Taint和Toleration可以实现节点专用。",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "通过给节点添加Taint，只有有对应Toleration的Pod才能调度到该节点，实现专用。",
+      "tags": [
+        "调度",
+        "Taint"
+      ],
+      "related_commands": [
+        "kubectl taint",
+        "kubectl describe node"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845484"
+    },
+    {
+      "id": "rbac_001",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "RBAC包含哪些核心资源？",
+      "options": [
+        "A. Role",
+        "B. ClusterRole",
+        "C. RoleBinding",
+        "D. ClusterRoleBinding"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "explanation": "RBAC四要素：Role/ClusterRole定义权限，RoleBinding/ClusterRoleBinding绑定用户。",
+      "tags": [
+        "RBAC",
+        "安全"
+      ],
+      "related_commands": [
+        "kubectl get role",
+        "kubectl get rolebinding"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845489"
+    },
+    {
+      "id": "helm_001",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "helm",
+      "question": "Helm Chart中的values.yaml用于？",
+      "options": [
+        "A. 定义依赖",
+        "B. 配置默认值",
+        "C. 描述Chart信息",
+        "D. 存储模板"
+      ],
+      "correct_answer": "B",
+      "explanation": "values.yaml存储配置默认值，安装时可以被覆盖。",
+      "tags": [
+        "Helm",
+        "配置"
+      ],
+      "related_commands": [
+        "helm install",
+        "helm upgrade"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845494"
+    },
+    {
+      "id": "helm_002",
+      "type": "command_complete",
+      "difficulty": 3,
+      "category": "helm",
+      "question": "升级Release并指定values文件：helm upgrade my-release my-chart ______ custom-values.yaml",
+      "options": null,
+      "correct_answer": "-f",
+      "explanation": "-f或--values参数指定values文件。",
+      "tags": [
+        "Helm",
+        "命令"
+      ],
+      "related_commands": [
+        "helm upgrade",
+        "helm install"
+      ],
+      "source": "导入",
+      "created_at": "2026-04-02T13:05:08.845499"
+    }
+  ]
+}

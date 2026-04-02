@@ -150,6 +150,174 @@
         "title": "连击王者"
       },
       "unlocked": false
+    },
+    {
+      "id": "equipment_10",
+      "name": "装备收集者",
+      "description": "收集10件装备",
+      "type": "collection",
+      "condition": 10,
+      "reward": {
+        "experience": 500,
+        "title": "装备收集者"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "equipment_50",
+      "name": "装备收藏家",
+      "description": "收集50件装备",
+      "type": "collection",
+      "condition": 50,
+      "reward": {
+        "experience": 2000,
+        "title": "装备收藏家"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "equipment_orange",
+      "name": "传说装备",
+      "description": "获得一件传说品质装备",
+      "type": "collection",
+      "condition": 1,
+      "reward": {
+        "experience": 3000,
+        "title": "传说拥有者"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "level_10",
+      "name": "初出茅庐",
+      "description": "达到10级",
+      "type": "level_achievement",
+      "condition": 10,
+      "reward": {
+        "experience": 300,
+        "title": "初入江湖"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "level_30",
+      "name": "小有所成",
+      "description": "达到30级",
+      "type": "level_achievement",
+      "condition": 30,
+      "reward": {
+        "experience": 1000,
+        "title": "江湖少侠"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "level_50",
+      "name": "一代宗师",
+      "description": "达到50级",
+      "type": "level_achievement",
+      "condition": 50,
+      "reward": {
+        "experience": 3000,
+        "title": "一代宗师"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "level_100",
+      "name": "修仙巅峰",
+      "description": "达到100级",
+      "type": "level_achievement",
+      "condition": 100,
+      "reward": {
+        "experience": 10000,
+        "title": "修仙巅峰"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "tower_10",
+      "name": "塔之新人",
+      "description": "挑战之塔达到10层",
+      "type": "tower_achievement",
+      "condition": 10,
+      "reward": {
+        "experience": 500,
+        "title": "塔之新人"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "tower_50",
+      "name": "塔之勇士",
+      "description": "挑战之塔达到50层",
+      "type": "tower_achievement",
+      "condition": 50,
+      "reward": {
+        "experience": 3000,
+        "title": "塔之勇士"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "tower_100",
+      "name": "通天塔主",
+      "description": "挑战之塔达到100层",
+      "type": "tower_achievement",
+      "condition": 100,
+      "reward": {
+        "experience": 10000,
+        "title": "通天塔主"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "combat_100",
+      "name": "百战老兵",
+      "description": "参加100场战斗",
+      "type": "combat_achievement",
+      "condition": 100,
+      "reward": {
+        "experience": 1000,
+        "title": "百战老兵"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "combat_win_50",
+      "name": "常胜将军",
+      "description": "赢得50场战斗",
+      "type": "combat_achievement",
+      "condition": 50,
+      "reward": {
+        "experience": 2000,
+        "title": "常胜将军"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "first_login",
+      "name": "初入仙门",
+      "description": "第一次登录游戏",
+      "type": "special_achievement",
+      "condition": 1,
+      "reward": {
+        "experience": 100,
+        "title": "初入仙门"
+      },
+      "unlocked": false
+    },
+    {
+      "id": "perfect_answer",
+      "name": "完美答题",
+      "description": "单次答对10道题",
+      "type": "special_achievement",
+      "condition": 1,
+      "reward": {
+        "experience": 500,
+        "title": "完美答题"
+      },
+      "unlocked": false
     }
   ],
   "current_chapter": "序章",
@@ -159,5 +327,152 @@
   "total_correct": 0,
   "total_attempts": 0,
   "custom_titles": [],
-  "sect_bonus": 1.1
+  "sect_bonus": 1.1,
+  "equipped_weapon": null,
+  "equipped_armor": null,
+  "equipped_accessory": null,
+  "inventory": [],
+  "skill_manager_data": {
+    "sect": "青云宗",
+    "skills": {
+      "qingyun_steady": {
+        "id": "qingyun_steady",
+        "name": "稳如泰山",
+        "description": "【被动】受到的伤害减少20%",
+        "sect": "青云宗",
+        "skill_type": "defense",
+        "cooldown": 0,
+        "effect_value": 20,
+        "duration": 1,
+        "mana_cost": 0,
+        "current_cooldown": 0
+      },
+      "qingyun_dao": {
+        "id": "qingyun_dao",
+        "name": "道法自然",
+        "description": "【主动】接下来3场战斗获得30%额外经验",
+        "sect": "青云宗",
+        "skill_type": "special",
+        "cooldown": 5,
+        "effect_value": 30,
+        "duration": 3,
+        "mana_cost": 0,
+        "current_cooldown": 0
+      },
+      "qingyun_counter": {
+        "id": "qingyun_counter",
+        "name": "以柔克刚",
+        "description": "【主动】反弹下一次受到的伤害",
+        "sect": "青云宗",
+        "skill_type": "defense",
+        "cooldown": 4,
+        "effect_value": 100,
+        "duration": 1,
+        "mana_cost": 0,
+        "current_cooldown": 0
+      }
+    },
+    "active_effects": {}
+  },
+  "talent_tree_data": {
+    "sect": "青云宗",
+    "talents": {
+      "qy_atk_1": {
+        "id": "qy_atk_1",
+        "name": "剑气初成",
+        "description": "攻击力+2/级",
+        "branch": "attack",
+        "tier": 1,
+        "max_points": 5,
+        "current_points": 0,
+        "effect_per_point": 2
+      },
+      "qy_atk_2": {
+        "id": "qy_atk_2",
+        "name": "剑意通明",
+        "description": "攻击力+4/级",
+        "branch": "attack",
+        "tier": 2,
+        "max_points": 3,
+        "current_points": 0,
+        "effect_per_point": 4
+      },
+      "qy_atk_3": {
+        "id": "qy_atk_3",
+        "name": "剑道通神",
+        "description": "攻击力+8/级",
+        "branch": "attack",
+        "tier": 3,
+        "max_points": 1,
+        "current_points": 0,
+        "effect_per_point": 8
+      },
+      "qy_def_1": {
+        "id": "qy_def_1",
+        "name": "气沉丹田",
+        "description": "防御力+2/级",
+        "branch": "defense",
+        "tier": 1,
+        "max_points": 5,
+        "current_points": 0,
+        "effect_per_point": 2
+      },
+      "qy_def_2": {
+        "id": "qy_def_2",
+        "name": "金刚不坏",
+        "description": "防御力+4/级",
+        "branch": "defense",
+        "tier": 2,
+        "max_points": 3,
+        "current_points": 0,
+        "effect_per_point": 4
+      },
+      "qy_def_3": {
+        "id": "qy_def_3",
+        "name": "万法不侵",
+        "description": "受到伤害-10%/级",
+        "branch": "defense",
+        "tier": 3,
+        "max_points": 1,
+        "current_points": 0,
+        "effect_per_point": 10
+      },
+      "qy_sup_1": {
+        "id": "qy_sup_1",
+        "name": "悟道",
+        "description": "经验获取+5%/级",
+        "branch": "support",
+        "tier": 1,
+        "max_points": 5,
+        "current_points": 0,
+        "effect_per_point": 5
+      },
+      "qy_sup_2": {
+        "id": "qy_sup_2",
+        "name": "心法",
+        "description": "连击加成+5%/级",
+        "branch": "support",
+        "tier": 2,
+        "max_points": 3,
+        "current_points": 0,
+        "effect_per_point": 5
+      },
+      "qy_sup_3": {
+        "id": "qy_sup_3",
+        "name": "天人合一",
+        "description": "全属性+10%",
+        "branch": "support",
+        "tier": 3,
+        "max_points": 1,
+        "current_points": 0,
+        "effect_per_point": 10
+      }
+    },
+    "available_points": 0
+  },
+  "dungeon_manager_data": null,
+  "tower_progress_data": null,
+  "stamina": 100,
+  "max_stamina": 100,
+  "last_stamina_refresh": null
 }

@@ -1,0 +1,6495 @@
+{
+  "version": "1.0",
+  "total": 279,
+  "questions": [
+    {
+      "id": "q001",
+      "type": "single_choice",
+      "difficulty": 1,
+      "category": "concepts",
+      "question": "Kubernetes中，最小的部署单元是什么？",
+      "options": [
+        "A. Node",
+        "B. Pod",
+        "C. Container",
+        "D. Cluster"
+      ],
+      "correct_answer": "B",
+      "explanation": "Pod是Kubernetes中最小的部署单元，一个Pod可以包含一个或多个容器。",
+      "tags": [
+        "基础",
+        "概念"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:02:56.717665"
+    },
+    {
+      "id": "q002",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "pod",
+      "question": "查看所有Pod的命令是什么？",
+      "options": [
+        "A. kubectl get nodes",
+        "B. kubectl get pods",
+        "C. kubectl list pods",
+        "D. kubectl show pods"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get pods 是查看所有Pod的标准命令。",
+      "tags": [
+        "命令",
+        "查询"
+      ],
+      "related_commands": [
+        "kubectl get pods",
+        "kubectl get pods -o wide"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:02:56.717673"
+    },
+    {
+      "id": "q003",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "Deployment可以实现哪些功能？（多选）",
+      "options": [
+        "A. 应用部署",
+        "B. 滚动更新",
+        "C. 自动扩缩容",
+        "D. 服务发现"
+      ],
+      "correct_answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "explanation": "Deployment主要负责应用部署、滚动更新和自动扩缩容，服务发现是Service的功能。",
+      "tags": [
+        "Deployment",
+        "功能"
+      ],
+      "related_commands": [
+        "kubectl create deployment",
+        "kubectl rollout"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:02:56.717675"
+    },
+    {
+      "id": "q004",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "service",
+      "question": "Service可以直接访问容器内部的端口。",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "Service访问的是Pod的端口，而不是直接访问容器内部端口。",
+      "tags": [
+        "Service",
+        "网络"
+      ],
+      "related_commands": [
+        "kubectl expose",
+        "kubectl get svc"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:02:56.717677"
+    },
+    {
+      "id": "q005",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "创建ConfigMap的命令是：kubectl ______ configmap",
+      "options": null,
+      "correct_answer": [
+        "create",
+        "apply"
+      ],
+      "explanation": "可以使用 kubectl create configmap 或 kubectl apply -f configmap.yaml 创建ConfigMap。",
+      "tags": [
+        "ConfigMap",
+        "命令"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:02:56.717679"
+    },
+    {
+      "id": "q006",
+      "type": "command_complete",
+      "difficulty": 4,
+      "category": "troubleshooting",
+      "question": "查看Pod日志并实时跟踪的命令：kubectl logs ______",
+      "options": null,
+      "correct_answer": "-f",
+      "explanation": "-f 参数表示follow，实时跟踪日志输出。",
+      "tags": [
+        "日志",
+        "排查"
+      ],
+      "related_commands": [
+        "kubectl logs",
+        "kubectl logs -f"
+      ],
+      "source": "内置",
+      "created_at": "2026-04-02T13:02:56.717681"
+    },
+    {
+      "id": "auto_kubectl_run_7578",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "以下哪个命令可以创建并运行一个Pod？",
+      "options": [
+        "D. kubectl delete pod",
+        "B. kubectl get all",
+        "C. kubectl describe pod",
+        "A. kubectl run"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl run 命令用于创建并运行一个Pod。\n语法: kubectl run NAME --image=IMAGE\n示例: kubectl run nginx --image=nginx",
+      "tags": [
+        "命令识别",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl run"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717727"
+    },
+    {
+      "id": "auto_syntax_kubectl_run_5714",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ NAME --image=IMAGE",
+      "options": [
+        "A. expose",
+        "B. describe",
+        "C. run",
+        "D. edit"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'run'。\n完整命令: kubectl run NAME --image=IMAGE\n说明: 创建并运行一个Pod",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl run"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717744"
+    },
+    {
+      "id": "auto_scenario_kubectl_run_7155",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你需要快速查看集群中运行的Pod状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl run",
+        "B. kubectl get pv",
+        "D. kubectl delete pv",
+        "C. kubectl edit"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl run。\n创建并运行一个Pod\n用法: kubectl run nginx --image=nginx",
+      "tags": [
+        "场景应用",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl run"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717763"
+    },
+    {
+      "id": "auto_related_kubectl_run_9246",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "'kubectl delete pod' 命令的作用是？",
+      "options": null,
+      "correct_answer": "列出所有Pod",
+      "explanation": "kubectl run 的相关命令包括: kubectl get pods, kubectl delete pod",
+      "tags": [
+        "相关命令"
+      ],
+      "related_commands": [
+        "kubectl run",
+        "kubectl get pods",
+        "kubectl delete pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717772"
+    },
+    {
+      "id": "auto_kubectl_get_pods_3730",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "以下哪个命令可以列出所有Pod？",
+      "options": [
+        "A. kubectl get pods",
+        "B. kubectl delete all",
+        "C. kubectl get all",
+        "D. kubectl describe pod"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get pods 命令用于列出所有Pod。\n语法: kubectl get pods [OPTIONS]\n示例: kubectl get pods -o wide",
+      "tags": [
+        "命令识别",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717787"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_pods_7033",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ pods [OPTIONS]",
+      "options": [
+        "A. describe",
+        "B. get",
+        "C. expose",
+        "D. apply"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get pods [OPTIONS]\n说明: 列出所有Pod",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717797"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_pods_5853",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你想创建一个新的Nginx服务进行测试，应该使用哪个命令？",
+      "options": [
+        "B. kubectl create secret generic",
+        "C. kubectl plugin list",
+        "A. kubectl get pods",
+        "D. kubectl api-resources"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl get pods。\n列出所有Pod\n用法: kubectl get pods -o wide",
+      "tags": [
+        "场景应用",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717813"
+    },
+    {
+      "id": "auto_concept_kubectl_get_pods_7346",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "'kubectl get pods' 命令可以用于列出所有Pod",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "列出所有Pod\n语法: kubectl get pods [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get pods"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717824"
+    },
+    {
+      "id": "auto_kubectl_describe_pod_4071",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "以下哪个命令可以显示Pod的详细信息？",
+      "options": [
+        "A. kubectl describe pod",
+        "B. kubectl get pods",
+        "C. kubectl delete pod",
+        "D. kubectl get all"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl describe pod 命令用于显示Pod的详细信息。\n语法: kubectl describe pod NAME\n示例: kubectl describe pod nginx-7d9c9c8d8-abcde",
+      "tags": [
+        "命令识别",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl describe pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717837"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_pod_4081",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. rollout",
+        "B. patch",
+        "C. run",
+        "D. pod"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'pod'。\n完整命令: kubectl describe pod NAME\n说明: 显示Pod的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717847"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_pod_7454",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你需要快速查看集群中运行的Pod状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl describe pod",
+        "D. kubectl debug",
+        "C. kubectl get pvc",
+        "B. kubectl set image"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl describe pod。\n显示Pod的详细信息\n用法: kubectl describe pod nginx-7d9c9c8d8-abcde",
+      "tags": [
+        "场景应用",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl describe pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717861"
+    },
+    {
+      "id": "auto_kubectl_delete_pod_9264",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "以下哪个命令可以删除Pod？",
+      "options": [
+        "B. kubectl get pods",
+        "C. kubectl get all",
+        "D. kubectl delete all",
+        "A. kubectl delete pod"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl delete pod 命令用于删除Pod。\n语法: kubectl delete pod NAME [OPTIONS]\n示例: kubectl delete pod nginx",
+      "tags": [
+        "命令识别",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl delete pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717877"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_pod_9349",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ pod NAME [OPTIONS]",
+      "options": [
+        "A. rollout",
+        "B. get",
+        "C. delete",
+        "D. apply"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete pod NAME [OPTIONS]\n说明: 删除Pod",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717887"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_pod_5544",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你需要快速查看集群中运行的Pod状态，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get roles",
+        "A. kubectl delete pod",
+        "C. kubectl get services",
+        "B. kubectl annotate"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl delete pod。\n删除Pod\n用法: kubectl delete pod nginx",
+      "tags": [
+        "场景应用",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl delete pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717900"
+    },
+    {
+      "id": "auto_concept_kubectl_delete_pod_9979",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "'kubectl delete pod' 命令可以用于删除Pod",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "删除Pod\n语法: kubectl delete pod NAME [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl delete pod"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717910"
+    },
+    {
+      "id": "auto_kubectl_get_all_3707",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "以下哪个命令可以列出所有资源？",
+      "options": [
+        "D. kubectl get pods",
+        "B. kubectl run",
+        "C. kubectl delete all",
+        "A. kubectl get all"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl get all 命令用于列出所有资源。\n语法: kubectl get all [OPTIONS]\n示例: kubectl get all -n default",
+      "tags": [
+        "命令识别",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl get all"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717923"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_all_5165",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ all [OPTIONS]",
+      "options": [
+        "A. patch",
+        "B. edit",
+        "C. get",
+        "D. create"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get all [OPTIONS]\n说明: 列出所有资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get all"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717933"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_all_8994",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你想创建一个新的Nginx服务进行测试，应该使用哪个命令？",
+      "options": [
+        "D. kubectl delete pv",
+        "B. kubectl delete pvc",
+        "A. kubectl get all",
+        "C. kubectl delete ingress"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl get all。\n列出所有资源\n用法: kubectl get all -n default",
+      "tags": [
+        "场景应用",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl get all"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717946"
+    },
+    {
+      "id": "auto_related_kubectl_get_all_8691",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "'kubectl get pods' 命令的作用是？",
+      "options": null,
+      "correct_answer": "列出所有Service",
+      "explanation": "kubectl get all 的相关命令包括: kubectl get pods, kubectl get services",
+      "tags": [
+        "相关命令"
+      ],
+      "related_commands": [
+        "kubectl get all",
+        "kubectl get pods",
+        "kubectl get services"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717953"
+    },
+    {
+      "id": "auto_kubectl_delete_all_9516",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "以下哪个命令可以删除所有资源？",
+      "options": [
+        "A. kubectl delete all",
+        "C. kubectl describe pod",
+        "D. kubectl delete pod",
+        "B. kubectl run"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl delete all 命令用于删除所有资源。\n语法: kubectl delete all NAME [OPTIONS]\n示例: kubectl delete all --all",
+      "tags": [
+        "命令识别",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl delete all"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717966"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_all_2809",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ all NAME [OPTIONS]",
+      "options": [
+        "A. expose",
+        "B. delete",
+        "C. apply",
+        "D. create"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete all NAME [OPTIONS]\n说明: 删除所有资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete all"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717975"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_all_6569",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你想创建一个新的Nginx服务进行测试，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get events",
+        "A. kubectl delete all",
+        "B. kubectl create rolebinding",
+        "C. kubectl get rolebindings"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl delete all。\n删除所有资源\n用法: kubectl delete all --all",
+      "tags": [
+        "场景应用",
+        "basic"
+      ],
+      "related_commands": [
+        "kubectl delete all"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717988"
+    },
+    {
+      "id": "auto_related_kubectl_delete_all_6062",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "与 'kubectl delete all' 经常配合使用的命令是？",
+      "options": null,
+      "correct_answer": "kubectl delete pod",
+      "explanation": "kubectl delete all 的相关命令包括: kubectl delete pod, kubectl delete service",
+      "tags": [
+        "相关命令"
+      ],
+      "related_commands": [
+        "kubectl delete all",
+        "kubectl delete pod",
+        "kubectl delete service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.717994"
+    },
+    {
+      "id": "auto_kubectl_create_deployment_4312",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "以下哪个命令可以创建一个Deployment？",
+      "options": [
+        "B. kubectl rollout status",
+        "A. kubectl create deployment",
+        "D. kubectl delete deployment",
+        "C. kubectl get deployments"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl create deployment 命令用于创建一个Deployment。\n语法: kubectl create deployment NAME --image=IMAGE\n示例: kubectl create deployment web --image=nginx",
+      "tags": [
+        "命令识别",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl create deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718007"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_deployment_3623",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "补全命令: kubectl ______ deployment NAME --image=IMAGE",
+      "options": [
+        "A. create",
+        "B. expose",
+        "C. run",
+        "D. scale"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create deployment NAME --image=IMAGE\n说明: 创建一个Deployment",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718016"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_deployment_3135",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "场景: 你想查看Deployment的滚动更新状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl create deployment",
+        "B. kubectl delete pod",
+        "C. kubectl delete networkpolicy",
+        "D. kubectl get pods"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl create deployment。\n创建一个Deployment\n用法: kubectl create deployment web --image=nginx",
+      "tags": [
+        "场景应用",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl create deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718031"
+    },
+    {
+      "id": "auto_related_kubectl_create_deployment_6315",
+      "type": "fill_blank",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "与 'kubectl create deployment' 经常配合使用的命令是？",
+      "options": null,
+      "correct_answer": "kubectl scale",
+      "explanation": "kubectl create deployment 的相关命令包括: kubectl get deployments, kubectl scale",
+      "tags": [
+        "相关命令"
+      ],
+      "related_commands": [
+        "kubectl create deployment",
+        "kubectl get deployments",
+        "kubectl scale"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718038"
+    },
+    {
+      "id": "auto_concept_kubectl_create_deployment_4251",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "使用 'kubectl create deployment' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "创建一个Deployment\n语法: kubectl create deployment NAME --image=IMAGE",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl create deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718044"
+    },
+    {
+      "id": "auto_kubectl_scale_7918",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "以下哪个命令可以扩缩容Deployment的副本数？",
+      "options": [
+        "D. kubectl describe deployment",
+        "A. kubectl scale",
+        "B. kubectl get deployments",
+        "C. kubectl delete deployment"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl scale 命令用于扩缩容Deployment的副本数。\n语法: kubectl scale deployment NAME --replicas=NUM\n示例: kubectl scale deployment web --replicas=3",
+      "tags": [
+        "命令识别",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl scale"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718056"
+    },
+    {
+      "id": "auto_syntax_kubectl_scale_5616",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "补全命令: kubectl ______ deployment NAME --replicas=NUM",
+      "options": [
+        "A. delete",
+        "B. patch",
+        "C. replace",
+        "D. scale"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'scale'。\n完整命令: kubectl scale deployment NAME --replicas=NUM\n说明: 扩缩容Deployment的副本数",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl scale"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718066"
+    },
+    {
+      "id": "auto_scenario_kubectl_scale_4848",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "场景: 你想查看Deployment的滚动更新状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl scale",
+        "D. kubectl cluster-info",
+        "C. kubectl create role",
+        "B. kubectl completion"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl scale。\n扩缩容Deployment的副本数\n用法: kubectl scale deployment web --replicas=3",
+      "tags": [
+        "场景应用",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl scale"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718079"
+    },
+    {
+      "id": "auto_concept_kubectl_scale_3502",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "'kubectl scale' 命令可以用于扩缩容Deployment的副本数",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "扩缩容Deployment的副本数\n语法: kubectl scale deployment NAME --replicas=NUM",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl scale"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718088"
+    },
+    {
+      "id": "auto_kubectl_get_deployments_7099",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "以下哪个命令可以列出所有Deployment？",
+      "options": [
+        "B. kubectl describe deployment",
+        "A. kubectl get deployments",
+        "C. kubectl create deployment",
+        "D. kubectl scale"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get deployments 命令用于列出所有Deployment。\n语法: kubectl get deployments [OPTIONS]\n示例: kubectl get deployments -o wide",
+      "tags": [
+        "命令识别",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl get deployments"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718100"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_deployments_9765",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "补全命令: kubectl ______ deployments [OPTIONS]",
+      "options": [
+        "A. expose",
+        "B. describe",
+        "C. edit",
+        "D. get"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get deployments [OPTIONS]\n说明: 列出所有Deployment",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get deployments"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718109"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_deployments_4028",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "场景: 你想查看Deployment的滚动更新状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get deployments",
+        "C. kubectl get services",
+        "D. kubectl patch",
+        "B. kubectl delete secret"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get deployments。\n列出所有Deployment\n用法: kubectl get deployments -o wide",
+      "tags": [
+        "场景应用",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl get deployments"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718122"
+    },
+    {
+      "id": "auto_kubectl_rollout_status_2707",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "以下哪个命令可以查看Deployment的滚动更新状态？",
+      "options": [
+        "C. kubectl describe deployment",
+        "B. kubectl delete deployment",
+        "A. kubectl rollout status",
+        "D. kubectl scale"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl rollout status 命令用于查看Deployment的滚动更新状态。\n语法: kubectl rollout status deployment NAME\n示例: kubectl rollout status deployment web",
+      "tags": [
+        "命令识别",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl rollout status"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718135"
+    },
+    {
+      "id": "auto_syntax_kubectl_rollout_status_3159",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "补全命令: kubectl rollout ______ deployment NAME",
+      "options": [
+        "A. scale",
+        "B. patch",
+        "C. status",
+        "D. expose"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'status'。\n完整命令: kubectl rollout status deployment NAME\n说明: 查看Deployment的滚动更新状态",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl rollout status"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718144"
+    },
+    {
+      "id": "auto_scenario_kubectl_rollout_status_4059",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "场景: 你需要将Deployment的副本数扩展到5个，应该使用哪个命令？",
+      "options": [
+        "D. kubectl exec",
+        "B. kubectl delete networkpolicy",
+        "C. kubectl delete pv",
+        "A. kubectl rollout status"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl rollout status。\n查看Deployment的滚动更新状态\n用法: kubectl rollout status deployment web",
+      "tags": [
+        "场景应用",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl rollout status"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718158"
+    },
+    {
+      "id": "auto_concept_kubectl_rollout_status_6123",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "'kubectl rollout status' 命令可以用于查看Deployment的滚动更新状态",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "查看Deployment的滚动更新状态\n语法: kubectl rollout status deployment NAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl rollout status"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718167"
+    },
+    {
+      "id": "auto_kubectl_describe_deployment_3545",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "以下哪个命令可以显示Deployment的详细信息？",
+      "options": [
+        "B. kubectl scale",
+        "A. kubectl describe deployment",
+        "D. kubectl get deployments",
+        "C. kubectl create deployment"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl describe deployment 命令用于显示Deployment的详细信息。\n语法: kubectl describe deployment NAME\n示例: kubectl describe deployment web",
+      "tags": [
+        "命令识别",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl describe deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718180"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_deployment_7862",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. describe",
+        "B. deployment",
+        "C. scale",
+        "D. expose"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'deployment'。\n完整命令: kubectl describe deployment NAME\n说明: 显示Deployment的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718189"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_deployment_1810",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "场景: 你想查看Deployment的滚动更新状态，应该使用哪个命令？",
+      "options": [
+        "C. kubectl delete all",
+        "A. kubectl describe deployment",
+        "D. kubectl debug",
+        "B. kubectl create role"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl describe deployment。\n显示Deployment的详细信息\n用法: kubectl describe deployment web",
+      "tags": [
+        "场景应用",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl describe deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718208"
+    },
+    {
+      "id": "auto_kubectl_delete_deployment_9859",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "以下哪个命令可以删除Deployment？",
+      "options": [
+        "C. kubectl scale",
+        "A. kubectl delete deployment",
+        "D. kubectl create deployment",
+        "B. kubectl get deployments"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl delete deployment 命令用于删除Deployment。\n语法: kubectl delete deployment NAME\n示例: kubectl delete deployment web",
+      "tags": [
+        "命令识别",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl delete deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718223"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_deployment_6192",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "补全命令: kubectl ______ deployment NAME",
+      "options": [
+        "A. apply",
+        "B. edit",
+        "C. get",
+        "D. delete"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete deployment NAME\n说明: 删除Deployment",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718232"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_deployment_1616",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "场景: 你想查看Deployment的滚动更新状态，应该使用哪个命令？",
+      "options": [
+        "B. kubectl apply",
+        "A. kubectl delete deployment",
+        "D. kubectl label node",
+        "C. kubectl delete pv"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl delete deployment。\n删除Deployment\n用法: kubectl delete deployment web",
+      "tags": [
+        "场景应用",
+        "deployment"
+      ],
+      "related_commands": [
+        "kubectl delete deployment"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718245"
+    },
+    {
+      "id": "auto_kubectl_expose_6385",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "service",
+      "question": "以下哪个命令可以为Pod或Deployment创建Service？",
+      "options": [
+        "D. kubectl delete service",
+        "C. kubectl get endpoints",
+        "B. kubectl get services",
+        "A. kubectl expose"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl expose 命令用于为Pod或Deployment创建Service。\n语法: kubectl expose deployment NAME --port=PORT --type=TYPE\n示例: kubectl expose deployment web --port=80 --type=NodePort",
+      "tags": [
+        "命令识别",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl expose"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718260"
+    },
+    {
+      "id": "auto_syntax_kubectl_expose_1494",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "补全命令: kubectl ______ deployment NAME --port=PORT --type=TYPE",
+      "options": [
+        "A. run",
+        "B. get",
+        "C. delete",
+        "D. expose"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'expose'。\n完整命令: kubectl expose deployment NAME --port=PORT --type=TYPE\n说明: 为Pod或Deployment创建Service",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl expose"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718270"
+    },
+    {
+      "id": "auto_scenario_kubectl_expose_6804",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "场景: 你需要为Pod或Deployment创建Service，应该使用哪个命令？",
+      "options": [
+        "D. kubectl delete deployment",
+        "B. kubectl apply",
+        "C. kubectl top node",
+        "A. kubectl expose"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl expose。\n为Pod或Deployment创建Service\n用法: kubectl expose deployment web --port=80 --type=NodePort",
+      "tags": [
+        "场景应用",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl expose"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718283"
+    },
+    {
+      "id": "auto_kubectl_get_services_9222",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "service",
+      "question": "以下哪个命令可以列出所有Service？",
+      "options": [
+        "C. kubectl get endpoints",
+        "B. kubectl expose",
+        "D. kubectl delete service",
+        "A. kubectl get services"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl get services 命令用于列出所有Service。\n语法: kubectl get services [OPTIONS]\n示例: kubectl get svc",
+      "tags": [
+        "命令识别",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl get services"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718296"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_services_8455",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "补全命令: kubectl ______ services [OPTIONS]",
+      "options": [
+        "A. edit",
+        "B. run",
+        "C. apply",
+        "D. get"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get services [OPTIONS]\n说明: 列出所有Service",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get services"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718304"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_services_4633",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "场景: 你需要列出所有Service，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get services",
+        "C. kubectl cp",
+        "B. kubectl get events",
+        "D. kubectl create deployment"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get services。\n列出所有Service\n用法: kubectl get svc",
+      "tags": [
+        "场景应用",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl get services"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718317"
+    },
+    {
+      "id": "auto_concept_kubectl_get_services_5206",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "service",
+      "question": "'kubectl get services' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "列出所有Service\n语法: kubectl get services [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get services"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718327"
+    },
+    {
+      "id": "auto_kubectl_describe_service_8120",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "service",
+      "question": "以下哪个命令可以显示Service的详细信息？",
+      "options": [
+        "D. kubectl delete service",
+        "A. kubectl describe service",
+        "B. kubectl expose",
+        "C. kubectl get services"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl describe service 命令用于显示Service的详细信息。\n语法: kubectl describe service NAME\n示例: kubectl describe service web",
+      "tags": [
+        "命令识别",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl describe service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718339"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_service_2659",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. apply",
+        "B. run",
+        "C. patch",
+        "D. service"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'service'。\n完整命令: kubectl describe service NAME\n说明: 显示Service的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718348"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_service_4037",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "场景: 你需要显示Service的详细信息，应该使用哪个命令？",
+      "options": [
+        "B. kubectl get networkpolicies",
+        "A. kubectl describe service",
+        "D. kubectl get configmaps",
+        "C. kubectl delete pv"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl describe service。\n显示Service的详细信息\n用法: kubectl describe service web",
+      "tags": [
+        "场景应用",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl describe service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718361"
+    },
+    {
+      "id": "auto_kubectl_delete_service_3343",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "service",
+      "question": "以下哪个命令可以删除Service？",
+      "options": [
+        "A. kubectl delete service",
+        "C. kubectl describe service",
+        "D. kubectl get services",
+        "B. kubectl expose"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl delete service 命令用于删除Service。\n语法: kubectl delete service NAME\n示例: kubectl delete service web",
+      "tags": [
+        "命令识别",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl delete service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718377"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_service_1774",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "补全命令: kubectl ______ service NAME",
+      "options": [
+        "A. replace",
+        "B. apply",
+        "C. delete",
+        "D. edit"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete service NAME\n说明: 删除Service",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718387"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_service_9911",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "场景: 你需要删除Service，应该使用哪个命令？",
+      "options": [
+        "C. kubectl rollout history",
+        "D. kubectl label node",
+        "B. kubectl cp",
+        "A. kubectl delete service"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl delete service。\n删除Service\n用法: kubectl delete service web",
+      "tags": [
+        "场景应用",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl delete service"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718400"
+    },
+    {
+      "id": "auto_kubectl_get_endpoints_5030",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "以下哪个命令可以列出所有Endpoints？",
+      "options": [
+        "B. kubectl expose",
+        "C. kubectl describe service",
+        "D. kubectl delete service",
+        "A. kubectl get endpoints"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl get endpoints 命令用于列出所有Endpoints。\n语法: kubectl get endpoints [OPTIONS]\n示例: kubectl get endpoints",
+      "tags": [
+        "命令识别",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl get endpoints"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718415"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_endpoints_3085",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "补全命令: kubectl ______ endpoints [OPTIONS]",
+      "options": [
+        "A. rollout",
+        "B. patch",
+        "C. replace",
+        "D. get"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get endpoints [OPTIONS]\n说明: 列出所有Endpoints",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get endpoints"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718424"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_endpoints_5911",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "service",
+      "question": "场景: 你需要列出所有Endpoints，应该使用哪个命令？",
+      "options": [
+        "C. kubectl scale",
+        "B. kubectl run",
+        "D. kubectl config view",
+        "A. kubectl get endpoints"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl get endpoints。\n列出所有Endpoints\n用法: kubectl get endpoints",
+      "tags": [
+        "场景应用",
+        "service"
+      ],
+      "related_commands": [
+        "kubectl get endpoints"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718438"
+    },
+    {
+      "id": "auto_concept_kubectl_get_endpoints_6090",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "service",
+      "question": "'kubectl get endpoints' 命令可以用于列出所有Endpoints",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "列出所有Endpoints\n语法: kubectl get endpoints [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get endpoints"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718447"
+    },
+    {
+      "id": "auto_kubectl_create_configmap_2844",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "以下哪个命令可以创建ConfigMap？",
+      "options": [
+        "C. kubectl create secret",
+        "B. kubectl get configmaps",
+        "D. kubectl delete secret",
+        "A. kubectl create configmap"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl create configmap 命令用于创建ConfigMap。\n语法: kubectl create configmap NAME --from-literal=key=value\n示例: kubectl create configmap app-config --from-literal=DB_HOST=localhost",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718460"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_configmap_9069",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl ______ configmap NAME --from-literal=key=value",
+      "options": [
+        "A. rollout",
+        "B. scale",
+        "C. run",
+        "D. create"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create configmap NAME --from-literal=key=value\n说明: 创建ConfigMap",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718468"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_configmap_8961",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要创建ConfigMap，应该使用哪个命令？",
+      "options": [
+        "D. kubectl describe deployment",
+        "A. kubectl create configmap",
+        "C. kubectl apply",
+        "B. kubectl delete service"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl create configmap。\n创建ConfigMap\n用法: kubectl create configmap app-config --from-literal=DB_HOST=localhost",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl create configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718483"
+    },
+    {
+      "id": "auto_kubectl_create_secret_7927",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "以下哪个命令可以创建Secret？",
+      "options": [
+        "D. kubectl describe configmap",
+        "B. kubectl delete configmap",
+        "C. kubectl delete secret",
+        "A. kubectl create secret"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl create secret 命令用于创建Secret。\n语法: kubectl create secret generic NAME --from-literal=key=value\n示例: kubectl create secret generic db-secret --from-literal=password=secret",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl create secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718499"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_secret_3540",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl ______ secret generic NAME --from-literal=key=value",
+      "options": [
+        "A. create",
+        "B. get",
+        "C. apply",
+        "D. describe"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create secret generic NAME --from-literal=key=value\n说明: 创建Secret",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718508"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_secret_1938",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要创建Secret，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get serviceaccounts",
+        "B. kubectl describe ingress",
+        "C. kubectl delete all",
+        "A. kubectl create secret"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl create secret。\n创建Secret\n用法: kubectl create secret generic db-secret --from-literal=password=secret",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl create secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718521"
+    },
+    {
+      "id": "auto_kubectl_get_configmaps_4973",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "configmap",
+      "question": "以下哪个命令可以列出所有ConfigMap？",
+      "options": [
+        "C. kubectl create configmap",
+        "A. kubectl get configmaps",
+        "D. kubectl get secrets",
+        "B. kubectl describe configmap"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get configmaps 命令用于列出所有ConfigMap。\n语法: kubectl get configmaps [OPTIONS]\n示例: kubectl get configmaps",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl get configmaps"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718536"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_configmaps_7266",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl ______ configmaps [OPTIONS]",
+      "options": [
+        "A. rollout",
+        "B. get",
+        "C. patch",
+        "D. run"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get configmaps [OPTIONS]\n说明: 列出所有ConfigMap",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get configmaps"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718545"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_configmaps_7577",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要列出所有ConfigMap，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get configmaps",
+        "C. kubectl create rolebinding",
+        "D. kubectl apply",
+        "B. kubectl get nodes"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get configmaps。\n列出所有ConfigMap\n用法: kubectl get configmaps",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl get configmaps"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718558"
+    },
+    {
+      "id": "auto_kubectl_get_secrets_8894",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "configmap",
+      "question": "以下哪个命令可以列出所有Secret？",
+      "options": [
+        "A. kubectl get secrets",
+        "B. kubectl get configmaps",
+        "D. kubectl delete configmap",
+        "C. kubectl create configmap"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get secrets 命令用于列出所有Secret。\n语法: kubectl get secrets [OPTIONS]\n示例: kubectl get secrets",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl get secrets"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718572"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_secrets_7647",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl ______ secrets [OPTIONS]",
+      "options": [
+        "A. create",
+        "B. get",
+        "C. delete",
+        "D. patch"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get secrets [OPTIONS]\n说明: 列出所有Secret",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get secrets"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718581"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_secrets_1257",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要列出所有Secret，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get secrets",
+        "D. kubectl edit",
+        "B. kubectl untaint node",
+        "C. kubectl get pv"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get secrets。\n列出所有Secret\n用法: kubectl get secrets",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl get secrets"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718594"
+    },
+    {
+      "id": "auto_kubectl_describe_configmap_5269",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "configmap",
+      "question": "以下哪个命令可以显示ConfigMap的详细信息？",
+      "options": [
+        "D. kubectl create configmap",
+        "C. kubectl delete configmap",
+        "B. kubectl get secrets",
+        "A. kubectl describe configmap"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl describe configmap 命令用于显示ConfigMap的详细信息。\n语法: kubectl describe configmap NAME\n示例: kubectl describe configmap app-config",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl describe configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718609"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_configmap_1009",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. configmap",
+        "B. delete",
+        "C. get",
+        "D. describe"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'configmap'。\n完整命令: kubectl describe configmap NAME\n说明: 显示ConfigMap的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718618"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_configmap_1594",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要显示ConfigMap的详细信息，应该使用哪个命令？",
+      "options": [
+        "B. kubectl uncordon node",
+        "A. kubectl describe configmap",
+        "C. kubectl get clusterroles",
+        "D. kubectl set image"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl describe configmap。\n显示ConfigMap的详细信息\n用法: kubectl describe configmap app-config",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl describe configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718631"
+    },
+    {
+      "id": "auto_kubectl_delete_configmap_7190",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "configmap",
+      "question": "以下哪个命令可以删除ConfigMap？",
+      "options": [
+        "D. kubectl create secret",
+        "A. kubectl delete configmap",
+        "B. kubectl delete secret",
+        "C. kubectl create configmap"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl delete configmap 命令用于删除ConfigMap。\n语法: kubectl delete configmap NAME\n示例: kubectl delete configmap app-config",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl delete configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718643"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_configmap_3571",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl ______ configmap NAME",
+      "options": [
+        "A. create",
+        "B. delete",
+        "C. expose",
+        "D. apply"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete configmap NAME\n说明: 删除ConfigMap",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718652"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_configmap_6786",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要删除ConfigMap，应该使用哪个命令？",
+      "options": [
+        "C. kubectl run",
+        "B. kubectl auth can-i",
+        "D. kubectl cluster-info",
+        "A. kubectl delete configmap"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl delete configmap。\n删除ConfigMap\n用法: kubectl delete configmap app-config",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl delete configmap"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718666"
+    },
+    {
+      "id": "auto_kubectl_delete_secret_9789",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "configmap",
+      "question": "以下哪个命令可以删除Secret？",
+      "options": [
+        "C. kubectl create configmap",
+        "A. kubectl delete secret",
+        "D. kubectl create secret",
+        "B. kubectl delete configmap"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl delete secret 命令用于删除Secret。\n语法: kubectl delete secret NAME\n示例: kubectl delete secret db-secret",
+      "tags": [
+        "命令识别",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl delete secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718679"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_secret_8836",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "补全命令: kubectl ______ secret NAME",
+      "options": [
+        "A. delete",
+        "B. get",
+        "C. run",
+        "D. describe"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete secret NAME\n说明: 删除Secret",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718688"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_secret_3090",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "configmap",
+      "question": "场景: 你需要删除Secret，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get clusterrolebindings",
+        "A. kubectl delete secret",
+        "B. kubectl create role",
+        "D. kubectl delete pvc"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl delete secret。\n删除Secret\n用法: kubectl delete secret db-secret",
+      "tags": [
+        "场景应用",
+        "config"
+      ],
+      "related_commands": [
+        "kubectl delete secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718700"
+    },
+    {
+      "id": "auto_kubectl_get_pv_3688",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "以下哪个命令可以列出所有PersistentVolume？",
+      "options": [
+        "B. kubectl get storageclasses",
+        "C. kubectl apply",
+        "D. kubectl delete pvc",
+        "A. kubectl get pv"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl get pv 命令用于列出所有PersistentVolume。\n语法: kubectl get pv [OPTIONS]\n示例: kubectl get pv",
+      "tags": [
+        "命令识别",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl get pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718715"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_pv_5932",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "补全命令: kubectl ______ pv [OPTIONS]",
+      "options": [
+        "A. expose",
+        "B. get",
+        "C. describe",
+        "D. rollout"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get pv [OPTIONS]\n说明: 列出所有PersistentVolume",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718724"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_pv_9551",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "场景: 你需要查看集群中的持久卷，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get pv",
+        "D. kubectl version",
+        "B. kubectl get serviceaccounts",
+        "C. kubectl delete deployment"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get pv。\n列出所有PersistentVolume\n用法: kubectl get pv",
+      "tags": [
+        "场景应用",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl get pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718737"
+    },
+    {
+      "id": "auto_concept_kubectl_get_pv_8363",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "storage",
+      "question": "'kubectl get pv' 命令可以用于列出所有PersistentVolume",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "列出所有PersistentVolume\n语法: kubectl get pv [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718746"
+    },
+    {
+      "id": "auto_kubectl_get_pvc_1487",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "以下哪个命令可以列出所有PersistentVolumeClaim？",
+      "options": [
+        "A. kubectl get pvc",
+        "C. kubectl delete pv",
+        "D. kubectl get storageclasses",
+        "B. kubectl delete pvc"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get pvc 命令用于列出所有PersistentVolumeClaim。\n语法: kubectl get pvc [OPTIONS]\n示例: kubectl get pvc",
+      "tags": [
+        "命令识别",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl get pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718758"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_pvc_1745",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "补全命令: kubectl ______ pvc [OPTIONS]",
+      "options": [
+        "A. scale",
+        "B. get",
+        "C. delete",
+        "D. rollout"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get pvc [OPTIONS]\n说明: 列出所有PersistentVolumeClaim",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718767"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_pvc_6206",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "场景: 想查看某个PVC的绑定状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get pvc",
+        "B. kubectl get roles",
+        "C. kubectl top",
+        "D. kubectl cp"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get pvc。\n列出所有PersistentVolumeClaim\n用法: kubectl get pvc",
+      "tags": [
+        "场景应用",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl get pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718780"
+    },
+    {
+      "id": "auto_concept_kubectl_get_pvc_6380",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "storage",
+      "question": "'kubectl get pvc' 命令可以用于列出所有PersistentVolumeClaim",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "列出所有PersistentVolumeClaim\n语法: kubectl get pvc [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718790"
+    },
+    {
+      "id": "auto_kubectl_apply_6371",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "以下哪个命令可以从YAML文件创建或更新资源？",
+      "options": [
+        "C. kubectl delete pvc",
+        "A. kubectl apply",
+        "D. kubectl get pv",
+        "B. kubectl get pvc"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl apply 命令用于从YAML文件创建或更新资源。\n语法: kubectl apply -f FILENAME\n示例: kubectl apply -f deployment.yaml",
+      "tags": [
+        "命令识别",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl apply"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718802"
+    },
+    {
+      "id": "auto_syntax_kubectl_apply_8701",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "补全命令: kubectl ______ -f FILENAME",
+      "options": [
+        "A. replace",
+        "B. scale",
+        "C. run",
+        "D. apply"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'apply'。\n完整命令: kubectl apply -f FILENAME\n说明: 从YAML文件创建或更新资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl apply"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718811"
+    },
+    {
+      "id": "auto_scenario_kubectl_apply_8308",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "场景: 你需要查看集群中的持久卷，应该使用哪个命令？",
+      "options": [
+        "A. kubectl apply",
+        "C. kubectl api-resources",
+        "B. kubectl get endpoints",
+        "D. kubectl delete secret"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl apply。\n从YAML文件创建或更新资源\n用法: kubectl apply -f deployment.yaml",
+      "tags": [
+        "场景应用",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl apply"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718824"
+    },
+    {
+      "id": "auto_concept_kubectl_apply_9753",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "storage",
+      "question": "使用 'kubectl apply' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "从YAML文件创建或更新资源\n语法: kubectl apply -f FILENAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl apply"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718834"
+    },
+    {
+      "id": "auto_kubectl_delete_pvc_4845",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "以下哪个命令可以删除PersistentVolumeClaim？",
+      "options": [
+        "B. kubectl apply",
+        "D. kubectl get pvc",
+        "C. kubectl delete pv",
+        "A. kubectl delete pvc"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl delete pvc 命令用于删除PersistentVolumeClaim。\n语法: kubectl delete pvc NAME\n示例: kubectl delete pvc my-pvc",
+      "tags": [
+        "命令识别",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl delete pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718847"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_pvc_9573",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "补全命令: kubectl ______ pvc NAME",
+      "options": [
+        "A. create",
+        "B. patch",
+        "C. delete",
+        "D. rollout"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete pvc NAME\n说明: 删除PersistentVolumeClaim",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718856"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_pvc_8702",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "场景: 想查看某个PVC的绑定状态，应该使用哪个命令？",
+      "options": [
+        "C. kubectl api-resources",
+        "B. kubectl create secret",
+        "D. kubectl describe deployment",
+        "A. kubectl delete pvc"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl delete pvc。\n删除PersistentVolumeClaim\n用法: kubectl delete pvc my-pvc",
+      "tags": [
+        "场景应用",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl delete pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718869"
+    },
+    {
+      "id": "auto_concept_kubectl_delete_pvc_8090",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "storage",
+      "question": "'kubectl delete pvc' 命令可以用于删除PersistentVolumeClaim",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "删除PersistentVolumeClaim\n语法: kubectl delete pvc NAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl delete pvc"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718878"
+    },
+    {
+      "id": "auto_kubectl_get_storageclasses_1893",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "以下哪个命令可以列出所有StorageClass？",
+      "options": [
+        "D. kubectl delete pv",
+        "A. kubectl get storageclasses",
+        "C. kubectl apply",
+        "B. kubectl get pvc"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get storageclasses 命令用于列出所有StorageClass。\n语法: kubectl get storageclasses [OPTIONS]\n示例: kubectl get sc",
+      "tags": [
+        "命令识别",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl get storageclasses"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718910"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_storageclasses_4940",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "补全命令: kubectl ______ storageclasses [OPTIONS]",
+      "options": [
+        "A. get",
+        "B. create",
+        "C. run",
+        "D. apply"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get storageclasses [OPTIONS]\n说明: 列出所有StorageClass",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get storageclasses"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718920"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_storageclasses_3025",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "场景: 你需要查看集群中的持久卷，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get rolebindings",
+        "B. kubectl describe deployment",
+        "D. kubectl describe ingress",
+        "A. kubectl get storageclasses"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl get storageclasses。\n列出所有StorageClass\n用法: kubectl get sc",
+      "tags": [
+        "场景应用",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl get storageclasses"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718933"
+    },
+    {
+      "id": "auto_kubectl_delete_pv_2398",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "以下哪个命令可以删除PersistentVolume？",
+      "options": [
+        "D. kubectl apply",
+        "A. kubectl delete pv",
+        "B. kubectl get storageclasses",
+        "C. kubectl get pv"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl delete pv 命令用于删除PersistentVolume。\n语法: kubectl delete pv NAME\n示例: kubectl delete pv my-pv",
+      "tags": [
+        "命令识别",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl delete pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718946"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_pv_1440",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "补全命令: kubectl ______ pv NAME",
+      "options": [
+        "A. delete",
+        "B. create",
+        "C. expose",
+        "D. scale"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete pv NAME\n说明: 删除PersistentVolume",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718955"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_pv_4277",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "storage",
+      "question": "场景: 想查看某个PVC的绑定状态，应该使用哪个命令？",
+      "options": [
+        "A. kubectl delete pv",
+        "D. kubectl describe configmap",
+        "B. kubectl config view",
+        "C. kubectl delete secret"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl delete pv。\n删除PersistentVolume\n用法: kubectl delete pv my-pv",
+      "tags": [
+        "场景应用",
+        "storage"
+      ],
+      "related_commands": [
+        "kubectl delete pv"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718968"
+    },
+    {
+      "id": "auto_kubectl_top_9730",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以查看资源使用情况？",
+      "options": [
+        "D. kubectl get nodes",
+        "B. kubectl uncordon node",
+        "A. kubectl top",
+        "C. kubectl drain node"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl top 命令用于查看资源使用情况。\n语法: kubectl top pods [OPTIONS]\n示例: kubectl top pods",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl top"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718982"
+    },
+    {
+      "id": "auto_syntax_kubectl_top_1061",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ pods [OPTIONS]",
+      "options": [
+        "A. top",
+        "B. get",
+        "C. edit",
+        "D. run"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'top'。\n完整命令: kubectl top pods [OPTIONS]\n说明: 查看资源使用情况",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl top"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.718991"
+    },
+    {
+      "id": "auto_scenario_kubectl_top_2858",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要查看资源使用情况，应该使用哪个命令？",
+      "options": [
+        "D. kubectl replace",
+        "A. kubectl top",
+        "C. kubectl describe networkpolicy",
+        "B. kubectl get serviceaccounts"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl top。\n查看资源使用情况\n用法: kubectl top pods",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl top"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719004"
+    },
+    {
+      "id": "auto_kubectl_top_node_9499",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以查看节点资源使用情况？",
+      "options": [
+        "C. kubectl annotate",
+        "B. kubectl get nodes",
+        "A. kubectl top node",
+        "D. kubectl uncordon node"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl top node 命令用于查看节点资源使用情况。\n语法: kubectl top node [OPTIONS]\n示例: kubectl top node worker-1",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl top node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719017"
+    },
+    {
+      "id": "auto_syntax_kubectl_top_node_6890",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl top ______ [OPTIONS]",
+      "options": [
+        "A. node",
+        "B. apply",
+        "C. rollout",
+        "D. replace"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl top node [OPTIONS]\n说明: 查看节点资源使用情况",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl top node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719025"
+    },
+    {
+      "id": "auto_scenario_kubectl_top_node_3254",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要查看节点资源使用情况，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get services",
+        "C. kubectl get all",
+        "A. kubectl top node",
+        "B. kubectl cluster-info"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl top node。\n查看节点资源使用情况\n用法: kubectl top node worker-1",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl top node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719039"
+    },
+    {
+      "id": "auto_concept_kubectl_top_node_2726",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "使用 'kubectl top node' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "查看节点资源使用情况\n语法: kubectl top node [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl top node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719048"
+    },
+    {
+      "id": "auto_kubectl_describe_node_5196",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以显示Node的详细信息？",
+      "options": [
+        "C. kubectl annotate",
+        "B. kubectl taint node",
+        "A. kubectl describe node",
+        "D. kubectl uncordon node"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl describe node 命令用于显示Node的详细信息。\n语法: kubectl describe node NAME\n示例: kubectl describe node worker-1",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl describe node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719060"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_node_4938",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. replace",
+        "B. expose",
+        "C. node",
+        "D. delete"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl describe node NAME\n说明: 显示Node的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719069"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_node_4999",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要显示Node的详细信息，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get pv",
+        "A. kubectl describe node",
+        "B. kubectl create secret",
+        "D. kubectl delete service"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl describe node。\n显示Node的详细信息\n用法: kubectl describe node worker-1",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl describe node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719082"
+    },
+    {
+      "id": "auto_concept_kubectl_describe_node_8141",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "使用 'kubectl describe node' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "显示Node的详细信息\n语法: kubectl describe node NAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl describe node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719091"
+    },
+    {
+      "id": "auto_kubectl_label_node_4541",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以为Node添加标签？",
+      "options": [
+        "A. kubectl label node",
+        "B. kubectl get nodes",
+        "D. kubectl logs -f",
+        "C. kubectl uncordon node"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl label node 命令用于为Node添加标签。\n语法: kubectl label node NAME KEY=VALUE\n示例: kubectl label node worker-1 disktype=ssd",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl label node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719103"
+    },
+    {
+      "id": "auto_syntax_kubectl_label_node_9247",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl label ______ NAME KEY=VALUE",
+      "options": [
+        "A. node",
+        "B. replace",
+        "C. describe",
+        "D. get"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl label node NAME KEY=VALUE\n说明: 为Node添加标签",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl label node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719112"
+    },
+    {
+      "id": "auto_scenario_kubectl_label_node_6522",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要为Node添加标签，应该使用哪个命令？",
+      "options": [
+        "A. kubectl label node",
+        "D. kubectl get networkpolicies",
+        "C. kubectl create deployment",
+        "B. kubectl scale"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl label node。\n为Node添加标签\n用法: kubectl label node worker-1 disktype=ssd",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl label node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719125"
+    },
+    {
+      "id": "auto_kubectl_taint_node_8187",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以为Node添加污点？",
+      "options": [
+        "D. kubectl top",
+        "B. kubectl drain node",
+        "A. kubectl taint node",
+        "C. kubectl get nodes"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl taint node 命令用于为Node添加污点。\n语法: kubectl taint node NAME KEY=VALUE:EFFECT\n示例: kubectl taint node master-1 node-role.kubernetes.io/master:NoSchedule",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl taint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719141"
+    },
+    {
+      "id": "auto_syntax_kubectl_taint_node_8030",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl taint ______ NAME KEY=VALUE:EFFECT",
+      "options": [
+        "A. patch",
+        "B. rollout",
+        "C. node",
+        "D. replace"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl taint node NAME KEY=VALUE:EFFECT\n说明: 为Node添加污点",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl taint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719150"
+    },
+    {
+      "id": "auto_scenario_kubectl_taint_node_5859",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要为Node添加污点，应该使用哪个命令？",
+      "options": [
+        "B. kubectl describe deployment",
+        "A. kubectl taint node",
+        "D. kubectl get roles",
+        "C. kubectl create configmap"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl taint node。\n为Node添加污点\n用法: kubectl taint node master-1 node-role.kubernetes.io/master:NoSchedule",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl taint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719186"
+    },
+    {
+      "id": "auto_kubectl_untaint_node_7311",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以移除Node的污点？",
+      "options": [
+        "B. kubectl uncordon node",
+        "A. kubectl untaint node",
+        "C. kubectl logs -f",
+        "D. kubectl describe node"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl untaint node 命令用于移除Node的污点。\n语法: kubectl untaint node NAME KEY:EFFECT-\n示例: kubectl untaint node worker-1 dedicated:NoSchedule-",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl untaint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719204"
+    },
+    {
+      "id": "auto_syntax_kubectl_untaint_node_8447",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl untaint ______ NAME KEY:EFFECT-",
+      "options": [
+        "A. node",
+        "B. get",
+        "C. edit",
+        "D. delete"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl untaint node NAME KEY:EFFECT-\n说明: 移除Node的污点",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl untaint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719213"
+    },
+    {
+      "id": "auto_scenario_kubectl_untaint_node_1657",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要移除Node的污点，应该使用哪个命令？",
+      "options": [
+        "B. kubectl patch",
+        "C. kubectl get deployments",
+        "D. kubectl delete ingress",
+        "A. kubectl untaint node"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl untaint node。\n移除Node的污点\n用法: kubectl untaint node worker-1 dedicated:NoSchedule-",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl untaint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719227"
+    },
+    {
+      "id": "auto_concept_kubectl_untaint_node_5777",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "'kubectl untaint node' 命令可以用于移除Node的污点",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "移除Node的污点\n语法: kubectl untaint node NAME KEY:EFFECT-",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl untaint node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719236"
+    },
+    {
+      "id": "auto_kubectl_get_nodes_1582",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "以下哪个命令可以列出所有Node？",
+      "options": [
+        "A. kubectl get nodes",
+        "D. kubectl top",
+        "C. kubectl taint node",
+        "B. kubectl logs -f"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get nodes 命令用于列出所有Node。\n语法: kubectl get nodes [OPTIONS]\n示例: kubectl get nodes -o wide",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl get nodes"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719248"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_nodes_6640",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ nodes [OPTIONS]",
+      "options": [
+        "A. get",
+        "B. create",
+        "C. patch",
+        "D. edit"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get nodes [OPTIONS]\n说明: 列出所有Node",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get nodes"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719256"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_nodes_2087",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要列出所有Node，应该使用哪个命令？",
+      "options": [
+        "C. kubectl delete secret",
+        "B. kubectl get deployments",
+        "A. kubectl get nodes",
+        "D. kubectl create rolebinding"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl get nodes。\n列出所有Node\n用法: kubectl get nodes -o wide",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl get nodes"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719270"
+    },
+    {
+      "id": "auto_concept_kubectl_get_nodes_6013",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "'kubectl get nodes' 命令可以用于列出所有Node",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "列出所有Node\n语法: kubectl get nodes [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get nodes"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719279"
+    },
+    {
+      "id": "auto_kubectl_cordon_node_4822",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以标记节点为不可调度？",
+      "options": [
+        "B. kubectl top",
+        "D. kubectl annotate",
+        "C. kubectl untaint node",
+        "A. kubectl cordon node"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl cordon node 命令用于标记节点为不可调度。\n语法: kubectl cordon node NAME\n示例: kubectl cordon node worker-1",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl cordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719291"
+    },
+    {
+      "id": "auto_syntax_kubectl_cordon_node_7311",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl cordon ______ NAME",
+      "options": [
+        "A. patch",
+        "B. get",
+        "C. scale",
+        "D. node"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl cordon node NAME\n说明: 标记节点为不可调度",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl cordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719300"
+    },
+    {
+      "id": "auto_scenario_kubectl_cordon_node_9083",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要标记节点为不可调度，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get rolebindings",
+        "B. kubectl create role",
+        "C. kubectl get events",
+        "A. kubectl cordon node"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl cordon node。\n标记节点为不可调度\n用法: kubectl cordon node worker-1",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl cordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719313"
+    },
+    {
+      "id": "auto_concept_kubectl_cordon_node_7360",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "'kubectl cordon node' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "标记节点为不可调度\n语法: kubectl cordon node NAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl cordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719322"
+    },
+    {
+      "id": "auto_kubectl_uncordon_node_2664",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以标记节点为可调度？",
+      "options": [
+        "C. kubectl untaint node",
+        "A. kubectl uncordon node",
+        "D. kubectl cordon node",
+        "B. kubectl drain node"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl uncordon node 命令用于标记节点为可调度。\n语法: kubectl uncordon node NAME\n示例: kubectl uncordon node worker-1",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl uncordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719334"
+    },
+    {
+      "id": "auto_syntax_kubectl_uncordon_node_9487",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl uncordon ______ NAME",
+      "options": [
+        "A. scale",
+        "B. node",
+        "C. patch",
+        "D. create"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl uncordon node NAME\n说明: 标记节点为可调度",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl uncordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719344"
+    },
+    {
+      "id": "auto_scenario_kubectl_uncordon_node_2972",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要标记节点为可调度，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get storageclasses",
+        "C. kubectl describe ingress",
+        "B. kubectl get ingress",
+        "A. kubectl uncordon node"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl uncordon node。\n标记节点为可调度\n用法: kubectl uncordon node worker-1",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl uncordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719358"
+    },
+    {
+      "id": "auto_concept_kubectl_uncordon_node_4864",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "'kubectl uncordon node' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "标记节点为可调度\n语法: kubectl uncordon node NAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl uncordon node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719367"
+    },
+    {
+      "id": "auto_kubectl_drain_node_8722",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以驱逐节点上的所有Pod？",
+      "options": [
+        "C. kubectl cordon node",
+        "D. kubectl annotate",
+        "B. kubectl logs -f",
+        "A. kubectl drain node"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl drain node 命令用于驱逐节点上的所有Pod。\n语法: kubectl drain node NAME [OPTIONS]\n示例: kubectl drain node worker-1 --ignore-daemonsets",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl drain node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719379"
+    },
+    {
+      "id": "auto_syntax_kubectl_drain_node_6317",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl drain ______ NAME [OPTIONS]",
+      "options": [
+        "A. run",
+        "B. edit",
+        "C. node",
+        "D. create"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'node'。\n完整命令: kubectl drain node NAME [OPTIONS]\n说明: 驱逐节点上的所有Pod",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl drain node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719388"
+    },
+    {
+      "id": "auto_scenario_kubectl_drain_node_3099",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要驱逐节点上的所有Pod，应该使用哪个命令？",
+      "options": [
+        "A. kubectl drain node",
+        "D. kubectl get serviceaccounts",
+        "B. kubectl get networkpolicies",
+        "C. kubectl logs"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl drain node。\n驱逐节点上的所有Pod\n用法: kubectl drain node worker-1 --ignore-daemonsets",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl drain node"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719401"
+    },
+    {
+      "id": "auto_kubectl_cp_8797",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以在本地和Pod之间复制文件？",
+      "options": [
+        "D. kubectl logs -f",
+        "B. kubectl get nodes",
+        "C. kubectl cordon node",
+        "A. kubectl cp"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl cp 命令用于在本地和Pod之间复制文件。\n语法: kubectl cp LOCAL_PATH POD:REMOTE_PATH\n示例: kubectl cp /local/file.txt my-pod:/remote/path/",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl cp"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719416"
+    },
+    {
+      "id": "auto_syntax_kubectl_cp_7220",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ LOCAL_PATH POD:REMOTE_PATH",
+      "options": [
+        "A. replace",
+        "B. scale",
+        "C. describe",
+        "D. cp"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'cp'。\n完整命令: kubectl cp LOCAL_PATH POD:REMOTE_PATH\n说明: 在本地和Pod之间复制文件",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl cp"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719425"
+    },
+    {
+      "id": "auto_scenario_kubectl_cp_8476",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要在本地和Pod之间复制文件，应该使用哪个命令？",
+      "options": [
+        "B. kubectl get configmaps",
+        "C. kubectl apply",
+        "D. kubectl get rolebindings",
+        "A. kubectl cp"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl cp。\n在本地和Pod之间复制文件\n用法: kubectl cp /local/file.txt my-pod:/remote/path/",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl cp"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719439"
+    },
+    {
+      "id": "auto_kubectl_logs__f_9744",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以实时查看Pod日志？",
+      "options": [
+        "B. kubectl drain node",
+        "A. kubectl logs -f",
+        "D. kubectl top",
+        "C. kubectl label node"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl logs -f 命令用于实时查看Pod日志。\n语法: kubectl logs -f POD [OPTIONS]\n示例: kubectl logs -f web-7d9c9c9d8-abcde",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl logs -f"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719454"
+    },
+    {
+      "id": "auto_syntax_kubectl_logs__f_9506",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl logs ______ POD [OPTIONS]",
+      "options": [
+        "A. patch",
+        "B. run",
+        "C. delete",
+        "D. -f"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 '-f'。\n完整命令: kubectl logs -f POD [OPTIONS]\n说明: 实时查看Pod日志",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl logs -f"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719463"
+    },
+    {
+      "id": "auto_scenario_kubectl_logs__f_1943",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要实时查看Pod日志，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get ingress",
+        "A. kubectl logs -f",
+        "D. kubectl create role",
+        "B. kubectl delete configmap"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl logs -f。\n实时查看Pod日志\n用法: kubectl logs -f web-7d9c9c9d8-abcde",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl logs -f"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719476"
+    },
+    {
+      "id": "auto_kubectl_annotate_9601",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以为资源添加注解？",
+      "options": [
+        "D. kubectl uncordon node",
+        "B. kubectl top node",
+        "C. kubectl get nodes",
+        "A. kubectl annotate"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl annotate 命令用于为资源添加注解。\n语法: kubectl annotate RESOURCE NAME KEY=VALUE\n示例: kubectl annotate pod web-1 description='production app'",
+      "tags": [
+        "命令识别",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl annotate"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719491"
+    },
+    {
+      "id": "auto_syntax_kubectl_annotate_7713",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ RESOURCE NAME KEY=VALUE",
+      "options": [
+        "A. patch",
+        "B. annotate",
+        "C. apply",
+        "D. create"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'annotate'。\n完整命令: kubectl annotate RESOURCE NAME KEY=VALUE\n说明: 为资源添加注解",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl annotate"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719501"
+    },
+    {
+      "id": "auto_scenario_kubectl_annotate_3949",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要为资源添加注解，应该使用哪个命令？",
+      "options": [
+        "D. kubectl delete secret",
+        "C. kubectl delete configmap",
+        "B. kubectl get all",
+        "A. kubectl annotate"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl annotate。\n为资源添加注解\n用法: kubectl annotate pod web-1 description='production app'",
+      "tags": [
+        "场景应用",
+        "resource"
+      ],
+      "related_commands": [
+        "kubectl annotate"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719515"
+    },
+    {
+      "id": "auto_concept_kubectl_annotate_6725",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "使用 'kubectl annotate' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "为资源添加注解\n语法: kubectl annotate RESOURCE NAME KEY=VALUE",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl annotate"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719524"
+    },
+    {
+      "id": "auto_kubectl_logs_6105",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "以下哪个命令可以查看Pod的日志？",
+      "options": [
+        "D. kubectl port-forward",
+        "A. kubectl logs",
+        "C. kubectl events",
+        "B. kubectl debug"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl logs 命令用于查看Pod的日志。\n语法: kubectl logs POD [OPTIONS]\n示例: kubectl logs web-7d9c9c9d8-abcde --tail=100",
+      "tags": [
+        "命令识别",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl logs"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719536"
+    },
+    {
+      "id": "auto_syntax_kubectl_logs_7401",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "补全命令: kubectl ______ POD [OPTIONS]",
+      "options": [
+        "A. logs",
+        "B. rollout",
+        "C. delete",
+        "D. edit"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'logs'。\n完整命令: kubectl logs POD [OPTIONS]\n说明: 查看Pod的日志",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl logs"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719544"
+    },
+    {
+      "id": "auto_scenario_kubectl_logs_8028",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "场景: Pod无法启动，你想进入容器调试，应该使用哪个命令？",
+      "options": [
+        "B. kubectl create configmap",
+        "C. kubectl rollout history",
+        "A. kubectl logs",
+        "D. kubectl taint node"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl logs。\n查看Pod的日志\n用法: kubectl logs web-7d9c9c9d8-abcde --tail=100",
+      "tags": [
+        "场景应用",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl logs"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719558"
+    },
+    {
+      "id": "auto_concept_kubectl_logs_7499",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "troubleshooting",
+      "question": "使用 'kubectl logs' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "查看Pod的日志\n语法: kubectl logs POD [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl logs"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719567"
+    },
+    {
+      "id": "auto_kubectl_exec_8798",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "以下哪个命令可以在Pod中执行命令？",
+      "options": [
+        "C. kubectl port-forward",
+        "A. kubectl exec",
+        "B. kubectl debug",
+        "D. kubectl events"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl exec 命令用于在Pod中执行命令。\n语法: kubectl exec POD -- COMMAND\n示例: kubectl exec -it web-7d9c9c9d8-abcde -- /bin/sh",
+      "tags": [
+        "命令识别",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl exec"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719579"
+    },
+    {
+      "id": "auto_syntax_kubectl_exec_1252",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "补全命令: kubectl ______ POD -- COMMAND",
+      "options": [
+        "A. rollout",
+        "B. exec",
+        "C. get",
+        "D. apply"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'exec'。\n完整命令: kubectl exec POD -- COMMAND\n说明: 在Pod中执行命令",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl exec"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719588"
+    },
+    {
+      "id": "auto_scenario_kubectl_exec_4250",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "场景: Pod无法启动，你想进入容器调试，应该使用哪个命令？",
+      "options": [
+        "D. kubectl create deployment",
+        "A. kubectl exec",
+        "B. kubectl edit",
+        "C. kubectl uncordon node"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl exec。\n在Pod中执行命令\n用法: kubectl exec -it web-7d9c9c9d8-abcde -- /bin/sh",
+      "tags": [
+        "场景应用",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl exec"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719602"
+    },
+    {
+      "id": "auto_kubectl_port_forward_5144",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "以下哪个命令可以本地端口转发到Pod？",
+      "options": [
+        "B. kubectl events",
+        "C. kubectl logs",
+        "A. kubectl port-forward",
+        "D. kubectl get events"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl port-forward 命令用于本地端口转发到Pod。\n语法: kubectl port-forward POD LOCAL_PORT:REMOTE_PORT\n示例: kubectl port-forward svc/web 8080:80",
+      "tags": [
+        "命令识别",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl port-forward"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719614"
+    },
+    {
+      "id": "auto_syntax_kubectl_port_forward_7558",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "补全命令: kubectl ______ POD LOCAL_PORT:REMOTE_PORT",
+      "options": [
+        "A. port-forward",
+        "B. apply",
+        "C. delete",
+        "D. scale"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'port-forward'。\n完整命令: kubectl port-forward POD LOCAL_PORT:REMOTE_PORT\n说明: 本地端口转发到Pod",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl port-forward"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719623"
+    },
+    {
+      "id": "auto_scenario_kubectl_port_forward_9198",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "场景: 应用出现问题，你需要查看容器日志，应该使用哪个命令？",
+      "options": [
+        "B. kubectl get pv",
+        "A. kubectl port-forward",
+        "D. kubectl describe serviceaccount",
+        "C. kubectl apply"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl port-forward。\n本地端口转发到Pod\n用法: kubectl port-forward svc/web 8080:80",
+      "tags": [
+        "场景应用",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl port-forward"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719636"
+    },
+    {
+      "id": "auto_kubectl_events_8883",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "以下哪个命令可以查看集群事件？",
+      "options": [
+        "C. kubectl logs",
+        "A. kubectl events",
+        "B. kubectl port-forward",
+        "D. kubectl get events"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl events 命令用于查看集群事件。\n语法: kubectl events [OPTIONS]\n示例: kubectl events --sort-by='.lastTimestamp'",
+      "tags": [
+        "命令识别",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719648"
+    },
+    {
+      "id": "auto_syntax_kubectl_events_4510",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "补全命令: kubectl ______ [OPTIONS]",
+      "options": [
+        "A. describe",
+        "B. events",
+        "C. expose",
+        "D. delete"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'events'。\n完整命令: kubectl events [OPTIONS]\n说明: 查看集群事件",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719657"
+    },
+    {
+      "id": "auto_scenario_kubectl_events_7787",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "场景: 应用出现问题，你需要查看容器日志，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get clusterrolebindings",
+        "D. kubectl delete configmap",
+        "B. kubectl create role",
+        "A. kubectl events"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl events。\n查看集群事件\n用法: kubectl events --sort-by='.lastTimestamp'",
+      "tags": [
+        "场景应用",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719671"
+    },
+    {
+      "id": "auto_kubectl_debug_6278",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "以下哪个命令可以调试Pod？",
+      "options": [
+        "A. kubectl debug",
+        "C. kubectl get events",
+        "D. kubectl logs",
+        "B. kubectl events"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl debug 命令用于调试Pod。\n语法: kubectl debug POD [OPTIONS]\n示例: kubectl debug web-7d9c9c9d8-abcde --image=busybox",
+      "tags": [
+        "命令识别",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl debug"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719686"
+    },
+    {
+      "id": "auto_syntax_kubectl_debug_6130",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "补全命令: kubectl ______ POD [OPTIONS]",
+      "options": [
+        "A. apply",
+        "B. get",
+        "C. debug",
+        "D. delete"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'debug'。\n完整命令: kubectl debug POD [OPTIONS]\n说明: 调试Pod",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl debug"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719696"
+    },
+    {
+      "id": "auto_scenario_kubectl_debug_9675",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "场景: 应用出现问题，你需要查看容器日志，应该使用哪个命令？",
+      "options": [
+        "D. kubectl auth can-i",
+        "A. kubectl debug",
+        "B. kubectl create secret docker-registry",
+        "C. kubectl cp"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl debug。\n调试Pod\n用法: kubectl debug web-7d9c9c9d8-abcde --image=busybox",
+      "tags": [
+        "场景应用",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl debug"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719709"
+    },
+    {
+      "id": "auto_concept_kubectl_debug_5806",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "troubleshooting",
+      "question": "使用 'kubectl debug' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "调试Pod\n语法: kubectl debug POD [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl debug"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719718"
+    },
+    {
+      "id": "auto_kubectl_get_events_6184",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "以下哪个命令可以列出所有事件？",
+      "options": [
+        "D. kubectl logs",
+        "C. kubectl debug",
+        "B. kubectl port-forward",
+        "A. kubectl get events"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl get events 命令用于列出所有事件。\n语法: kubectl get events [OPTIONS]\n示例: kubectl get events --field-selector type=Warning",
+      "tags": [
+        "命令识别",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl get events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719730"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_events_2629",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "补全命令: kubectl ______ events [OPTIONS]",
+      "options": [
+        "A. scale",
+        "B. get",
+        "C. rollout",
+        "D. expose"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get events [OPTIONS]\n说明: 列出所有事件",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719739"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_events_2877",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "troubleshooting",
+      "question": "场景: 应用出现问题，你需要查看容器日志，应该使用哪个命令？",
+      "options": [
+        "C. kubectl apply",
+        "A. kubectl get events",
+        "D. kubectl create deployment",
+        "B. kubectl describe networkpolicy"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl get events。\n列出所有事件\n用法: kubectl get events --field-selector type=Warning",
+      "tags": [
+        "场景应用",
+        "debug"
+      ],
+      "related_commands": [
+        "kubectl get events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719752"
+    },
+    {
+      "id": "auto_concept_kubectl_get_events_9536",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "troubleshooting",
+      "question": "'kubectl get events' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "列出所有事件\n语法: kubectl get events [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl get events"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719761"
+    },
+    {
+      "id": "auto_kubectl_patch_9270",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以更新资源的字段？",
+      "options": [
+        "A. kubectl patch",
+        "D. kubectl edit",
+        "B. kubectl rollout undo",
+        "C. kubectl rollout history"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl patch 命令用于更新资源的字段。\n语法: kubectl patch TYPE NAME -p PATCH\n示例: kubectl patch deployment web -p '{\"spec\":{\"replicas\":5}}'",
+      "tags": [
+        "命令识别",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl patch"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719773"
+    },
+    {
+      "id": "auto_syntax_kubectl_patch_3538",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ TYPE NAME -p PATCH",
+      "options": [
+        "A. describe",
+        "B. scale",
+        "C. create",
+        "D. patch"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'patch'。\n完整命令: kubectl patch TYPE NAME -p PATCH\n说明: 更新资源的字段",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl patch"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719782"
+    },
+    {
+      "id": "auto_scenario_kubectl_patch_3966",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要更新资源的字段，应该使用哪个命令？",
+      "options": [
+        "B. kubectl delete deployment",
+        "C. kubectl plugin list",
+        "A. kubectl patch",
+        "D. kubectl delete networkpolicy"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl patch。\n更新资源的字段\n用法: kubectl patch deployment web -p '{\"spec\":{\"replicas\":5}}'",
+      "tags": [
+        "场景应用",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl patch"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719861"
+    },
+    {
+      "id": "auto_kubectl_set_image_6527",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以更新容器镜像？",
+      "options": [
+        "A. kubectl set image",
+        "D. kubectl patch",
+        "B. kubectl rollout history",
+        "C. kubectl replace"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl set image 命令用于更新容器镜像。\n语法: kubectl set image deployment NAME CONTAINER=IMAGE\n示例: kubectl set image deployment web nginx=nginx:1.21",
+      "tags": [
+        "命令识别",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl set image"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719887"
+    },
+    {
+      "id": "auto_syntax_kubectl_set_image_1986",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl set ______ deployment NAME CONTAINER=IMAGE",
+      "options": [
+        "A. rollout",
+        "B. patch",
+        "C. image",
+        "D. apply"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'image'。\n完整命令: kubectl set image deployment NAME CONTAINER=IMAGE\n说明: 更新容器镜像",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl set image"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719902"
+    },
+    {
+      "id": "auto_scenario_kubectl_set_image_3040",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要更新容器镜像，应该使用哪个命令？",
+      "options": [
+        "B. kubectl rollout status",
+        "A. kubectl set image",
+        "C. kubectl get rolebindings",
+        "D. kubectl get endpoints"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl set image。\n更新容器镜像\n用法: kubectl set image deployment web nginx=nginx:1.21",
+      "tags": [
+        "场景应用",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl set image"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719919"
+    },
+    {
+      "id": "auto_kubectl_rollout_undo_5964",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以回滚Deployment到上一版本？",
+      "options": [
+        "A. kubectl rollout undo",
+        "D. kubectl set image",
+        "C. kubectl patch",
+        "B. kubectl rollout history"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl rollout undo 命令用于回滚Deployment到上一版本。\n语法: kubectl rollout undo deployment NAME\n示例: kubectl rollout undo deployment web",
+      "tags": [
+        "命令识别",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl rollout undo"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719933"
+    },
+    {
+      "id": "auto_syntax_kubectl_rollout_undo_3617",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl rollout ______ deployment NAME",
+      "options": [
+        "A. edit",
+        "B. undo",
+        "C. delete",
+        "D. rollout"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'undo'。\n完整命令: kubectl rollout undo deployment NAME\n说明: 回滚Deployment到上一版本",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl rollout undo"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719944"
+    },
+    {
+      "id": "auto_scenario_kubectl_rollout_undo_5588",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要回滚Deployment到上一版本，应该使用哪个命令？",
+      "options": [
+        "D. kubectl get roles",
+        "A. kubectl rollout undo",
+        "B. kubectl exec",
+        "C. kubectl delete pod"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl rollout undo。\n回滚Deployment到上一版本\n用法: kubectl rollout undo deployment web",
+      "tags": [
+        "场景应用",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl rollout undo"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719960"
+    },
+    {
+      "id": "auto_kubectl_rollout_history_3046",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以查看Deployment的版本历史？",
+      "options": [
+        "D. kubectl patch",
+        "A. kubectl rollout history",
+        "B. kubectl edit",
+        "C. kubectl replace"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl rollout history 命令用于查看Deployment的版本历史。\n语法: kubectl rollout history deployment NAME\n示例: kubectl rollout history deployment web",
+      "tags": [
+        "命令识别",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl rollout history"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719973"
+    },
+    {
+      "id": "auto_syntax_kubectl_rollout_history_9486",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl rollout ______ deployment NAME",
+      "options": [
+        "A. describe",
+        "B. apply",
+        "C. get",
+        "D. history"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'history'。\n完整命令: kubectl rollout history deployment NAME\n说明: 查看Deployment的版本历史",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl rollout history"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719983"
+    },
+    {
+      "id": "auto_scenario_kubectl_rollout_history_7026",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要查看Deployment的版本历史，应该使用哪个命令？",
+      "options": [
+        "C. kubectl cp",
+        "D. kubectl create secret docker-registry",
+        "A. kubectl rollout history",
+        "B. kubectl describe serviceaccount"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl rollout history。\n查看Deployment的版本历史\n用法: kubectl rollout history deployment web",
+      "tags": [
+        "场景应用",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl rollout history"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.719998"
+    },
+    {
+      "id": "auto_concept_kubectl_rollout_history_4550",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "scheduling",
+      "question": "'kubectl rollout history' 命令可以用于查看Deployment的版本历史",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "查看Deployment的版本历史\n语法: kubectl rollout history deployment NAME",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl rollout history"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720008"
+    },
+    {
+      "id": "auto_kubectl_replace_2148",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以替换资源？",
+      "options": [
+        "B. kubectl patch",
+        "D. kubectl rollout undo",
+        "A. kubectl replace",
+        "C. kubectl set image"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl replace 命令用于替换资源。\n语法: kubectl replace -f FILENAME\n示例: kubectl replace -f deployment.yaml",
+      "tags": [
+        "命令识别",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl replace"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720021"
+    },
+    {
+      "id": "auto_syntax_kubectl_replace_9648",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ -f FILENAME",
+      "options": [
+        "A. describe",
+        "B. patch",
+        "C. get",
+        "D. replace"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'replace'。\n完整命令: kubectl replace -f FILENAME\n说明: 替换资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl replace"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720032"
+    },
+    {
+      "id": "auto_scenario_kubectl_replace_7575",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要替换资源，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get serviceaccounts",
+        "D. kubectl describe node",
+        "B. kubectl scale",
+        "A. kubectl replace"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl replace。\n替换资源\n用法: kubectl replace -f deployment.yaml",
+      "tags": [
+        "场景应用",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl replace"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720045"
+    },
+    {
+      "id": "auto_kubectl_edit_1108",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "以下哪个命令可以编辑资源？",
+      "options": [
+        "A. kubectl edit",
+        "B. kubectl patch",
+        "D. kubectl rollout undo",
+        "C. kubectl replace"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl edit 命令用于编辑资源。\n语法: kubectl edit TYPE NAME\n示例: kubectl edit deployment web",
+      "tags": [
+        "命令识别",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl edit"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720061"
+    },
+    {
+      "id": "auto_syntax_kubectl_edit_4116",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "补全命令: kubectl ______ TYPE NAME",
+      "options": [
+        "A. delete",
+        "B. apply",
+        "C. get",
+        "D. edit"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'edit'。\n完整命令: kubectl edit TYPE NAME\n说明: 编辑资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl edit"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720071"
+    },
+    {
+      "id": "auto_scenario_kubectl_edit_7576",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "scheduling",
+      "question": "场景: 你需要编辑资源，应该使用哪个命令？",
+      "options": [
+        "C. kubectl describe networkpolicy",
+        "B. kubectl get roles",
+        "A. kubectl edit",
+        "D. kubectl top"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl edit。\n编辑资源\n用法: kubectl edit deployment web",
+      "tags": [
+        "场景应用",
+        "advanced"
+      ],
+      "related_commands": [
+        "kubectl edit"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720084"
+    },
+    {
+      "id": "auto_kubectl_auth_can_i_5050",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "cluster",
+      "question": "以下哪个命令可以检查当前用户的权限？",
+      "options": [
+        "D. kubectl api-resources",
+        "B. kubectl cluster-info",
+        "A. kubectl auth can-i",
+        "C. kubectl config view"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl auth can-i 命令用于检查当前用户的权限。\n语法: kubectl auth can-i VERB RESOURCE\n示例: kubectl auth can-i create pods",
+      "tags": [
+        "命令识别",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl auth can-i"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720100"
+    },
+    {
+      "id": "auto_syntax_kubectl_auth_can_i_5048",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "补全命令: kubectl auth ______ VERB RESOURCE",
+      "options": [
+        "A. rollout",
+        "B. create",
+        "C. can-i",
+        "D. apply"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'can-i'。\n完整命令: kubectl auth can-i VERB RESOURCE\n说明: 检查当前用户的权限",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl auth can-i"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720111"
+    },
+    {
+      "id": "auto_scenario_kubectl_auth_can_i_9718",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "场景: 你需要检查当前用户的权限，应该使用哪个命令？",
+      "options": [
+        "D. kubectl describe deployment",
+        "C. kubectl rollout status",
+        "A. kubectl auth can-i",
+        "B. kubectl get pods"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl auth can-i。\n检查当前用户的权限\n用法: kubectl auth can-i create pods",
+      "tags": [
+        "场景应用",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl auth can-i"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720125"
+    },
+    {
+      "id": "auto_kubectl_config_view_6848",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "以下哪个命令可以显示kubeconfig配置？",
+      "options": [
+        "B. kubectl auth can-i",
+        "C. kubectl cluster-info",
+        "A. kubectl config view",
+        "D. kubectl api-resources"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl config view 命令用于显示kubeconfig配置。\n语法: kubectl config view\n示例: kubectl config view",
+      "tags": [
+        "命令识别",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl config view"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720137"
+    },
+    {
+      "id": "auto_syntax_kubectl_config_view_8551",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "补全命令: kubectl config ______",
+      "options": [
+        "A. apply",
+        "B. replace",
+        "C. view",
+        "D. describe"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'view'。\n完整命令: kubectl config view\n说明: 显示kubeconfig配置",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl config view"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720146"
+    },
+    {
+      "id": "auto_scenario_kubectl_config_view_8675",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "场景: 你需要显示kubeconfig配置，应该使用哪个命令？",
+      "options": [
+        "C. kubectl delete pv",
+        "D. kubectl drain node",
+        "A. kubectl config view",
+        "B. kubectl describe networkpolicy"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl config view。\n显示kubeconfig配置\n用法: kubectl config view",
+      "tags": [
+        "场景应用",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl config view"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720160"
+    },
+    {
+      "id": "auto_kubectl_cluster_info_6050",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "以下哪个命令可以显示集群信息？",
+      "options": [
+        "D. kubectl api-resources",
+        "C. kubectl auth can-i",
+        "A. kubectl cluster-info",
+        "B. kubectl config view"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl cluster-info 命令用于显示集群信息。\n语法: kubectl cluster-info\n示例: kubectl cluster-info",
+      "tags": [
+        "命令识别",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl cluster-info"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720172"
+    },
+    {
+      "id": "auto_syntax_kubectl_cluster_info_1102",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "补全命令: kubectl ______",
+      "options": [
+        "A. create",
+        "B. cluster-info",
+        "C. edit",
+        "D. expose"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'cluster-info'。\n完整命令: kubectl cluster-info\n说明: 显示集群信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl cluster-info"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720182"
+    },
+    {
+      "id": "auto_scenario_kubectl_cluster_info_5406",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "场景: 你需要显示集群信息，应该使用哪个命令？",
+      "options": [
+        "D. kubectl logs -f",
+        "B. kubectl describe service",
+        "C. kubectl describe serviceaccount",
+        "A. kubectl cluster-info"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl cluster-info。\n显示集群信息\n用法: kubectl cluster-info",
+      "tags": [
+        "场景应用",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl cluster-info"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720197"
+    },
+    {
+      "id": "auto_concept_kubectl_cluster_info_6634",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "cluster",
+      "question": "使用 'kubectl cluster-info' 需要cluster-admin权限",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "显示集群信息\n语法: kubectl cluster-info",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl cluster-info"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720207"
+    },
+    {
+      "id": "auto_kubectl_api_resources_1952",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "以下哪个命令可以列出所有可用的API资源？",
+      "options": [
+        "A. kubectl api-resources",
+        "B. kubectl config view",
+        "D. kubectl cluster-info",
+        "C. kubectl auth can-i"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl api-resources 命令用于列出所有可用的API资源。\n语法: kubectl api-resources [OPTIONS]\n示例: kubectl api-resources",
+      "tags": [
+        "命令识别",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl api-resources"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720219"
+    },
+    {
+      "id": "auto_syntax_kubectl_api_resources_9760",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "补全命令: kubectl ______ [OPTIONS]",
+      "options": [
+        "A. expose",
+        "B. api-resources",
+        "C. describe",
+        "D. create"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'api-resources'。\n完整命令: kubectl api-resources [OPTIONS]\n说明: 列出所有可用的API资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl api-resources"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720228"
+    },
+    {
+      "id": "auto_scenario_kubectl_api_resources_1597",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "cluster",
+      "question": "场景: 你需要列出所有可用的API资源，应该使用哪个命令？",
+      "options": [
+        "C. kubectl run",
+        "D. kubectl label node",
+        "B. kubectl create role",
+        "A. kubectl api-resources"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl api-resources。\n列出所有可用的API资源\n用法: kubectl api-resources",
+      "tags": [
+        "场景应用",
+        "cluster"
+      ],
+      "related_commands": [
+        "kubectl api-resources"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720242"
+    },
+    {
+      "id": "auto_syntax_kubectl_completion_1214",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ shell",
+      "options": [
+        "A. completion",
+        "B. patch",
+        "C. edit",
+        "D. create"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'completion'。\n完整命令: kubectl completion shell\n说明: 生成shell补全脚本",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl completion"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720261"
+    },
+    {
+      "id": "auto_scenario_kubectl_completion_8917",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你需要生成shell补全脚本，应该使用哪个命令？",
+      "options": [
+        "D. kubectl create secret docker-registry",
+        "B. kubectl apply",
+        "A. kubectl completion",
+        "C. kubectl delete deployment"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl completion。\n生成shell补全脚本\n用法: kubectl completion bash",
+      "tags": [
+        "场景应用",
+        "utility"
+      ],
+      "related_commands": [
+        "kubectl completion"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720276"
+    },
+    {
+      "id": "auto_concept_kubectl_completion_3036",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "'kubectl completion' 命令可以用于生成shell补全脚本",
+      "options": null,
+      "correct_answer": "True",
+      "explanation": "生成shell补全脚本\n语法: kubectl completion shell",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl completion"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720286"
+    },
+    {
+      "id": "auto_syntax_kubectl_version_6072",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl ______ [OPTIONS]",
+      "options": [
+        "A. run",
+        "B. delete",
+        "C. version",
+        "D. apply"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'version'。\n完整命令: kubectl version [OPTIONS]\n说明: 显示kubectl版本信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl version"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720313"
+    },
+    {
+      "id": "auto_scenario_kubectl_version_9831",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你需要显示kubectl版本信息，应该使用哪个命令？",
+      "options": [
+        "B. kubectl get nodes",
+        "D. kubectl events",
+        "C. kubectl get serviceaccounts",
+        "A. kubectl version"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl version。\n显示kubectl版本信息\n用法: kubectl version --short",
+      "tags": [
+        "场景应用",
+        "utility"
+      ],
+      "related_commands": [
+        "kubectl version"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720330"
+    },
+    {
+      "id": "auto_syntax_kubectl_plugin_list_4052",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "补全命令: kubectl plugin ______",
+      "options": [
+        "A. list",
+        "B. expose",
+        "C. apply",
+        "D. patch"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'list'。\n完整命令: kubectl plugin list\n说明: 列出所有kubectl插件",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl plugin list"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720350"
+    },
+    {
+      "id": "auto_scenario_kubectl_plugin_list_1250",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "concepts",
+      "question": "场景: 你需要列出所有kubectl插件，应该使用哪个命令？",
+      "options": [
+        "A. kubectl plugin list",
+        "C. kubectl delete ingress",
+        "B. kubectl describe pod",
+        "D. kubectl taint node"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl plugin list。\n列出所有kubectl插件\n用法: kubectl plugin list",
+      "tags": [
+        "场景应用",
+        "utility"
+      ],
+      "related_commands": [
+        "kubectl plugin list"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720365"
+    },
+    {
+      "id": "auto_kubectl_get_networkpolicies_1303",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "network",
+      "question": "以下哪个命令可以列出所有网络策略？",
+      "options": [
+        "D. kubectl get ingress",
+        "A. kubectl get networkpolicies",
+        "B. kubectl delete ingress",
+        "C. kubectl describe ingress"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get networkpolicies 命令用于列出所有网络策略。\n语法: kubectl get networkpolicies [OPTIONS]\n示例: kubectl get networkpolicies",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl get networkpolicies"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720381"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_networkpolicies_8175",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl ______ networkpolicies [OPTIONS]",
+      "options": [
+        "A. scale",
+        "B. get",
+        "C. replace",
+        "D. expose"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get networkpolicies [OPTIONS]\n说明: 列出所有网络策略",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get networkpolicies"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720423"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_networkpolicies_1617",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要列出所有网络策略，应该使用哪个命令？",
+      "options": [
+        "D. kubectl describe node",
+        "C. kubectl events",
+        "B. kubectl describe pod",
+        "A. kubectl get networkpolicies"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl get networkpolicies。\n列出所有网络策略\n用法: kubectl get networkpolicies",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl get networkpolicies"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720437"
+    },
+    {
+      "id": "auto_kubectl_describe_networkpolicy_8362",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "network",
+      "question": "以下哪个命令可以显示网络策略的详细信息？",
+      "options": [
+        "B. kubectl delete networkpolicy",
+        "D. kubectl delete ingress",
+        "A. kubectl describe networkpolicy",
+        "C. kubectl create networkpolicy"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl describe networkpolicy 命令用于显示网络策略的详细信息。\n语法: kubectl describe networkpolicy NAME\n示例: kubectl describe networkpolicy default-deny",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl describe networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720450"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_networkpolicy_1411",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. get",
+        "B. expose",
+        "C. networkpolicy",
+        "D. rollout"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'networkpolicy'。\n完整命令: kubectl describe networkpolicy NAME\n说明: 显示网络策略的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720459"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_networkpolicy_9514",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要显示网络策略的详细信息，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get deployments",
+        "A. kubectl describe networkpolicy",
+        "B. kubectl get events",
+        "D. kubectl describe serviceaccount"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl describe networkpolicy。\n显示网络策略的详细信息\n用法: kubectl describe networkpolicy default-deny",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl describe networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720473"
+    },
+    {
+      "id": "auto_kubectl_create_networkpolicy_3319",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "network",
+      "question": "以下哪个命令可以创建网络策略？",
+      "options": [
+        "C. kubectl describe ingress",
+        "A. kubectl create networkpolicy",
+        "B. kubectl describe networkpolicy",
+        "D. kubectl get ingress"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl create networkpolicy 命令用于创建网络策略。\n语法: kubectl create networkpolicy NAME --allow --from=SOURCE [OPTIONS]\n示例: kubectl create networkpolicy allow-from-web --allow --from=podSelector:app=web",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl create networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720511"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_networkpolicy_3411",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl ______ networkpolicy NAME --allow --from=SOURCE [OPTIONS]",
+      "options": [
+        "A. scale",
+        "B. apply",
+        "C. create",
+        "D. describe"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create networkpolicy NAME --allow --from=SOURCE [OPTIONS]\n说明: 创建网络策略",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720521"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_networkpolicy_5733",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要创建网络策略，应该使用哪个命令？",
+      "options": [
+        "D. kubectl edit",
+        "A. kubectl create networkpolicy",
+        "B. kubectl create secret",
+        "C. kubectl cordon node"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl create networkpolicy。\n创建网络策略\n用法: kubectl create networkpolicy allow-from-web --allow --from=podSelector:app=web",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl create networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720534"
+    },
+    {
+      "id": "auto_concept_kubectl_create_networkpolicy_7450",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "network",
+      "question": "'kubectl create networkpolicy' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "创建网络策略\n语法: kubectl create networkpolicy NAME --allow --from=SOURCE [OPTIONS]",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl create networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720543"
+    },
+    {
+      "id": "auto_kubectl_delete_networkpolicy_1964",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "network",
+      "question": "以下哪个命令可以删除网络策略？",
+      "options": [
+        "D. kubectl delete ingress",
+        "C. kubectl create networkpolicy",
+        "B. kubectl describe ingress",
+        "A. kubectl delete networkpolicy"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl delete networkpolicy 命令用于删除网络策略。\n语法: kubectl delete networkpolicy NAME\n示例: kubectl delete networkpolicy default-deny",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl delete networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720555"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_networkpolicy_9842",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl ______ networkpolicy NAME",
+      "options": [
+        "A. edit",
+        "B. patch",
+        "C. apply",
+        "D. delete"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete networkpolicy NAME\n说明: 删除网络策略",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720564"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_networkpolicy_4508",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要删除网络策略，应该使用哪个命令？",
+      "options": [
+        "A. kubectl delete networkpolicy",
+        "D. kubectl describe deployment",
+        "C. kubectl get deployments",
+        "B. kubectl auth can-i"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl delete networkpolicy。\n删除网络策略\n用法: kubectl delete networkpolicy default-deny",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl delete networkpolicy"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720577"
+    },
+    {
+      "id": "auto_kubectl_get_ingress_8722",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "以下哪个命令可以列出所有Ingress资源？",
+      "options": [
+        "A. kubectl get ingress",
+        "C. kubectl describe ingress",
+        "B. kubectl delete networkpolicy",
+        "D. kubectl create networkpolicy"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get ingress 命令用于列出所有Ingress资源。\n语法: kubectl get ingress [OPTIONS]\n示例: kubectl get ingress",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl get ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720593"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_ingress_4965",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl ______ ingress [OPTIONS]",
+      "options": [
+        "A. run",
+        "B. apply",
+        "C. get",
+        "D. expose"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get ingress [OPTIONS]\n说明: 列出所有Ingress资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720605"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_ingress_5858",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要列出所有Ingress资源，应该使用哪个命令？",
+      "options": [
+        "C. kubectl describe service",
+        "D. kubectl get secrets",
+        "B. kubectl get services",
+        "A. kubectl get ingress"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl get ingress。\n列出所有Ingress资源\n用法: kubectl get ingress",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl get ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720619"
+    },
+    {
+      "id": "auto_kubectl_describe_ingress_7310",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "以下哪个命令可以显示Ingress的详细信息？",
+      "options": [
+        "C. kubectl get ingress",
+        "A. kubectl describe ingress",
+        "D. kubectl get networkpolicies",
+        "B. kubectl delete networkpolicy"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl describe ingress 命令用于显示Ingress的详细信息。\n语法: kubectl describe ingress NAME\n示例: kubectl describe ingress web-ingress",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl describe ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720631"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_ingress_8903",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. rollout",
+        "B. describe",
+        "C. expose",
+        "D. ingress"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'ingress'。\n完整命令: kubectl describe ingress NAME\n说明: 显示Ingress的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720640"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_ingress_1307",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要显示Ingress的详细信息，应该使用哪个命令？",
+      "options": [
+        "A. kubectl describe ingress",
+        "C. kubectl get pods",
+        "B. kubectl get nodes",
+        "D. kubectl taint node"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl describe ingress。\n显示Ingress的详细信息\n用法: kubectl describe ingress web-ingress",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl describe ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720653"
+    },
+    {
+      "id": "auto_kubectl_delete_ingress_3264",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "以下哪个命令可以删除Ingress资源？",
+      "options": [
+        "B. kubectl describe networkpolicy",
+        "A. kubectl delete ingress",
+        "C. kubectl describe ingress",
+        "D. kubectl get networkpolicies"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl delete ingress 命令用于删除Ingress资源。\n语法: kubectl delete ingress NAME\n示例: kubectl delete ingress web-ingress",
+      "tags": [
+        "命令识别",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl delete ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720665"
+    },
+    {
+      "id": "auto_syntax_kubectl_delete_ingress_8546",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "补全命令: kubectl ______ ingress NAME",
+      "options": [
+        "A. scale",
+        "B. edit",
+        "C. run",
+        "D. delete"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'delete'。\n完整命令: kubectl delete ingress NAME\n说明: 删除Ingress资源",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl delete ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720674"
+    },
+    {
+      "id": "auto_scenario_kubectl_delete_ingress_1524",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "network",
+      "question": "场景: 你需要删除Ingress资源，应该使用哪个命令？",
+      "options": [
+        "B. kubectl top",
+        "C. kubectl describe deployment",
+        "A. kubectl delete ingress",
+        "D. kubectl delete service"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl delete ingress。\n删除Ingress资源\n用法: kubectl delete ingress web-ingress",
+      "tags": [
+        "场景应用",
+        "network"
+      ],
+      "related_commands": [
+        "kubectl delete ingress"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720687"
+    },
+    {
+      "id": "auto_kubectl_get_roles_8166",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "以下哪个命令可以列出所有Role？",
+      "options": [
+        "A. kubectl get roles",
+        "C. kubectl create secret generic",
+        "D. kubectl describe secret",
+        "B. kubectl create role"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get roles 命令用于列出所有Role。\n语法: kubectl get roles [OPTIONS]\n示例: kubectl get roles",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get roles"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720702"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_roles_4024",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ roles [OPTIONS]",
+      "options": [
+        "A. patch",
+        "B. apply",
+        "C. run",
+        "D. get"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get roles [OPTIONS]\n说明: 列出所有Role",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get roles"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720711"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_roles_7694",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要列出所有Role，应该使用哪个命令？",
+      "options": [
+        "D. kubectl delete deployment",
+        "A. kubectl get roles",
+        "C. kubectl create secret",
+        "B. kubectl logs"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl get roles。\n列出所有Role\n用法: kubectl get roles",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get roles"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720724"
+    },
+    {
+      "id": "auto_kubectl_get_rolebindings_5039",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "以下哪个命令可以列出所有RoleBinding？",
+      "options": [
+        "A. kubectl get rolebindings",
+        "D. kubectl describe secret",
+        "B. kubectl create rolebinding",
+        "C. kubectl create role"
+      ],
+      "correct_answer": "A",
+      "explanation": "kubectl get rolebindings 命令用于列出所有RoleBinding。\n语法: kubectl get rolebindings [OPTIONS]\n示例: kubectl get rolebindings",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get rolebindings"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720740"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_rolebindings_7426",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ rolebindings [OPTIONS]",
+      "options": [
+        "A. scale",
+        "B. delete",
+        "C. expose",
+        "D. get"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get rolebindings [OPTIONS]\n说明: 列出所有RoleBinding",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get rolebindings"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720749"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_rolebindings_5499",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要列出所有RoleBinding，应该使用哪个命令？",
+      "options": [
+        "D. kubectl logs -f",
+        "C. kubectl top node",
+        "A. kubectl get rolebindings",
+        "B. kubectl describe ingress"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl get rolebindings。\n列出所有RoleBinding\n用法: kubectl get rolebindings",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get rolebindings"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720762"
+    },
+    {
+      "id": "auto_kubectl_get_clusterroles_5391",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "以下哪个命令可以列出所有ClusterRole？",
+      "options": [
+        "C. kubectl create secret generic",
+        "A. kubectl get clusterroles",
+        "D. kubectl create secret docker-registry",
+        "B. kubectl get clusterrolebindings"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get clusterroles 命令用于列出所有ClusterRole。\n语法: kubectl get clusterroles [OPTIONS]\n示例: kubectl get clusterroles",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get clusterroles"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720774"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_clusterroles_2063",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ clusterroles [OPTIONS]",
+      "options": [
+        "A. rollout",
+        "B. replace",
+        "C. edit",
+        "D. get"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get clusterroles [OPTIONS]\n说明: 列出所有ClusterRole",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get clusterroles"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720783"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_clusterroles_4145",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要列出所有ClusterRole，应该使用哪个命令？",
+      "options": [
+        "D. kubectl top node",
+        "C. kubectl get nodes",
+        "A. kubectl get clusterroles",
+        "B. kubectl logs -f"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl get clusterroles。\n列出所有ClusterRole\n用法: kubectl get clusterroles",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get clusterroles"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720818"
+    },
+    {
+      "id": "auto_kubectl_get_clusterrolebindings_1993",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "以下哪个命令可以列出所有ClusterRoleBinding？",
+      "options": [
+        "C. kubectl describe serviceaccount",
+        "B. kubectl create rolebinding",
+        "A. kubectl get clusterrolebindings",
+        "D. kubectl create secret generic"
+      ],
+      "correct_answer": "C",
+      "explanation": "kubectl get clusterrolebindings 命令用于列出所有ClusterRoleBinding。\n语法: kubectl get clusterrolebindings [OPTIONS]\n示例: kubectl get clusterrolebindings",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get clusterrolebindings"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720831"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_clusterrolebindings_7956",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ clusterrolebindings [OPTIONS]",
+      "options": [
+        "A. get",
+        "B. run",
+        "C. apply",
+        "D. rollout"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get clusterrolebindings [OPTIONS]\n说明: 列出所有ClusterRoleBinding",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get clusterrolebindings"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720842"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_clusterrolebindings_5234",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要列出所有ClusterRoleBinding，应该使用哪个命令？",
+      "options": [
+        "D. kubectl uncordon node",
+        "B. kubectl events",
+        "C. kubectl exec",
+        "A. kubectl get clusterrolebindings"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl get clusterrolebindings。\n列出所有ClusterRoleBinding\n用法: kubectl get clusterrolebindings",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get clusterrolebindings"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720855"
+    },
+    {
+      "id": "auto_kubectl_create_role_2127",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "以下哪个命令可以创建Role？",
+      "options": [
+        "C. kubectl get clusterrolebindings",
+        "D. kubectl get serviceaccounts",
+        "B. kubectl create secret generic",
+        "A. kubectl create role"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl create role 命令用于创建Role。\n语法: kubectl create role NAME --verb=VERB --resource=RESOURCE\n示例: kubectl create role pod-reader --verb=get --resource=pods",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create role"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720871"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_role_8605",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ role NAME --verb=VERB --resource=RESOURCE",
+      "options": [
+        "A. get",
+        "B. patch",
+        "C. create",
+        "D. replace"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create role NAME --verb=VERB --resource=RESOURCE\n说明: 创建Role",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create role"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720880"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_role_1222",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要创建Role，应该使用哪个命令？",
+      "options": [
+        "A. kubectl create role",
+        "D. kubectl logs -f",
+        "B. kubectl logs",
+        "C. kubectl port-forward"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl create role。\n创建Role\n用法: kubectl create role pod-reader --verb=get --resource=pods",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create role"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720894"
+    },
+    {
+      "id": "auto_concept_kubectl_create_role_5140",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "security",
+      "question": "'kubectl create role' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "创建Role\n语法: kubectl create role NAME --verb=VERB --resource=RESOURCE",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl create role"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720903"
+    },
+    {
+      "id": "auto_kubectl_create_rolebinding_3982",
+      "type": "single_choice",
+      "difficulty": 4,
+      "category": "security",
+      "question": "以下哪个命令可以创建RoleBinding？",
+      "options": [
+        "C. kubectl get clusterrolebindings",
+        "A. kubectl create rolebinding",
+        "D. kubectl get roles",
+        "B. kubectl get serviceaccounts"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl create rolebinding 命令用于创建RoleBinding。\n语法: kubectl create rolebinding NAME --role=ROLE --user=USER\n示例: kubectl create rolebinding alice-pod-reader --role=pod-reader --user=alice",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create rolebinding"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720916"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_rolebinding_8590",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ rolebinding NAME --role=ROLE --user=USER",
+      "options": [
+        "A. describe",
+        "B. scale",
+        "C. create",
+        "D. expose"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create rolebinding NAME --role=ROLE --user=USER\n说明: 创建RoleBinding",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create rolebinding"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720925"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_rolebinding_1599",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要创建RoleBinding，应该使用哪个命令？",
+      "options": [
+        "B. kubectl cluster-info",
+        "D. kubectl create networkpolicy",
+        "A. kubectl create rolebinding",
+        "C. kubectl expose"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl create rolebinding。\n创建RoleBinding\n用法: kubectl create rolebinding alice-pod-reader --role=pod-reader --user=alice",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create rolebinding"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720937"
+    },
+    {
+      "id": "auto_kubectl_create_secret_generic_5294",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "以下哪个命令可以从文件或字面量创建Secret？",
+      "options": [
+        "D. kubectl create rolebinding",
+        "B. kubectl get serviceaccounts",
+        "C. kubectl get rolebindings",
+        "A. kubectl create secret generic"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl create secret generic 命令用于从文件或字面量创建Secret。\n语法: kubectl create secret generic NAME --from-literal=KEY=VALUE\n示例: kubectl create secret generic db-secret --from-literal=password=secret123",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create secret generic"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720950"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_secret_generic_2158",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ secret generic NAME --from-literal=KEY=VALUE",
+      "options": [
+        "A. edit",
+        "B. create",
+        "C. expose",
+        "D. run"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create secret generic NAME --from-literal=KEY=VALUE\n说明: 从文件或字面量创建Secret",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create secret generic"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720958"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_secret_generic_9911",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要从文件或字面量创建Secret，应该使用哪个命令？",
+      "options": [
+        "D. kubectl top node",
+        "B. kubectl get events",
+        "A. kubectl create secret generic",
+        "C. kubectl get pvc"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 kubectl create secret generic。\n从文件或字面量创建Secret\n用法: kubectl create secret generic db-secret --from-literal=password=secret123",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create secret generic"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720972"
+    },
+    {
+      "id": "auto_concept_kubectl_create_secret_generic_4690",
+      "type": "true_false",
+      "difficulty": 2,
+      "category": "security",
+      "question": "'kubectl create secret generic' 命令只能在default命名空间使用",
+      "options": null,
+      "correct_answer": "False",
+      "explanation": "从文件或字面量创建Secret\n语法: kubectl create secret generic NAME --from-literal=KEY=VALUE",
+      "tags": [
+        "概念判断"
+      ],
+      "related_commands": [
+        "kubectl create secret generic"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720981"
+    },
+    {
+      "id": "auto_kubectl_create_secret_docker_registry_8276",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "以下哪个命令可以创建Docker Registry认证Secret？",
+      "options": [
+        "D. kubectl get clusterroles",
+        "B. kubectl get clusterrolebindings",
+        "C. kubectl get rolebindings",
+        "A. kubectl create secret docker-registry"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl create secret docker-registry 命令用于创建Docker Registry认证Secret。\n语法: kubectl create secret docker-registry NAME --docker-server=SERVER --docker-username=USER --docker-password=PASSWORD\n示例: kubectl create secret docker-registry reg-cred --docker-server=registry.example.com --docker-username=admin --docker-password=pass123",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create secret docker-registry"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.720994"
+    },
+    {
+      "id": "auto_syntax_kubectl_create_secret_docker_registry_9853",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ secret docker-registry NAME --docker-server=SERVER --docker-username=USER --docker-password=PASSWORD",
+      "options": [
+        "A. edit",
+        "B. replace",
+        "C. create",
+        "D. expose"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'create'。\n完整命令: kubectl create secret docker-registry NAME --docker-server=SERVER --docker-username=USER --docker-password=PASSWORD\n说明: 创建Docker Registry认证Secret",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl create secret docker-registry"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721003"
+    },
+    {
+      "id": "auto_scenario_kubectl_create_secret_docker_registry_4111",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要创建Docker Registry认证Secret，应该使用哪个命令？",
+      "options": [
+        "B. kubectl scale",
+        "A. kubectl create secret docker-registry",
+        "D. kubectl describe networkpolicy",
+        "C. kubectl get nodes"
+      ],
+      "correct_answer": "B",
+      "explanation": "正确答案是 kubectl create secret docker-registry。\n创建Docker Registry认证Secret\n用法: kubectl create secret docker-registry reg-cred --docker-server=registry.example.com --docker-username=admin --docker-password=pass123",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl create secret docker-registry"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721016"
+    },
+    {
+      "id": "auto_kubectl_describe_secret_2289",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "以下哪个命令可以显示Secret的详细信息？",
+      "options": [
+        "D. kubectl get rolebindings",
+        "A. kubectl describe secret",
+        "B. kubectl describe serviceaccount",
+        "C. kubectl create secret docker-registry"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl describe secret 命令用于显示Secret的详细信息。\n语法: kubectl describe secret NAME\n示例: kubectl describe secret db-secret",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl describe secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721033"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_secret_8686",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. create",
+        "B. get",
+        "C. expose",
+        "D. secret"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 'secret'。\n完整命令: kubectl describe secret NAME\n说明: 显示Secret的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721042"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_secret_6581",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要显示Secret的详细信息，应该使用哪个命令？",
+      "options": [
+        "A. kubectl describe secret",
+        "D. kubectl annotate",
+        "C. kubectl port-forward",
+        "B. kubectl describe node"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl describe secret。\n显示Secret的详细信息\n用法: kubectl describe secret db-secret",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl describe secret"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721055"
+    },
+    {
+      "id": "auto_kubectl_get_serviceaccounts_2215",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "以下哪个命令可以列出所有ServiceAccount？",
+      "options": [
+        "B. kubectl get clusterrolebindings",
+        "A. kubectl get serviceaccounts",
+        "D. kubectl create secret generic",
+        "C. kubectl get rolebindings"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl get serviceaccounts 命令用于列出所有ServiceAccount。\n语法: kubectl get serviceaccounts [OPTIONS]\n示例: kubectl get sa",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get serviceaccounts"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721071"
+    },
+    {
+      "id": "auto_syntax_kubectl_get_serviceaccounts_8608",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl ______ serviceaccounts [OPTIONS]",
+      "options": [
+        "A. get",
+        "B. run",
+        "C. edit",
+        "D. apply"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 'get'。\n完整命令: kubectl get serviceaccounts [OPTIONS]\n说明: 列出所有ServiceAccount",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl get serviceaccounts"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721080"
+    },
+    {
+      "id": "auto_scenario_kubectl_get_serviceaccounts_5825",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要列出所有ServiceAccount，应该使用哪个命令？",
+      "options": [
+        "A. kubectl get serviceaccounts",
+        "C. kubectl expose",
+        "B. kubectl delete deployment",
+        "D. kubectl auth can-i"
+      ],
+      "correct_answer": "A",
+      "explanation": "正确答案是 kubectl get serviceaccounts。\n列出所有ServiceAccount\n用法: kubectl get sa",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl get serviceaccounts"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721092"
+    },
+    {
+      "id": "auto_kubectl_describe_serviceaccount_3775",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "以下哪个命令可以显示ServiceAccount的详细信息？",
+      "options": [
+        "C. kubectl create role",
+        "B. kubectl get serviceaccounts",
+        "D. kubectl create secret generic",
+        "A. kubectl describe serviceaccount"
+      ],
+      "correct_answer": "D",
+      "explanation": "kubectl describe serviceaccount 命令用于显示ServiceAccount的详细信息。\n语法: kubectl describe serviceaccount NAME\n示例: kubectl describe sa default",
+      "tags": [
+        "命令识别",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl describe serviceaccount"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721108"
+    },
+    {
+      "id": "auto_syntax_kubectl_describe_serviceaccount_4066",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "补全命令: kubectl describe ______ NAME",
+      "options": [
+        "A. get",
+        "B. create",
+        "C. serviceaccount",
+        "D. run"
+      ],
+      "correct_answer": "C",
+      "explanation": "正确答案是 'serviceaccount'。\n完整命令: kubectl describe serviceaccount NAME\n说明: 显示ServiceAccount的详细信息",
+      "tags": [
+        "命令语法",
+        "填空"
+      ],
+      "related_commands": [
+        "kubectl describe serviceaccount"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721117"
+    },
+    {
+      "id": "auto_scenario_kubectl_describe_serviceaccount_6013",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "security",
+      "question": "场景: 你需要显示ServiceAccount的详细信息，应该使用哪个命令？",
+      "options": [
+        "C. kubectl get events",
+        "B. kubectl create deployment",
+        "D. kubectl logs",
+        "A. kubectl describe serviceaccount"
+      ],
+      "correct_answer": "D",
+      "explanation": "正确答案是 kubectl describe serviceaccount。\n显示ServiceAccount的详细信息\n用法: kubectl describe sa default",
+      "tags": [
+        "场景应用",
+        "security"
+      ],
+      "related_commands": [
+        "kubectl describe serviceaccount"
+      ],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721131"
+    },
+    {
+      "id": "auto_concept_001",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "concepts",
+      "question": "Kubernetes中，Pod和Container的关系是什么？",
+      "options": [
+        "A. 一对一",
+        "B. 一对多",
+        "C. 多对一",
+        "D. 没有关系"
+      ],
+      "correct_answer": "B",
+      "explanation": "一个Pod可以包含一个或多个Container，它们共享网络和存储。",
+      "tags": [],
+      "related_commands": [],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721138"
+    },
+    {
+      "id": "auto_concept_002",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "deployment",
+      "question": "Deployment和ReplicaSet的关系是？",
+      "options": [
+        "A. Deployment管理ReplicaSet",
+        "B. ReplicaSet管理Deployment",
+        "C. 同级关系",
+        "D. 没有关系"
+      ],
+      "correct_answer": "A",
+      "explanation": "Deployment通过管理ReplicaSet来实现Pod的滚动更新和回滚。",
+      "tags": [],
+      "related_commands": [],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721140"
+    },
+    {
+      "id": "auto_concept_003",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "service",
+      "question": "Service的作用是什么？",
+      "options": [
+        "A. 部署应用",
+        "B. 服务发现和负载均衡",
+        "C. 存储数据",
+        "D. 监控告警"
+      ],
+      "correct_answer": "B",
+      "explanation": "Service为一组Pod提供稳定的访问入口，实现服务发现和负载均衡。",
+      "tags": [],
+      "related_commands": [],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721142"
+    },
+    {
+      "id": "auto_scenario_001",
+      "type": "single_choice",
+      "difficulty": 3,
+      "category": "deployment",
+      "question": "应用发布新版本后出现问题，需要回滚到上一版本，应该怎么做？",
+      "options": [
+        "A. kubectl delete deployment 重新创建",
+        "B. kubectl rollout undo deployment/xxx",
+        "C. 修改镜像标签重新部署",
+        "D. 重启所有Pod"
+      ],
+      "correct_answer": "B",
+      "explanation": "kubectl rollout undo 是标准的回滚命令，可以快速回到上一版本。",
+      "tags": [],
+      "related_commands": [],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721146"
+    },
+    {
+      "id": "auto_scenario_002",
+      "type": "single_choice",
+      "difficulty": 2,
+      "category": "troubleshooting",
+      "question": "需要查看Pod的实时日志，应该使用什么命令？",
+      "options": [
+        "A. kubectl logs pod-name",
+        "B. kubectl logs pod-name -f",
+        "C. kubectl get logs pod-name",
+        "D. kubectl describe pod pod-name"
+      ],
+      "correct_answer": "B",
+      "explanation": "-f 参数表示follow，会持续跟踪日志输出。",
+      "tags": [],
+      "related_commands": [],
+      "source": "自动生成",
+      "created_at": "2026-04-02T13:02:56.721148"
+    }
+  ]
+}
