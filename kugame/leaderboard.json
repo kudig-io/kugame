@@ -10,7 +10,7 @@
       "total_combats": 0,
       "combats_won": 0,
       "play_time": 0,
-      "last_updated": "2026-04-02T13:05:56.214000"
+      "last_updated": "2026-07-29T17:54:39.931567"
     },
     {
       "player_id": "test_4",
@@ -22,7 +22,7 @@
       "total_combats": 0,
       "combats_won": 0,
       "play_time": 0,
-      "last_updated": "2026-04-02T13:05:56.215370"
+      "last_updated": "2026-07-29T17:54:39.932339"
     },
     {
       "player_id": "test_3",
@@ -34,7 +34,7 @@
       "total_combats": 0,
       "combats_won": 0,
       "play_time": 0,
-      "last_updated": "2026-04-02T13:05:56.215282"
+      "last_updated": "2026-07-29T17:54:39.932257"
     },
     {
       "player_id": "test_2",
@@ -46,7 +46,7 @@
       "total_combats": 0,
       "combats_won": 0,
       "play_time": 0,
-      "last_updated": "2026-04-02T13:05:56.215145"
+      "last_updated": "2026-07-29T17:54:39.932178"
     },
     {
       "player_id": "test_1",
@@ -58,7 +58,7 @@
       "total_combats": 0,
       "combats_won": 0,
       "play_time": 0,
-      "last_updated": "2026-04-02T13:05:56.215048"
+      "last_updated": "2026-07-29T17:54:39.932092"
     },
     {
       "player_id": "test_0",
@@ -70,8 +70,8 @@
       "total_combats": 0,
       "combats_won": 0,
       "play_time": 0,
-      "last_updated": "2026-04-02T13:05:56.214933"
+      "last_updated": "2026-07-29T17:54:39.931993"
     }
   ],
-  "last_updated": "2026-04-02T13:05:56.215396"
+  "last_updated": "2026-07-29T17:54:39.932364"
 }

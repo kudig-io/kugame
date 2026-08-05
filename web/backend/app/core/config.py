@@ -2,10 +2,11 @@
 应用配置
 使用 Pydantic Settings 管理环境变量
 """
+import secrets
 from functools import lru_cache
 from typing import List, Optional
 
-from pydantic import PostgresDsn, RedisDsn, computed_field
+from pydantic import Field, PostgresDsn, RedisDsn, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -50,7 +51,9 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
     
     # JWT 配置
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    # 未设置环境变量时生成随机密钥，避免硬编码密钥泄露风险
+    # 注意：生产环境应通过环境变量 SECRET_KEY 固定密钥，否则重启后旧 token 全部失效
+    SECRET_KEY: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

@@ -1,138 +1,129 @@
-"""Combat API Routes"""
+"""Combat API Routes（封装 kugame 核心战斗系统）
+
+战斗采用"答题驱动攻击"模式：每次攻击伴随一道命令测验题，
+答对造成双倍伤害，答错伤害减半。怪物取自故事系统的战斗事件。
+"""
+from typing import Any, Optional
+
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, Optional, List
 from pydantic import BaseModel
-from enum import Enum
+
+from kugame.story import Monster
+
+from .deps import get_engine, persist
 
 router = APIRouter(prefix="/api/combat", tags=["combat"])
 
 
-class CombatAction(str, Enum):
-    ATTACK = "attack"
-    SKILL = "skill"
-    ITEM = "item"
-    DEFEND = "defend"
-    FLEE = "flee"
-
-
 class CombatStartRequest(BaseModel):
-    enemy_id: str
+    enemy_id: Optional[str] = None
 
 
-class CombatActionRequest(BaseModel):
-    action: CombatAction
-    target: Optional[str] = None
-    skill_id: Optional[str] = None
-    item_id: Optional[str] = None
+class CombatAttackRequest(BaseModel):
+    answer: Any  # 题目答案（单选为字母字符串，多选为列表）
 
 
-# 模拟战斗状态存储
-active_combats: Dict[str, Dict[str, Any]] = {}
+def _combat_monsters() -> list:
+    """从故事系统收集战斗事件怪物"""
+    engine = get_engine()
+    events = engine.story_manager.random_events
+    return [e for e in events if getattr(e, "event_type", None) == "combat" and e.monster]
+
+
+@router.get("/enemies")
+async def get_enemies():
+    """获取可战斗的敌人列表（来自故事战斗事件）"""
+    data = []
+    for event in _combat_monsters():
+        m: Monster = event.monster
+        data.append({
+            "id": event.event_id,
+            "name": m.name,
+            "level": m.level,
+            "description": m.description,
+            "reward": {"exp": m.experience_reward},
+        })
+    return {
+        "status": "success",
+        "data": data,
+    }
 
 
 @router.post("/start")
 async def start_combat(request: CombatStartRequest):
     """开始战斗"""
-    combat_id = f"combat_{request.enemy_id}_{hash(request.enemy_id) % 10000}"
-    
-    combat_state = {
-        "id": combat_id,
-        "enemy": {
-            "id": request.enemy_id,
-            "name": "妖兽",
-            "hp": 100,
-            "max_hp": 100,
-            "level": 5,
-        },
-        "player_hp": 100,
-        "player_mp": 50,
-        "turn": 1,
-        "status": "active",
-        "log": ["战斗开始！遭遇了妖兽！"],
-    }
-    
-    active_combats[combat_id] = combat_state
-    
+    engine = get_engine()
+    events = _combat_monsters()
+    if not events:
+        raise HTTPException(status_code=404, detail="没有可用的战斗")
+
+    event = next((e for e in events if e.event_id == request.enemy_id), None)
+    if event is None:
+        event = events[0]
+
+    # 重建怪物实例，避免污染故事事件中的共享对象
+    src: Monster = event.monster
+    monster = Monster(
+        name=src.name,
+        health=src.health,
+        attack=src.attack,
+        defense=src.defense,
+        experience_reward=src.experience_reward,
+        command_challenge=src.command_challenge,
+        description=src.description,
+        level=src.level,
+    )
+
+    try:
+        state = engine.start_combat(monster)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     return {
         "status": "success",
-        "data": combat_state,
+        "data": state,
     }
 
 
-@router.post("/action")
-async def combat_action(request: CombatActionRequest):
-    """执行战斗动作"""
-    # 模拟战斗逻辑
-    import random
-    
-    result = {
-        "action": request.action,
-        "damage_dealt": 0,
-        "damage_taken": 0,
-        "effects": [],
-        "log": [],
+@router.post("/attack")
+async def combat_attack(request: CombatAttackRequest):
+    """执行一次攻击（伴随一道题库测验题判定）"""
+    engine = get_engine()
+    if not getattr(engine, "current_monster", None):
+        raise HTTPException(status_code=400, detail="没有正在进行的战斗，请先开始战斗")
+
+    question = engine.generate_bank_question()
+    if not question:
+        raise HTTPException(status_code=400, detail="暂无可用的命令测验题")
+
+    is_correct, _ = question.check_answer(request.answer)
+    result = engine.player_attack(engine.current_monster, is_correct)
+
+    if result.get("status") in ("victory", "combat_victory"):
+        persist()
+
+    return {
+        "status": "success",
+        "data": {
+            "quiz": {
+                "id": question.id,
+                "question": question.question,
+                "options": question.options,
+            },
+            "answer_correct": is_correct,
+            "combat": result,
+        },
     }
-    
-    if request.action == CombatAction.ATTACK:
-        damage = random.randint(15, 25)
-        result["damage_dealt"] = damage
-        result["log"].append(f"你发动了攻击，造成 {damage} 点伤害！")
-        
-        # 敌人反击
-        enemy_damage = random.randint(5, 15)
-        result["damage_taken"] = enemy_damage
-        result["log"].append(f"敌人反击，你受到 {enemy_damage} 点伤害！")
-        
-    elif request.action == CombatAction.SKILL:
-        if request.skill_id:
-            damage = random.randint(25, 40)
-            result["damage_dealt"] = damage
-            result["effects"].append("skill_used")
-            result["log"].append(f"你使用了技能，造成 {damage} 点伤害！")
-        else:
-            result["log"].append("未选择技能")
-            
-    elif request.action == CombatAction.DEFEND:
-        result["effects"].append("defending")
-        result["damage_taken"] = random.randint(0, 5)
-        result["log"].append("你进入防御姿态，受到的伤害大幅降低！")
-        
-    elif request.action == CombatAction.FLEE:
-        success = random.random() > 0.5
-        if success:
-            result["effects"].append("fled")
-            result["log"].append("你成功逃离了战斗！")
-        else:
-            result["log"].append("逃跑失败！")
-            result["damage_taken"] = random.randint(5, 10)
-    
+
+
+@router.post("/flee")
+async def flee_combat():
+    """逃离战斗"""
+    engine = get_engine()
+    if not getattr(engine, "current_monster", None):
+        raise HTTPException(status_code=400, detail="没有正在进行的战斗")
+    result = engine.flee_combat(engine.current_monster)
     return {
         "status": "success",
         "data": result,
-    }
-
-
-@router.get("/enemies")
-async def get_enemies():
-    """获取可战斗的敌人列表"""
-    return {
-        "status": "success",
-        "data": [
-            {"id": "wild_beast", "name": "妖兽", "level": 5, "reward": {"exp": 30}},
-            {"id": "bandit", "name": "强盗", "level": 8, "reward": {"exp": 50}},
-            {"id": "demon", "name": "魔修", "level": 15, "reward": {"exp": 100}},
-        ],
-    }
-
-
-@router.get("/skills")
-async def get_skills():
-    """获取可用技能"""
-    return {
-        "status": "success",
-        "data": [
-            {"id": "basic_attack", "name": "普通攻击", "damage": 20, "mp_cost": 0},
-            {"id": "fireball", "name": "火球术", "damage": 35, "mp_cost": 10},
-            {"id": "heal", "name": "治愈术", "heal": 30, "mp_cost": 15},
-        ],
     }

@@ -156,6 +156,14 @@ class CLI:
             self.visit_shop()
         elif action == "dungeon":
             self.dungeon_menu()
+        elif action == "arena":
+            self.arena_menu()
+        elif action == "pet":
+            self.pet_menu()
+        elif action == "gem":
+            self.gem_menu()
+        elif action == "event":
+            self.event_menu()
         elif action == "checkin":
             self.daily_checkin()
         elif action == "help":
@@ -472,8 +480,148 @@ class CLI:
                 self.console.print("[red]无效输入[/red]")
 
     def do_quiz(self) -> None:
-        """执行测验"""
+        """执行知识问答（题库模式）
+
+        从题库中按当前章节知识点出题，支持错题本复习模式，
+        答题后展示解析与相关命令。题库不可用时回退到旧版章节测验。
+        """
         self.clear_screen()
+
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]错误：玩家未初始化，无法进行答题！[/red]")
+            return
+
+        stats = self.engine.get_question_bank_stats()
+        if not stats or stats.get("total_questions", 0) == 0:
+            # 题库未加载时回退到旧版章节测验
+            self._do_legacy_quiz()
+            return
+
+        wrong_count = len(player.wrong_question_ids)
+        self.console.print(Panel(
+            f"题库共 [bold]{stats['total_questions']}[/bold] 道题目，覆盖 {len(stats.get('by_category', {}))} 个知识分类\n"
+            f"错题本：[bold red]{wrong_count}[/bold red] 道（连续答对2次自动移出）",
+            title="📝 知识问答",
+            border_style="cyan"
+        ))
+
+        self.console.print("\n[bold yellow]选择答题模式：[/bold yellow]\n")
+        self.console.print("[1] 章节练习 - 根据当前章节的知识点出题")
+        self.console.print(f"[2] 错题复习 - 只从错题本中出题（{wrong_count}题）")
+        self.console.print("[q] 返回主菜单")
+
+        mode = Prompt.ask("\n请选择模式", default="1")
+        if mode.lower() == 'q':
+            return
+
+        use_wrong_only = mode.strip() == "2"
+        if use_wrong_only and wrong_count == 0:
+            self.console.print("\n[green]错题本是空的，太棒了！先去章节练习吧。[/green]")
+            return
+
+        self.console.print("\n输入 'q' 可随时退出答题\n")
+
+        while True:
+            question = self.engine.generate_bank_question(use_wrong_only=use_wrong_only)
+            if not question:
+                if use_wrong_only:
+                    self.console.print("\n[bold green]🎉 错题本已清空，全部掌握！[/bold green]")
+                else:
+                    self.console.print("\n[yellow]暂无可用题目[/yellow]")
+                break
+
+            answer = self._ask_bank_question(question)
+            if answer is None:
+                break
+
+            result = self.engine.check_bank_answer(question, answer)
+            self._show_bank_result(question, result)
+
+            if use_wrong_only and not player.wrong_question_ids:
+                self.console.print("\n[bold green]🎉 错题本已清空，全部掌握！[/bold green]")
+                break
+
+        # 保存答题进度
+        self.engine.save_game()
+        self.console.print("\n[green]✓ 答题进度已保存[/green]")
+
+    def _ask_bank_question(self, question: Any) -> Optional[Any]:
+        """展示题库题目并按题型读取玩家答案
+
+        Returns:
+            玩家答案，输入'q'退出时返回None
+        """
+        from .question_bank import QuestionType
+
+        header = f"{question.type.name} {question.difficulty.stars} · {question.category.name}"
+        body = f"[bold]{question.question}[/bold]"
+        if question.options:
+            body += "\n\n" + "\n".join(f"  {opt}" for opt in question.options)
+        self.console.print(Panel(body, title=f"📝 {header}", border_style="cyan"))
+
+        if question.type == QuestionType.单选题:
+            raw = Prompt.ask("请输入答案 (如 A)")
+            if raw.lower() == 'q':
+                return None
+            raw = raw.strip().upper()
+            # 兼容输入选项序号（1-4）
+            if raw.isdigit() and question.options and 1 <= int(raw) <= len(question.options):
+                raw = chr(ord('A') + int(raw) - 1)
+            return raw
+
+        if question.type == QuestionType.多选题:
+            raw = Prompt.ask("请输入答案 (多选，如 ABC 或 A,B,C)")
+            if raw.lower() == 'q':
+                return None
+            return [c for c in raw.upper() if 'A' <= c <= 'Z']
+
+        if question.type == QuestionType.判断题:
+            raw = Prompt.ask("请判断 [1]正确 [2]错误")
+            if raw.lower() == 'q':
+                return None
+            mapping = {"1": "true", "2": "false", "t": "true", "f": "false"}
+            return mapping.get(raw.strip().lower(), raw.strip())
+
+        if question.type == QuestionType.简答题:
+            raw = Prompt.ask("请简述你的答案（自评题）")
+            if raw.lower() == 'q':
+                return None
+            self.console.print(f"\n[yellow]参考答案：[/yellow]{question.correct_answer}")
+            if Confirm.ask("你的回答是否覆盖了参考答案要点？", default=False):
+                # 自评正确时按标准答案计分
+                return question.correct_answer
+            return raw
+
+        # 填空题 / 命令补全
+        raw = Prompt.ask("请输入答案")
+        if raw.lower() == 'q':
+            return None
+        return raw.strip()
+
+    def _show_bank_result(self, question: Any, result: Dict[str, Any]) -> None:
+        """展示判题结果、解析与奖励"""
+        if result["correct"]:
+            self.console.print(
+                f"\n[bold green]✓ 回答正确！[/bold green] "
+                f"经验 +{result['exp_gained']}  连击 x{result['streak']}"
+            )
+        else:
+            self.console.print(f"\n[bold red]✗ 回答错误[/bold red]，正确答案：{question.correct_answer}")
+            self.console.print("[yellow]已加入错题本，连续答对2次可移出[/yellow]")
+
+        if result.get("explanation"):
+            self.console.print(f"\n[yellow]💡 解析：[/yellow]{result['explanation']}")
+        if result.get("related_commands"):
+            self.console.print(f"[cyan]🔗 相关命令：[/cyan]{'、'.join(result['related_commands'])}")
+        for ach in result.get("unlocked_achievements", []):
+            ach_name = getattr(ach, 'name', str(ach))
+            self.console.print(f"[bold magenta]🏆 解锁成就：{ach_name}[/bold magenta]")
+
+        self.console.print("\n" + "─" * 60)
+
+    def _do_legacy_quiz(self) -> None:
+        """旧版章节测验（题库不可用时的回退方案）"""
         quiz = self.engine.generate_quiz()
 
         if not quiz or not quiz.get("question"):
@@ -574,16 +722,25 @@ class CLI:
                         if 0 <= answer_idx < len(quiz_question['options']):
                             correct = answer_idx == quiz_question['correct_index']
 
+                            cmd_name = quiz_question['command_info']['name']
                             if correct:
                                 self.console.print("\n[bold green]✓ 回答正确！[/bold green]")
-                                # 从错题集中移除（如果存在）
-                                if quiz_question['command_info']['name'] in player.wrong_commands:
-                                    player.wrong_commands.remove(quiz_question['command_info']['name'])
+                                # 错题需连续答对2次才移出错题集
+                                if cmd_name in player.wrong_commands:
+                                    review = player.wrong_review_progress.get(cmd_name, 0) + 1
+                                    if review >= 2:
+                                        player.wrong_commands.remove(cmd_name)
+                                        player.wrong_review_progress.pop(cmd_name, None)
+                                        self.console.print("[green]已连续答对2次，该命令移出错题集！[/green]")
+                                    else:
+                                        player.wrong_review_progress[cmd_name] = review
+                                        self.console.print("[yellow]再答对1次即可移出错题集[/yellow]")
                             else:
                                 self.console.print(f"\n[bold red]✗ 回答错误[/bold red]，正确答案是：{quiz_question['options'][quiz_question['correct_index']]}")
-                                # 加入错题集
-                                if quiz_question['command_info']['name'] not in player.wrong_commands:
-                                    player.wrong_commands.append(quiz_question['command_info']['name'])
+                                # 加入错题集并重置复习进度
+                                if cmd_name not in player.wrong_commands:
+                                    player.wrong_commands.append(cmd_name)
+                                player.wrong_review_progress[cmd_name] = 0
 
                             # 显示命令详情
                             cmd_info = quiz_question['command_info']
@@ -661,9 +818,14 @@ class CLI:
         table.add_column("描述", style="white")
         table.add_column("状态", justify="center", style="green")
 
+        proficiency_styles = {
+            "mastered": ("★ 已掌握", "green"),
+            "familiar": ("◆ 熟悉", "yellow"),
+            "learning": ("◇ 学习中", "blue"),
+        }
         for cmd in commands:
-            status = "✓ 已掌握" if cmd["mastered"] else "○ 待学习"
-            style = "green" if cmd["mastered"] else "dim"
+            status, style = proficiency_styles.get(
+                cmd.get("proficiency"), ("○ 待学习", "dim"))
             table.add_row(
                 cmd["name"],
                 cmd["category"],
@@ -971,6 +1133,16 @@ class CLI:
         self.console.print(f"[bold]总生命：[/bold]{player.total_max_health} (基础{player.max_health})")
         self.console.print(f"[bold]经验加成：[/bold]+{int(player.exp_bonus * 100)}%")
         self.console.print()
+
+        # 显示已激活的套装效果
+        active_sets = player.set_bonuses["active_sets"]
+        if active_sets:
+            self.console.print("[bold cyan]已激活套装：[/bold cyan]")
+            for s in active_sets:
+                self.console.print(f"  ✨ {s['set_name']}（{s['pieces_equipped']}/{s['total_pieces']}件）")
+                for desc in s["active_bonuses"]:
+                    self.console.print(f"     [green]{desc}[/green]")
+            self.console.print()
         
         # 装备管理选项
         self.console.print("[bold yellow]操作选项：[/bold yellow]")
@@ -978,10 +1150,11 @@ class CLI:
         self.console.print("2. 装备物品")
         self.console.print("3. 卸下装备")
         self.console.print("4. 强化装备")
-        self.console.print("5. 返回主菜单")
+        self.console.print("5. 套装图鉴")
+        self.console.print("6. 返回主菜单")
         self.console.print()
         
-        choice = Prompt.ask("请选择操作", default="5")
+        choice = Prompt.ask("请选择操作", default="6")
         
         if choice == "1":
             self.show_inventory()
@@ -991,6 +1164,30 @@ class CLI:
             self.unequip_item()
         elif choice == "4":
             self.upgrade_equipment()
+        elif choice == "5":
+            self.show_set_collection()
+
+    def show_set_collection(self) -> None:
+        """套装图鉴：展示各套装收集进度与效果"""
+        self.clear_screen()
+        self.console.print("[bold cyan]📖 套装图鉴[/bold cyan]")
+        self.console.print("[dim cyan]" + "─" * 50 + "[/dim cyan]")
+        self.console.print()
+
+        progress = self.engine.get_set_collection()
+        for p in progress:
+            stars = "⭐" * p["quality_level"]
+            self.console.print(f"[bold]{p['set_name']}[/bold] {stars}"
+                               f"  （{p['collected_count']}/{p['total_count']}件）")
+            self.console.print(f"[dim]{p['description']}[/dim]")
+            for b in p["bonuses"]:
+                mark = "[green]✓[/green]" if b["active"] else "[dim]○[/dim]"
+                self.console.print(f"  {mark} {b['description']}")
+            if p["missing_pieces"]:
+                self.console.print(f"  [yellow]缺少：{'、'.join(p['missing_pieces'])}[/yellow]")
+            self.console.print()
+
+        input("按回车键继续...")
     
     def show_inventory(self) -> None:
         """显示背包"""
@@ -1274,7 +1471,414 @@ class CLI:
             self.daily_dungeon_menu()
         elif choice == "2":
             self.challenge_tower_menu()
-    
+
+    def arena_menu(self) -> None:
+        """竞技场菜单"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  🏟️  竞技场  🏟️  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+
+        info = self.engine.arena_sync_player()
+        if info:
+            self.console.print(f"[bold]段位：[/bold]{info['rank']}  [bold]积分：[/bold]{info['rating']}"
+                               f"（最高 {info['highest_rating']}）")
+            self.console.print(f"[bold]战绩：[/bold]{info['win_count']}胜 {info['lose_count']}负"
+                               f"  胜率 {info['win_rate']}%  连胜/败 {info['streak']}")
+            season = self.engine.arena_season_info()
+            if "season_name" in season:
+                self.console.print(f"[bold]赛季：[/bold]{season['season_name']}"
+                                   f"（剩余 {season['days_remaining']} 天）")
+        self.console.print()
+
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print("1. 匹配挑战")
+        self.console.print("2. 排行榜")
+        self.console.print("3. 战斗历史")
+        self.console.print("4. 返回主菜单")
+        self.console.print()
+
+        choice = Prompt.ask("请选择", default="4")
+
+        if choice == "1":
+            self.arena_challenge()
+        elif choice == "2":
+            self.arena_ranking()
+        elif choice == "3":
+            self.arena_history()
+
+    def arena_challenge(self) -> None:
+        """竞技场匹配挑战"""
+        self.console.print()
+        self.console.print("[cyan]正在寻找对手...[/cyan]")
+        result = self.engine.arena_challenge()
+
+        if not result.get("success"):
+            self.console.print(f"[red]{result.get('message', '挑战失败')}[/red]")
+            input("按回车键继续...")
+            return
+
+        for line in result.get("battle_log", []):
+            self.console.print(f"[dim]{line}[/dim]")
+        self.console.print()
+
+        attacker = result["attacker"]
+        if result["attacker_wins"]:
+            self.console.print("[bold green]🏆 战斗胜利！[/bold green]")
+        else:
+            self.console.print("[bold red]💀 挑战失败...[/bold red]")
+        self.console.print(f"积分变化：{attacker['rating_change']:+d} → 当前 {attacker['rating']}"
+                           f"（{attacker['rank']}）")
+        self.console.print(f"[green]获得经验：+{result['exp_reward']}[/green]")
+        if result.get("level_up"):
+            player = self.engine.player
+            if player:
+                self.console.print(f"[bold yellow]🎉 恭喜升级！当前等级：{player.level}[/bold yellow]")
+        self.engine.save_game()
+        input("按回车键继续...")
+
+    def arena_ranking(self) -> None:
+        """竞技场排行榜"""
+        self.console.print()
+        ranking = self.engine.arena_ranking(10)
+        if not ranking:
+            self.console.print("[yellow]暂无排名数据[/yellow]")
+            input("按回车键继续...")
+            return
+
+        table = Table(show_header=True, header_style="bold green", title="🏆 竞技场排行榜")
+        table.add_column("排名", justify="right", width=5)
+        table.add_column("侠名", width=15)
+        table.add_column("等级", width=5)
+        table.add_column("段位", width=8)
+        table.add_column("积分", width=8)
+        table.add_column("胜/负", width=10)
+        table.add_column("胜率", width=8)
+
+        for r in ranking:
+            table.add_row(str(r["rank"]), r["player_name"], str(r["level"]), r["rank_name"],
+                          str(r["rating"]), f"{r['win_count']}/{r['lose_count']}", f"{r['win_rate']}%")
+
+        self.console.print(table)
+        input("按回车键继续...")
+
+    def arena_history(self) -> None:
+        """竞技场战斗历史"""
+        self.console.print()
+        history = self.engine.arena_battle_history(10)
+        if not history:
+            self.console.print("[yellow]暂无战斗记录[/yellow]")
+            input("按回车键继续...")
+            return
+
+        for b in history:
+            outcome = "[green]胜[/green]" if b["is_winner"] else "[red]负[/red]"
+            self.console.print(f"{outcome}  vs {b['opponent_name']}  积分 {b['rating_change']:+d}"
+                               f"  [dim]{b['battle_time'][:19]}[/dim]")
+        input("按回车键继续...")
+
+    def pet_menu(self) -> None:
+        """灵兽园菜单"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  🐾  灵兽园  🐾  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+
+        summary = self.engine.pet_summary()
+        if summary:
+            self.console.print(f"[bold]灵兽：[/bold]{summary['total_pets']}/{summary['max_pets']}"
+                               f"  [bold]体力：[/bold]{player.stamina}/{player.max_stamina}")
+        pets = self.engine.pet_list()
+        if pets:
+            self.console.print()
+            for idx, pet in enumerate(pets, 1):
+                active = " [green]★出战[/green]" if pet["is_active"] else ""
+                self.console.print(
+                    f"{idx}. {pet['display_name']}{active}"
+                    f"  攻{pet['attack']} 防{pet['defense']} 生命{pet['health']}/{pet['max_health']}"
+                    f"  忠诚{pet['loyalty']} 心情{pet['mood']}"
+                )
+        else:
+            self.console.print("[dim]你还没有灵兽伙伴，去寻访一只吧！[/dim]")
+        self.console.print()
+
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print(f"1. 寻访灵兽（消耗体力{self.engine.PET_ADOPT_STAMINA_COST}）")
+        self.console.print("2. 喂食")
+        self.console.print("3. 玩耍")
+        self.console.print("4. 训练")
+        self.console.print("5. 设置出战")
+        self.console.print("6. 返回主菜单")
+        self.console.print()
+
+        choice = Prompt.ask("请选择", default="6")
+
+        if choice == "1":
+            result = self.engine.adopt_random_pet()
+            if result["success"]:
+                self.console.print(f"[bold green]{result['message']}[/bold green]")
+                if result.get("pet", {}).get("appearance"):
+                    self.console.print(f"[dim]{result['pet']['appearance']}[/dim]")
+                self.engine.save_game()
+            else:
+                self.console.print(f"[red]{result['message']}[/red]")
+            input("按回车键继续...")
+            self.pet_menu()
+        elif choice in ("2", "3", "4", "5"):
+            pet_id = self._select_pet(pets)
+            if pet_id:
+                if choice == "2":
+                    result = self.engine.pet_feed(pet_id)
+                elif choice == "3":
+                    result = self.engine.pet_play(pet_id)
+                elif choice == "4":
+                    ttype = Prompt.ask("训练方向", choices=["attack", "defense", "health"],
+                                       default="attack")
+                    result = self.engine.pet_train(pet_id, ttype)
+                    if result.get("leveled_up"):
+                        self.console.print("[bold yellow]🎉 灵兽升级了！[/bold yellow]")
+                else:
+                    result = self.engine.pet_set_active(pet_id)
+                color = "green" if result.get("success") else "red"
+                message = result.get("message") or result.get("bonus_message", "")
+                if message:
+                    self.console.print(f"[{color}]{message}[/{color}]")
+                if result.get("success"):
+                    self.engine.save_game()
+                input("按回车键继续...")
+            self.pet_menu()
+
+    def _select_pet(self, pets: list) -> Optional[str]:
+        """从列表中选择一只宠物，返回宠物ID"""
+        if not pets:
+            self.console.print("[yellow]你还没有灵兽[/yellow]")
+            input("按回车键继续...")
+            return None
+        idx = Prompt.ask("选择灵兽编号", default="1")
+        try:
+            pos = int(idx) - 1
+            if 0 <= pos < len(pets):
+                return pets[pos]["id"]
+        except ValueError:
+            pass
+        self.console.print("[red]无效编号[/red]")
+        return None
+
+    def gem_menu(self) -> None:
+        """宝石阁菜单"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  💎  宝石阁  💎  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+
+        player = self.engine.player
+        if not player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+
+        overview = self.engine.gem_overview()
+        self.console.print(f"[bold]体力：[/bold]{player.stamina}/{player.max_stamina}")
+        self.console.print()
+
+        self.console.print("[bold yellow]镶嵌槽位：[/bold yellow]")
+        for slot in overview["slots"]:
+            if slot["is_locked"]:
+                self.console.print(f"  槽{slot['slot_id']}  🔒 未解锁（等级{slot['unlock_level']}）")
+            elif slot["gem"]:
+                self.console.print(f"  槽{slot['slot_id']}  {slot['gem']['display_name']}"
+                                   f"  [{slot['gem']['type']}] 数值{slot['gem']['value']}")
+            else:
+                self.console.print(f"  槽{slot['slot_id']}  [dim]空[/dim]")
+
+        bonuses = overview["bonuses"]
+        active_bonus = {k: round(v, 2) for k, v in bonuses.items() if v}
+        if active_bonus:
+            self.console.print(f"[green]当前宝石加成：{active_bonus}[/green]")
+        self.console.print()
+
+        if overview["gems"]:
+            self.console.print("[bold yellow]背包宝石：[/bold yellow]")
+            for idx, gem in enumerate(overview["gems"], 1):
+                self.console.print(f"  {idx}. {gem['display_name']}  [{gem['type']}]"
+                                   f"  品质{gem['quality']} 数值{gem['value']}")
+        else:
+            self.console.print("[dim]背包空空，去采矿寻宝吧！[/dim]")
+        self.console.print()
+
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print(f"1. 采矿寻宝（消耗体力{self.engine.GEM_MINE_STAMINA_COST}）")
+        self.console.print("2. 镶嵌宝石")
+        self.console.print("3. 卸下宝石")
+        self.console.print("4. 合成宝石")
+        self.console.print("5. 返回主菜单")
+        self.console.print()
+
+        choice = Prompt.ask("请选择", default="5")
+
+        if choice == "1":
+            result = self.engine.mine_gem()
+            color = "bold green" if result["success"] else "red"
+            self.console.print(f"[{color}]{result['message']}[/{color}]")
+            if result["success"]:
+                self.engine.save_game()
+            input("按回车键继续...")
+            self.gem_menu()
+        elif choice == "2":
+            gems = overview["gems"]
+            if not gems:
+                self.console.print("[yellow]背包中没有宝石[/yellow]")
+                input("按回车键继续...")
+            else:
+                gem_idx = Prompt.ask("选择宝石编号", default="1")
+                slot_idx = Prompt.ask("选择槽位编号", default="1")
+                try:
+                    gem_id = gems[int(gem_idx) - 1]["id"]
+                    result = self.engine.socket_gem(gem_id, int(slot_idx))
+                except (ValueError, IndexError):
+                    result = {"success": False, "message": "无效编号"}
+                color = "green" if result["success"] else "red"
+                self.console.print(f"[{color}]{result['message']}[/{color}]")
+                if result["success"]:
+                    self.engine.save_game()
+                input("按回车键继续...")
+            self.gem_menu()
+        elif choice == "3":
+            slot_idx = Prompt.ask("选择要卸下的槽位编号", default="1")
+            try:
+                result = self.engine.unsocket_gem(int(slot_idx))
+            except ValueError:
+                result = {"success": False, "message": "无效编号"}
+            color = "green" if result["success"] else "red"
+            self.console.print(f"[{color}]{result['message']}[/{color}]")
+            if result["success"]:
+                self.engine.save_game()
+            input("按回车键继续...")
+            self.gem_menu()
+        elif choice == "4":
+            gems = overview["gems"]
+            if len(gems) < 2:
+                self.console.print("[yellow]至少需要两颗宝石才能合成[/yellow]")
+                input("按回车键继续...")
+            else:
+                id1 = Prompt.ask("第一颗宝石编号", default="1")
+                id2 = Prompt.ask("第二颗宝石编号", default="2")
+                try:
+                    result = self.engine.merge_inventory_gems(
+                        gems[int(id1) - 1]["id"], gems[int(id2) - 1]["id"])
+                except (ValueError, IndexError):
+                    result = {"success": False, "message": "无效编号"}
+                color = "green" if result["success"] else "red"
+                self.console.print(f"[{color}]{result['message']}[/{color}]")
+                if result["success"]:
+                    self.engine.save_game()
+                input("按回车键继续...")
+            self.gem_menu()
+
+    def event_menu(self) -> None:
+        """奇遇探险菜单"""
+        self.clear_screen()
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print("[bold magenta]│  🎲  奇遇探险  🎲  │")
+        self.console.print("[bold magenta]" + "═" * 50)
+        self.console.print()
+
+        if not self.engine.player:
+            self.console.print("[red]玩家未初始化[/red]")
+            return
+
+        current = self.engine.event_status()
+        if current:
+            self._play_event(current)
+            return
+
+        self.console.print("[dim]当前没有进行中的奇遇。[/dim]")
+        self.console.print()
+        self.console.print("[bold yellow]操作选项：[/bold yellow]")
+        self.console.print("1. 触发随机奇遇")
+        self.console.print("2. 开启事件链")
+        self.console.print("3. 返回主菜单")
+        self.console.print()
+
+        choice = Prompt.ask("请选择", default="3")
+        if choice == "1":
+            event = self.engine.event_trigger()
+            if event:
+                self._play_event(event)
+            else:
+                self.console.print("[yellow]这次什么也没发生...[/yellow]")
+                input("按回车键继续...")
+        elif choice == "2":
+            chains = self.engine.available_chains()
+            for idx, chain in enumerate(chains, 1):
+                self.console.print(f"{idx}. {chain['name']}（{chain['rarity']}）")
+            idx = Prompt.ask("选择事件链编号", default="1")
+            try:
+                event = self.engine.event_start_chain(chains[int(idx) - 1]["name"])
+            except (ValueError, IndexError):
+                event = None
+            if event:
+                self._play_event(event)
+            else:
+                self.console.print("[red]无效选择[/red]")
+                input("按回车键继续...")
+
+    def _play_event(self, event: dict) -> None:
+        """展示事件并处理选择"""
+        self.console.print(Panel(
+            f"[italic]{event['description']}[/italic]",
+            title=f"{event['name']} [{event['rarity']}]",
+            border_style="cyan",
+            box=box.DOUBLE_EDGE,
+        ))
+        self.console.print()
+        for idx, choice in enumerate(event["choices"], 1):
+            self.console.print(f"{idx}. {choice['description']}")
+        self.console.print()
+
+        idx = Prompt.ask("你的选择", default="1")
+        try:
+            choice_id = event["choices"][int(idx) - 1]["choice_id"]
+        except (ValueError, IndexError):
+            self.console.print("[red]无效选择[/red]")
+            input("按回车键继续...")
+            return
+
+        result = self.engine.event_choose(choice_id)
+        self.console.print()
+        color = "green" if result.get("success") else "yellow"
+        self.console.print(f"[{color}]{result.get('message', '')}[/{color}]")
+
+        rewards = result.get("rewards", {})
+        if rewards.get("exp"):
+            self.console.print(f"[green]获得经验：+{rewards['exp']}[/green]")
+        if rewards.get("level_up"):
+            self.console.print(f"[bold yellow]🎉 恭喜升级！当前等级：{self.engine.player.level}[/bold yellow]")
+        if rewards.get("gem"):
+            self.console.print(f"[green]获得宝石：{rewards['gem']}[/green]")
+        if rewards.get("equipment"):
+            self.console.print(f"[green]获得装备：{rewards['equipment']}[/green]")
+        if rewards.get("stamina"):
+            self.console.print(f"[green]体力变化：{rewards['stamina']:+d}[/green]")
+
+        if result.get("success"):
+            self.engine.save_game()
+            if result.get("chain_continues"):
+                self.console.print("[dim]事件仍在继续...[/dim]")
+        input("按回车键继续...")
+
     def daily_dungeon_menu(self) -> None:
         """每日副本菜单"""
         self.clear_screen()

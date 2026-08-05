@@ -10,9 +10,15 @@ from dataclasses import dataclass
 from .player import Player, Sect
 from .story import StoryManager, Chapter
 from .kubernetes_commands import KubernetesCommandManager
-from .equipment import EquipmentManager, Equipment, EquipmentType
+from .equipment import EquipmentManager, Equipment, EquipmentType, EquipmentQuality
+from .equipment_sets import get_set_collection_progress
 from .dungeon import DungeonManager, Dungeon
 from .tower import ChallengeTower, TowerProgress
+from .arena import ArenaSystem
+from .pet_system import generate_random_pet, PetRarity
+from .gem_system import generate_random_gem, merge_gems, GemQuality
+from .event_chains import EventChainManager, EVENT_CHAINS, EventChoiceResult
+from .question_bank import QuestionBank, Question, QuestionType, K8sCategory
 import random
 import os
 import json
@@ -109,6 +115,52 @@ class GameEngine:
         self.challenge_tower = ChallengeTower()
         self.tower_progress: Optional[TowerProgress] = None
 
+        # 竞技场系统（延迟初始化，避免无谓的数据文件读写）
+        self.arena_system: Optional[ArenaSystem] = None
+        self.arena_data_dir: Optional[str] = None  # None时使用当前工作目录
+
+        # 题库系统：加载内置题目并合并完整题库JSON
+        self.question_bank = QuestionBank()
+        self._load_question_bank()
+
+    # 章节 -> 题库分类映射，用于按学习进度出题
+    CHAPTER_CATEGORY_MAP: Dict[str, List[K8sCategory]] = {
+        "prologue": [K8sCategory.基础概念],
+        "chapter_1": [K8sCategory.Pod, K8sCategory.基础概念],
+        "chapter_2": [K8sCategory.Deployment],
+        "chapter_3": [K8sCategory.Service],
+        "chapter_4": [K8sCategory.ConfigMap, K8sCategory.Secret],
+        "chapter_5": [K8sCategory.存储],
+        "chapter_6": [K8sCategory.调度],
+        "chapter_7": [K8sCategory.故障排查, K8sCategory.监控],
+        "chapter_8": [K8sCategory.网络, K8sCategory.安全],
+        "chapter_9": [K8sCategory.集群管理],
+        "chapter_10": [K8sCategory.集群管理, K8sCategory.Helm],
+        "chapter_11": [K8sCategory.集群管理, K8sCategory.Helm],
+        "epilogue": [],  # 终章：全部分类综合出题
+    }
+
+    def _load_question_bank(self) -> None:
+        """加载完整题库JSON文件
+
+        优先从当前工作目录、其次从项目根目录查找 complete_question_bank.json，
+        以合并方式导入（保留内置题目，跳过重复ID）。
+        """
+        candidates = [
+            "complete_question_bank.json",
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                         "complete_question_bank.json"),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                try:
+                    with open(path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    self.question_bank.import_from_dict(data, merge=True)
+                    break
+                except Exception as e:
+                    print(f"加载题库失败 {path}: {str(e)}")
+
     def initialize_player(self, name: str, sect: Sect) -> Player:
         """初始化玩家
 
@@ -203,6 +255,433 @@ class GameEngine:
             print(f"保存游戏失败: {str(e)}")
             return False
 
+    # ------------------------------------------------------------------
+    # 竞技场系统
+    # ------------------------------------------------------------------
+
+    def _get_arena(self) -> ArenaSystem:
+        """获取竞技场系统（懒加载）
+
+        默认将 arena_data.json 存放在当前工作目录，与 player_save.json 一致。
+        """
+        if self.arena_system is None:
+            data_dir = self.arena_data_dir or os.getcwd()
+            self.arena_system = ArenaSystem(data_dir=data_dir)
+        return self.arena_system
+
+    def _arena_player_id(self) -> Optional[str]:
+        """获取当前玩家的竞技场ID"""
+        if not self.player:
+            return None
+        return f"player_{self.player.name}"
+
+    def arena_sync_player(self) -> Optional[Dict[str, Any]]:
+        """同步玩家属性到竞技场并返回竞技场信息
+
+        Returns:
+            玩家的竞技场信息，玩家未初始化时返回None
+        """
+        player_id = self._arena_player_id()
+        if not player_id or not self.player:
+            return None
+        arena = self._get_arena()
+        arena.register_player({
+            "player_id": player_id,
+            "player_name": self.player.name,
+            "level": self.player.level,
+            "attack": self.player.total_attack,
+            "defense": self.player.total_defense,
+            "health": self.player.total_max_health,
+        })
+        return arena.get_player_info(player_id)
+
+    def arena_challenge(self) -> Dict[str, Any]:
+        """竞技场匹配并挑战一场
+
+        自动同步玩家属性、匹配对手、结算战斗并发放经验奖励。
+
+        Returns:
+            战斗结果字典，额外包含 exp_reward 与 level_up 字段
+        """
+        if not self.player:
+            return {"success": False, "message": "玩家未初始化"}
+        self.arena_sync_player()
+        arena = self._get_arena()
+        player_id = self._arena_player_id()
+        opponent = arena.find_match(player_id)
+        if opponent is None:
+            return {"success": False, "message": "暂无可匹配的对手"}
+        result = arena.battle(player_id, opponent.player_id)
+        if not result.get("success"):
+            return result
+        # 发放奖励：胜利按积分变化加成，失败发参与奖
+        if result["winner_id"] == player_id:
+            exp_reward = 30 + max(0, result["attacker"]["rating_change"])
+        else:
+            exp_reward = 10
+        level_up = self.player.gain_experience(exp_reward)
+        result["exp_reward"] = exp_reward
+        result["level_up"] = level_up
+        return result
+
+    def arena_ranking(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """获取竞技场排行榜"""
+        return self._get_arena().get_ranking(limit)
+
+    def arena_battle_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """获取当前玩家的竞技场战斗历史"""
+        player_id = self._arena_player_id()
+        if not player_id:
+            return []
+        return self._get_arena().get_battle_history(player_id, limit)
+
+    def arena_season_info(self) -> Dict[str, Any]:
+        """获取当前赛季信息"""
+        return self._get_arena().get_season_info()
+
+    # ------------------------------------------------------------------
+    # 装备套装系统
+    # ------------------------------------------------------------------
+
+    def get_set_collection(self) -> List[Dict[str, Any]]:
+        """获取套装收集进度（背包 + 已装备）
+
+        Returns:
+            各套装的收集进度列表，按品质升序
+        """
+        if not self.player:
+            return get_set_collection_progress([])
+        owned = [item.name for item in self.player.inventory]
+        owned.extend(self.player._equipped_names())
+        return get_set_collection_progress(owned)
+
+    # ------------------------------------------------------------------
+    # 宠物系统
+    # ------------------------------------------------------------------
+
+    PET_ADOPT_STAMINA_COST = 30  # 寻访灵兽消耗的体力
+
+    def pet_summary(self) -> Optional[Dict[str, Any]]:
+        """获取宠物摘要（数量/出战宠物等）"""
+        if not self.player:
+            return None
+        return self.player.pet_manager.get_summary()
+
+    def pet_list(self) -> List[Dict[str, Any]]:
+        """获取宠物列表"""
+        if not self.player:
+            return []
+        return [
+            {
+                "id": pet.id,
+                "display_name": pet.display_name,
+                "type": pet.pet_type.name,
+                "rarity": pet.rarity.name,
+                "level": pet.level,
+                "exp": pet.exp,
+                "exp_to_level": pet.exp_to_level,
+                "attack": pet.total_attack,
+                "defense": pet.total_defense,
+                "health": pet.health,
+                "max_health": pet.max_health,
+                "loyalty": pet.loyalty,
+                "mood": pet.mood,
+                "is_active": pet.is_active,
+                "appearance": pet.appearance,
+            }
+            for pet in self.player.pet_manager.pets
+        ]
+
+    def adopt_random_pet(self) -> Dict[str, Any]:
+        """寻访灵兽（消耗体力，随机获得一只宠物）
+
+        Returns:
+            Dict: {success, message, pet?}
+        """
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        manager = self.player.pet_manager
+        if len(manager.pets) >= manager.MAX_PETS:
+            return {"success": False, "message": "宠物数量已达上限"}
+        if not self.player.consume_stamina(self.PET_ADOPT_STAMINA_COST):
+            return {
+                "success": False,
+                "message": f"体力不足（需要{self.PET_ADOPT_STAMINA_COST}点）",
+            }
+        # 普通~史诗随机，传说以上需特殊途径获得
+        pet = generate_random_pet(max_rarity=PetRarity.史诗)
+        manager.add_pet(pet)
+        return {
+            "success": True,
+            "message": f"你在寻访中遇到了 {pet.display_name}！",
+            "pet": {"id": pet.id, "display_name": pet.display_name, "appearance": pet.appearance},
+        }
+
+    def pet_feed(self, pet_id: str) -> Dict[str, Any]:
+        """喂食宠物"""
+        pet = self.player.pet_manager.get_pet(pet_id) if self.player else None
+        if not pet:
+            return {"success": False, "message": "未找到该宠物"}
+        result = pet.feed()
+        result["success"] = True
+        result["message"] = f"{pet.name}吃得很开心！忠诚+{result['loyalty_gain']} 心情+{result['mood_gain']}"
+        return result
+
+    def pet_play(self, pet_id: str) -> Dict[str, Any]:
+        """和宠物玩耍"""
+        pet = self.player.pet_manager.get_pet(pet_id) if self.player else None
+        if not pet:
+            return {"success": False, "message": "未找到该宠物"}
+        result = pet.play()
+        result["success"] = True
+        return result
+
+    def pet_train(self, pet_id: str, training_type: str) -> Dict[str, Any]:
+        """训练宠物
+
+        Args:
+            pet_id: 宠物ID
+            training_type: 训练类型 attack/defense/health
+        """
+        pet = self.player.pet_manager.get_pet(pet_id) if self.player else None
+        if not pet:
+            return {"success": False, "message": "未找到该宠物"}
+        return pet.train(training_type)
+
+    def pet_set_active(self, pet_id: str) -> Dict[str, Any]:
+        """设置出战宠物"""
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        if self.player.pet_manager.set_active_pet(pet_id):
+            pet = self.player.pet_manager.get_pet(pet_id)
+            return {"success": True, "message": f"{pet.display_name} 开始跟随你！"}
+        return {"success": False, "message": "未找到该宠物"}
+
+    # ------------------------------------------------------------------
+    # 宝石系统
+    # ------------------------------------------------------------------
+
+    GEM_MINE_STAMINA_COST = 20  # 采矿寻宝消耗的体力
+
+    def gem_overview(self) -> Optional[Dict[str, Any]]:
+        """获取宝石系统概览（槽位+背包+加成）"""
+        if not self.player:
+            return None
+        slots = [
+            {
+                "slot_id": slot.slot_id,
+                "is_locked": slot.is_locked,
+                "unlock_level": slot.unlock_level,
+                "gem": {
+                    "id": slot.equipped_gem.id,
+                    "display_name": slot.equipped_gem.display_name,
+                    "type": slot.equipped_gem.gem_type.name,
+                    "value": round(slot.equipped_gem.total_value, 2),
+                } if slot.equipped_gem else None,
+            }
+            for slot in self.player.gem_slots
+        ]
+        gems = [
+            {
+                "id": gem.id,
+                "display_name": gem.display_name,
+                "type": gem.gem_type.name,
+                "quality": gem.quality.name,
+                "level": gem.level,
+                "value": round(gem.total_value, 2),
+            }
+            for gem in self.player.gem_inventory.gems
+        ]
+        return {
+            "slots": slots,
+            "gems": gems,
+            "bonuses": self.player.gem_bonuses,
+            "mergeable_pairs": len(self.player.gem_inventory.get_mergeable_pairs()),
+        }
+
+    def mine_gem(self) -> Dict[str, Any]:
+        """采矿寻宝（消耗体力，随机获得一颗宝石）"""
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        if len(self.player.gem_inventory.gems) >= self.player.gem_inventory.max_slots:
+            return {"success": False, "message": "宝石背包已满"}
+        if not self.player.consume_stamina(self.GEM_MINE_STAMINA_COST):
+            return {
+                "success": False,
+                "message": f"体力不足（需要{self.GEM_MINE_STAMINA_COST}点）",
+            }
+        # 普通~史诗随机，传说宝石靠合成获得
+        gem = generate_random_gem(max_quality=GemQuality.史诗)
+        self.player.gem_inventory.add_gem(gem)
+        return {
+            "success": True,
+            "message": f"你挖到了 {gem.display_name}！",
+            "gem": {"id": gem.id, "display_name": gem.display_name},
+        }
+
+    def socket_gem(self, gem_id: str, slot_id: int) -> Dict[str, Any]:
+        """将背包中的宝石镶嵌到指定槽位"""
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        slot = next((s for s in self.player.gem_slots if s.slot_id == slot_id), None)
+        if not slot:
+            return {"success": False, "message": "槽位不存在"}
+        if slot.is_locked:
+            return {"success": False, "message": f"槽位未解锁（需要等级{slot.unlock_level}）"}
+        gem = next((g for g in self.player.gem_inventory.gems if g.id == gem_id), None)
+        if not gem:
+            return {"success": False, "message": "背包中未找到该宝石"}
+        # 原槽位有宝石则换回背包
+        old_gem = slot.unequip()
+        if old_gem:
+            self.player.gem_inventory.add_gem(old_gem)
+        self.player.gem_inventory.remove_gem(gem_id)
+        slot.equip(gem)
+        return {"success": True, "message": f"{gem.display_name} 镶嵌成功！"}
+
+    def unsocket_gem(self, slot_id: int) -> Dict[str, Any]:
+        """卸下槽位中的宝石回背包"""
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        slot = next((s for s in self.player.gem_slots if s.slot_id == slot_id), None)
+        if not slot or slot.is_empty:
+            return {"success": False, "message": "该槽位没有宝石"}
+        if len(self.player.gem_inventory.gems) >= self.player.gem_inventory.max_slots:
+            return {"success": False, "message": "宝石背包已满"}
+        gem = slot.unequip()
+        self.player.gem_inventory.add_gem(gem)
+        return {"success": True, "message": f"{gem.display_name} 已卸下"}
+
+    def merge_inventory_gems(self, gem_id_1: str, gem_id_2: str) -> Dict[str, Any]:
+        """合成背包中的两颗宝石（同类型同品质同等级）"""
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        inventory = self.player.gem_inventory
+        gem1 = next((g for g in inventory.gems if g.id == gem_id_1), None)
+        gem2 = next((g for g in inventory.gems if g.id == gem_id_2), None)
+        if not gem1 or not gem2 or gem_id_1 == gem_id_2:
+            return {"success": False, "message": "请选择两颗不同的宝石"}
+        merged = merge_gems(gem1, gem2)
+        if not merged:
+            return {"success": False, "message": "只有同类型、同品质、同等级的宝石才能合成"}
+        inventory.remove_gem(gem_id_1)
+        inventory.remove_gem(gem_id_2)
+        inventory.add_gem(merged)
+        return {
+            "success": True,
+            "message": f"合成成功！获得 {merged.display_name}",
+            "gem": {"id": merged.id, "display_name": merged.display_name},
+        }
+
+    # ------------------------------------------------------------------
+    # 事件链系统（奇遇）
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _serialize_event(event) -> Dict[str, Any]:
+        """将 RandomEvent 序列化为可展示的字典"""
+        return {
+            "id": event.id,
+            "name": event.name,
+            "description": event.description,
+            "rarity": event.rarity.name,
+            "chain_id": event.chain_id,
+            "choices": [
+                {
+                    "choice_id": c.choice_id,
+                    "description": c.description,
+                }
+                for c in event.choices
+            ],
+        }
+
+    def event_status(self) -> Optional[Dict[str, Any]]:
+        """获取当前进行中的事件（无则返回None）"""
+        if not self.player:
+            return None
+        manager = self.player.event_manager
+        if not manager.current_event_id:
+            return None
+        event = manager.trigger_random_event(self.player.level)
+        return self._serialize_event(event) if event else None
+
+    def event_trigger(self) -> Optional[Dict[str, Any]]:
+        """触发一个随机奇遇事件"""
+        if not self.player:
+            return None
+        event = self.player.event_manager.trigger_random_event(self.player.level)
+        return self._serialize_event(event) if event else None
+
+    def event_start_chain(self, chain_name: str) -> Optional[Dict[str, Any]]:
+        """手动开启指定事件链（从起始事件开始）"""
+        if not self.player:
+            return None
+        chain = EVENT_CHAINS.get(chain_name)
+        if not chain:
+            return None
+        manager = self.player.event_manager
+        for event_data in chain["events"]:
+            if event_data.get("is_chain_start", False):
+                manager.current_chain = chain_name
+                manager.current_event_id = event_data["id"]
+                return self.event_status()
+        return None
+
+    def available_chains(self) -> List[Dict[str, Any]]:
+        """列出所有事件链及其稀有度"""
+        return [
+            {"name": name, "rarity": data["rarity"].name}
+            for name, data in EVENT_CHAINS.items()
+        ]
+
+    def event_choose(self, choice_id: str) -> Dict[str, Any]:
+        """对当前事件做出选择并发放奖励
+
+        Returns:
+            Dict: {success, message, rewards?, chain_continues?}
+        """
+        if not self.player:
+            return {"success": False, "message": "请先创建角色"}
+        result = self.player.event_manager.make_choice(choice_id)
+        if not result.get("success"):
+            return result
+
+        rewards = self._apply_event_reward(
+            result.get("result_type"), result.get("result_value"))
+        result["rewards"] = rewards
+        return result
+
+    def _apply_event_reward(self, result_type, result_value) -> Dict[str, Any]:
+        """根据事件选择结果类型发放奖励"""
+        rewards: Dict[str, Any] = {}
+        if result_type == EventChoiceResult.获得经验 and result_value:
+            level_up = self.player.gain_experience(int(result_value))
+            rewards["exp"] = int(result_value)
+            rewards["level_up"] = level_up
+        elif result_type == EventChoiceResult.获得宝石:
+            quality_level = (result_value or {}).get("quality", 3)
+            quality = next(
+                (q for q in GemQuality if q.level == quality_level), GemQuality.稀有)
+            gem = generate_random_gem(min_quality=quality, max_quality=quality)
+            if self.player.gem_inventory.add_gem(gem):
+                rewards["gem"] = gem.display_name
+        elif result_type == EventChoiceResult.获得装备:
+            quality_level = (result_value or {}).get("quality", 3)
+            quality = next(
+                (q for q in EquipmentQuality if q.level == quality_level), None)
+            equipment = self.equipment_manager.generate_equipment(
+                quality=quality, player_level=self.player.level)
+            self.player.add_to_inventory(equipment)
+            rewards["equipment"] = equipment.name
+        elif result_type == EventChoiceResult.获得体力 and result_value:
+            self.player.stamina = min(
+                self.player.max_stamina, self.player.stamina + int(result_value))
+            rewards["stamina"] = int(result_value)
+        elif result_type == EventChoiceResult.失去体力 and result_value:
+            self.player.stamina = max(0, self.player.stamina - int(result_value))
+            rewards["stamina"] = -int(result_value)
+        return rewards
+
     def get_menu_options(self) -> List[Dict[str, str]]:
         """获取菜单选项
 
@@ -221,6 +700,10 @@ class GameEngine:
             {"id": "equipment", "name": "🎒 装备管理", "description": "查看、装备、强化装备"},
             {"id": "shop", "name": "🏪 仙缘商店", "description": "购买装备、出售物品"},
             {"id": "dungeon", "name": "🏰 副本挑战", "description": "每日副本、无尽之塔"},
+            {"id": "arena", "name": "🏟️ 竞技场", "description": "PVP对战、段位排名、赛季奖励"},
+            {"id": "pet", "name": "🐾 灵兽园", "description": "寻访、培养、训练灵兽伙伴"},
+            {"id": "gem", "name": "💎 宝石阁", "description": "采矿、镶嵌、合成宝石"},
+            {"id": "event", "name": "🎲 奇遇探险", "description": "触发随机事件与事件链"},
             {"id": "checkin", "name": "📅 每日签到", "description": "领取每日签到奖励"},
             {"id": "help", "name": "❓ 帮助指南", "description": "游戏帮助和系统说明"},
             {"id": "save", "name": "💾 保存进度", "description": "保存当前进度"},
@@ -357,11 +840,21 @@ class GameEngine:
             if self.player:
                 # 更新玩家数据
                 self.player.complete_challenge(self.current_challenge.challenge_id)
-                self.player.learn_command(expected)
+                # 掌握度三态模型：答对推进一步（familiar→mastered 时才写入掌握列表）
+                self.player.record_command_attempt(expected, True)
                 self.player.gain_experience(self.current_challenge.reward_exp)
 
                 # 更新连续成功次数和统计数据
                 self.player.update_streak(True)
+
+                # 错题复习闭环：连续答对2次才移出错题集
+                if expected in self.player.wrong_commands:
+                    progress = self.player.wrong_review_progress.get(expected, 0) + 1
+                    if progress >= 2:
+                        self.player.wrong_commands.remove(expected)
+                        self.player.wrong_review_progress.pop(expected, None)
+                    else:
+                        self.player.wrong_review_progress[expected] = progress
 
                 # 检查并解锁成就
                 unlocked_achievements = self.player.check_and_unlock_achievements()
@@ -374,8 +867,12 @@ class GameEngine:
                 # 更新玩家的连续成功次数
                 self.player.update_streak(False)
                 self.player.streak = self.streak
-                # 记录错题
-                self.player.wrong_commands.append(selected_command) if hasattr(self.player, 'wrong_commands') else None
+                # 记录错题：记录应掌握的目标命令（而非选错的选项），去重
+                if expected not in self.player.wrong_commands:
+                    self.player.wrong_commands.append(expected)
+                self.player.wrong_review_progress[expected] = 0
+                # 掌握度三态模型：答错可能生疏降级
+                self.player.record_command_attempt(expected, False)
 
         result = {
             "correct": is_correct,
@@ -521,6 +1018,7 @@ class GameEngine:
             },
             "story": story_progress,
             "commands": command_report,
+            "proficiency_summary": self.player.get_proficiency_summary(),
             "achievements": achievement_progress,
             "total_score": int(self.score),
             "streak": self.streak,
@@ -551,6 +1049,7 @@ class GameEngine:
                 "example": cmd.example,
                 "concept": concept,
                 "mastered": cmd.name in self.player.kubectl_commands_mastered,
+                "proficiency": self.player.get_command_proficiency(cmd.name),
             })
 
         # 按分类排序
@@ -1066,8 +1565,14 @@ class GameEngine:
 
         # 检查玩家是否被击败
         if self.player.health <= 0:
-            # 炼狱门：不屈 - 复活效果
-            if random.random() < 0.3:  # 30%概率复活
+            # 炼狱门：不屈 - 复活效果（仅炼狱门且持有该技能时生效）
+            has_resurrect_skill = (
+                self.player.sect == Sect.炼狱门
+                and hasattr(self.player, 'skill_manager')
+                and self.player.skill_manager is not None
+                and "liyu_resurrect" in self.player.skill_manager.skills
+            )
+            if has_resurrect_skill and random.random() < 0.3:  # 30%概率复活
                 self.player.health = int(self.player.total_max_health * 0.3)
                 return {
                     "player_health": self.player.health,
@@ -1372,4 +1877,107 @@ class GameEngine:
                 "example": cmd_info.example,
                 "concept": concept
             }
+        }
+
+    # ==================== 题库系统方法 ====================
+
+    def get_question_bank_stats(self) -> Dict[str, Any]:
+        """获取题库统计信息
+
+        Returns:
+            题库统计字典（总题数、按题型/难度/分类分布）
+        """
+        return self.question_bank.get_statistics()
+
+    def generate_bank_question(self, use_wrong_only: bool = False,
+                               category: Optional[K8sCategory] = None) -> Optional[Question]:
+        """从题库抽取一道题目
+
+        出题优先级：错题本（若指定） > 指定分类 > 当前章节对应分类 > 全库随机。
+
+        Args:
+            use_wrong_only: 是否只从错题本中出题
+            category: 指定题目分类（可选）
+
+        Returns:
+            题目对象，无可用题目时返回None
+        """
+        if use_wrong_only:
+            if not self.player or not self.player.wrong_question_ids:
+                return None
+            wrong_questions = [
+                q for qid in self.player.wrong_question_ids
+                if (q := self.question_bank.get_question(qid)) is not None
+            ]
+            return random.choice(wrong_questions) if wrong_questions else None
+
+        if category is not None:
+            question = self.question_bank.get_random_question(category=category)
+            if question:
+                return question
+
+        # 按当前章节对应的知识分类出题
+        chapter_value = self.story_manager.current_chapter.value
+        categories = self.CHAPTER_CATEGORY_MAP.get(chapter_value, [])
+        chapter_questions: List[Question] = []
+        for cat in categories:
+            chapter_questions.extend(self.question_bank.get_questions(category=cat, limit=500))
+        if chapter_questions:
+            return random.choice(chapter_questions)
+
+        # 兜底：全库随机
+        return self.question_bank.get_random_question()
+
+    def check_bank_answer(self, question: Question, answer: Any) -> Dict[str, Any]:
+        """检查题库题目的答案并更新玩家学习数据
+
+        答对：按难度给予经验奖励（难度×20），错题本中的题目需连续答对2次才移出；
+        答错：记入错题本，返回完整解析。
+
+        Args:
+            question: 题库题目对象
+            answer: 玩家答案
+
+        Returns:
+            包含判题结果、解析、经验奖励、连击和解锁成就的字典
+        """
+        is_correct, feedback = question.check_answer(answer)
+        unlocked_achievements: List[Any] = []
+        exp_gained = 0
+
+        if self.player:
+            self.player.update_streak(is_correct)
+            qid = question.id
+
+            if is_correct:
+                self.streak += 1
+                exp_gained = question.difficulty.level * 20
+                self.player.gain_experience(exp_gained)
+
+                # 错题复习闭环：连续答对2次才移出错题本
+                if qid in self.player.wrong_question_ids:
+                    progress = self.player.wrong_review_progress.get(qid, 0) + 1
+                    if progress >= 2:
+                        self.player.wrong_question_ids.remove(qid)
+                        self.player.wrong_review_progress.pop(qid, None)
+                    else:
+                        self.player.wrong_review_progress[qid] = progress
+
+                unlocked_achievements = self.player.check_and_unlock_achievements()
+                self.player.streak = self.streak
+            else:
+                self.streak = 0
+                self.player.streak = 0
+                if qid not in self.player.wrong_question_ids:
+                    self.player.wrong_question_ids.append(qid)
+                self.player.wrong_review_progress[qid] = 0
+
+        return {
+            "correct": is_correct,
+            "message": feedback,
+            "explanation": question.explanation,
+            "related_commands": question.related_commands,
+            "exp_gained": exp_gained,
+            "streak": self.streak,
+            "unlocked_achievements": unlocked_achievements,
         }

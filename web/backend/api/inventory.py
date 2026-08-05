@@ -1,69 +1,63 @@
-"""Inventory API Routes"""
+"""Inventory API Routes（封装 kugame 核心装备系统）"""
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, List
 from pydantic import BaseModel
+
+from kugame.equipment import Equipment, EquipmentType
+
+from .deps import get_engine, get_player, persist
 
 router = APIRouter(prefix="/api/inventory", tags=["inventory"])
 
 
-class UseItemRequest(BaseModel):
-    item_id: str
-
-
 class EquipRequest(BaseModel):
     item_id: str
-    slot: str = None
 
 
-# 模拟库存数据
-MOCK_INVENTORY = [
-    {"id": "health_potion", "name": "生命药水", "type": "consumable", "quantity": 5, "icon": "fa-flask"},
-    {"id": "mana_potion", "name": "法力药水", "type": "consumable", "quantity": 3, "icon": "fa-tint"},
-    {"id": "iron_sword", "name": "铁剑", "type": "weapon", "quantity": 1, "equipped": True, "icon": "fa-sword"},
-    {"id": "leather_armor", "name": "皮甲", "type": "armor", "quantity": 1, "equipped": False, "icon": "fa-shield-alt"},
-    {"id": "spirit_stone", "name": "灵石", "type": "currency", "quantity": 1000, "icon": "fa-gem"},
-]
+class UnequipRequest(BaseModel):
+    slot: str  # weapon / armor / accessory
+
+
+class UpgradeRequest(BaseModel):
+    item_id: str
+
+
+def _find_in_inventory(equipment_id: str) -> Optional[Equipment]:
+    player = get_player()
+    return next((e for e in player.inventory if e.id == equipment_id), None)
 
 
 @router.get("")
 async def get_inventory():
-    """获取背包内容"""
+    """获取背包内容（玩家装备背包）"""
+    player = get_player()
+    items = [e.to_dict() for e in player.inventory]
     return {
         "status": "success",
         "data": {
-            "items": MOCK_INVENTORY,
-            "capacity": 50,
-            "used": len(MOCK_INVENTORY),
+            "items": items,
+            "used": len(items),
         },
     }
 
 
-@router.post("/use")
-async def use_item(request: UseItemRequest):
-    """使用物品"""
-    item = next((i for i in MOCK_INVENTORY if i["id"] == request.item_id), None)
-    if not item:
-        raise HTTPException(status_code=404, detail="物品不存在")
-    
-    if item["quantity"] <= 0:
-        raise HTTPException(status_code=400, detail="物品数量不足")
-    
-    # 模拟使用效果
-    effects = {}
-    if item["type"] == "consumable":
-        if "health" in item["id"]:
-            effects["hp"] = 50
-        elif "mana" in item["id"]:
-            effects["mp"] = 30
-        elif "cultivation" in item["id"]:
-            effects["cultivation"] = 100
-    
+@router.get("/equipment")
+async def get_equipment():
+    """获取已装备物品与套装加成"""
+    player = get_player()
+    equipped = {
+        "weapon": player.equipped_weapon.to_dict() if player.equipped_weapon else None,
+        "armor": player.equipped_armor.to_dict() if player.equipped_armor else None,
+        "accessory": player.equipped_accessory.to_dict() if player.equipped_accessory else None,
+    }
+    set_info = player.set_bonuses
     return {
         "status": "success",
         "data": {
-            "item": item,
-            "effects": effects,
-            "message": f"使用了 {item['name']}",
+            "equipped": equipped,
+            "active_sets": set_info.get("active_sets", []),
+            "set_bonuses": set_info.get("bonuses", {}),
         },
     }
 
@@ -71,28 +65,74 @@ async def use_item(request: UseItemRequest):
 @router.post("/equip")
 async def equip_item(request: EquipRequest):
     """装备物品"""
-    item = next((i for i in MOCK_INVENTORY if i["id"] == request.item_id), None)
-    if not item:
-        raise HTTPException(status_code=404, detail="物品不存在")
-    
-    if item["type"] not in ["weapon", "armor", "accessory"]:
-        raise HTTPException(status_code=400, detail="该物品无法装备")
-    
+    engine = get_engine()
+    equipment = _find_in_inventory(request.item_id)
+    if not equipment:
+        raise HTTPException(status_code=404, detail="物品不存在或不在背包中")
+
+    result = engine.equip_item(equipment)
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("message", "装备失败"))
+
+    persist()
     return {
         "status": "success",
         "data": {
-            "item": item,
-            "equipped": True,
-            "message": f"装备了 {item['name']}",
+            "message": result["message"],
+            "equipment": result["equipment"].to_dict(),
         },
     }
 
 
-@router.get("/equipment")
-async def get_equipment():
-    """获取已装备物品"""
-    equipped = [i for i in MOCK_INVENTORY if i.get("equipped")]
+@router.post("/unequip")
+async def unequip_item(request: UnequipRequest):
+    """卸下装备"""
+    engine = get_engine()
+    try:
+        equipment_type = EquipmentType(request.slot)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"无效的装备槽位: {request.slot}")
+
+    result = engine.unequip_item(equipment_type)
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("message", "卸下失败"))
+
+    persist()
     return {
         "status": "success",
-        "data": equipped,
+        "data": {
+            "message": result["message"],
+            "equipment": result["equipment"].to_dict(),
+        },
+    }
+
+
+@router.post("/upgrade")
+async def upgrade_item(request: UpgradeRequest):
+    """强化装备"""
+    engine = get_engine()
+    player = get_player()
+    equipment = _find_in_inventory(request.item_id)
+    if not equipment:
+        # 也可能已装备
+        equipment = next(
+            (e for e in (player.equipped_weapon, player.equipped_armor, player.equipped_accessory)
+             if e and e.id == request.item_id),
+            None,
+        )
+    if not equipment:
+        raise HTTPException(status_code=404, detail="装备不存在")
+
+    result = engine.upgrade_equipment(equipment)
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("message", "强化失败"))
+
+    persist()
+    return {
+        "status": "success",
+        "data": {
+            "message": result["message"],
+            "new_level": result.get("new_level"),
+            "remaining_exp": result.get("remaining_exp"),
+        },
     }

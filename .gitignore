@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# 游戏存档
+player_save.json
+web_player_save.json
+*_save.json
+
+# 竞技场数据
+arena_data.json
+
+# 临时脚本
+_*.py
+
+# 系统文件
+.DS_Store

@@ -1,10 +1,20 @@
-"""Player API Routes"""
+"""Player API Routes（封装 kugame 核心包）"""
+from typing import Optional
+
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, Optional
 from pydantic import BaseModel
-from datetime import datetime
+
+from .deps import get_engine, get_player, persist, player_view
 
 router = APIRouter(prefix="/api/player", tags=["player"])
+
+# 门派映射：Web 前端 key -> kugame Sect 枚举名
+_SECT_KEYS = {
+    "qingyun": "青云宗",
+    "xuantian": "玄天宗",
+    "lianyu": "炼狱门",
+    "xiaoyao": "逍遥派",
+}
 
 
 class CreatePlayerRequest(BaseModel):
@@ -17,113 +27,72 @@ class UpdatePlayerRequest(BaseModel):
     sect: Optional[str] = None
 
 
-# 模拟玩家数据
-MOCK_PLAYER = {
-    "id": "player_001",
-    "name": "测试玩家",
-    "sect": "青云宗",
-    "level": 5,
-    "cultivation_realm": "练气期",
-    "realm_progress": 75,
-    "exp": 450,
-    "max_exp": 1000,
-    "hp": 100,
-    "max_hp": 100,
-    "mp": 50,
-    "max_mp": 50,
-    "spirit_stones": 1000,
-    "k8s_exp": 200,
-    "completed_quests": 5,
-    "online_time": "02:34:56",
-    "created_at": datetime.now().isoformat(),
-    "recent_activities": [
-        {"type": "combat", "message": "击败了妖兽，获得 30 经验", "time": "2分钟前"},
-        {"type": "cultivation", "message": "修炼了一周天，修为提升", "time": "15分钟前"},
-        {"type": "quest", "message": "完成任务：初识 K8s", "time": "1小时前"},
-    ],
-}
-
-
 @router.get("")
-async def get_player():
+async def get_player_info():
     """获取当前玩家信息"""
-    # 实际应用中应该从 session 或 token 获取玩家 ID
     return {
         "status": "success",
-        "data": MOCK_PLAYER,
+        "data": player_view(get_player()),
     }
 
 
 @router.post("/create")
 async def create_player(request: CreatePlayerRequest):
-    """创建新角色"""
+    """创建新角色（重置当前玩家）"""
+    from kugame.player import Sect
+
     if not request.name or len(request.name) < 2:
         raise HTTPException(status_code=400, detail="角色名称至少需要2个字符")
-    
-    if request.sect not in ["qingyun", "jianxin", "lingyao", "tianji"]:
+
+    sect_name = _SECT_KEYS.get(request.sect)
+    if sect_name is None:
         raise HTTPException(status_code=400, detail="无效的门派选择")
-    
-    sect_names = {
-        "qingyun": "青云宗",
-        "jianxin": "剑心阁",
-        "lingyao": "灵药谷",
-        "tianji": "天机阁",
-    }
-    
-    new_player = {
-        "id": f"player_{hash(request.name) % 10000}",
-        "name": request.name,
-        "sect": sect_names[request.sect],
-        "level": 1,
-        "cultivation_realm": "练气期",
-        "realm_progress": 0,
-        "exp": 0,
-        "max_exp": 100,
-        "hp": 100,
-        "max_hp": 100,
-        "mp": 50,
-        "max_mp": 50,
-        "spirit_stones": 100,
-        "k8s_exp": 0,
-        "completed_quests": 0,
-        "online_time": "00:00:00",
-        "created_at": datetime.now().isoformat(),
-        "recent_activities": [],
-    }
-    
+
+    engine = get_engine()
+    engine.initialize_player(request.name, Sect(sect_name))
+    persist()
+
     return {
         "status": "success",
-        "data": new_player,
+        "data": player_view(engine.player),
     }
 
 
 @router.get("/stats")
 async def get_player_stats():
-    """获取玩家详细统计"""
+    """获取玩家详细统计（来自游戏核心进度系统）"""
+    engine = get_engine()
+    try:
+        progress = engine.get_progress()
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    player = engine.player
+    commands = progress.get("commands", {})
+    achievements = progress.get("achievements", {})
+
     stats = {
         "combat": {
-            "wins": 15,
-            "losses": 3,
-            "win_rate": "83.3%",
-            "total_damage": 12500,
+            "total_correct": player.total_correct,
+            "total_attempts": player.total_attempts,
+            "accuracy": progress["player"]["accuracy"],
+            "streak": progress.get("streak", 0),
         },
         "cultivation": {
-            "total_sessions": 45,
-            "total_gain": 4500,
-            "avg_per_session": 100,
+            "level": progress["player"]["level"],
+            "experience": progress["player"]["experience"],
+            "required_exp": progress["player"]["required_exp"],
+            "sect_bonus": progress["player"]["sect_bonus"],
         },
         "k8s": {
-            "completed_lessons": 3,
-            "total_score": 850,
-            "commands_executed": 156,
+            "commands_mastered": commands.get("mastered_count", len(player.kubectl_commands_mastered)),
+            "total_commands": commands.get("total_count", 0),
+            "total_score": progress.get("total_score", 0),
         },
-        "achievements": [
-            {"id": "first_win", "name": "初战告捷", "description": "赢得第一场战斗", "unlocked_at": "2024-01-15"},
-            {"id": "cultivator", "name": "入门修士", "description": "累计修炼10次", "unlocked_at": "2024-01-16"},
-            {"id": "k8s_rookie", "name": "K8s 新手", "description": "完成第一个 K8s 课程", "unlocked_at": "2024-01-17"},
-        ],
+        "proficiency": progress.get("proficiency_summary", {}),
+        "achievements": achievements,
     }
-    
+
     return {
         "status": "success",
         "data": stats,
@@ -133,14 +102,36 @@ async def get_player_stats():
 @router.post("/update")
 async def update_player(request: UpdatePlayerRequest):
     """更新玩家信息"""
-    updated = {}
-    
+    from kugame.player import Sect
+
+    player = get_player()
+
     if request.name:
-        updated["name"] = request.name
+        if len(request.name) < 2:
+            raise HTTPException(status_code=400, detail="角色名称至少需要2个字符")
+        player.name = request.name
+
     if request.sect:
-        updated["sect"] = request.sect
-    
+        sect_name = _SECT_KEYS.get(request.sect)
+        if sect_name is None:
+            raise HTTPException(status_code=400, detail="无效的门派选择")
+        player.sect = Sect(sect_name)
+
+    persist()
+
     return {
         "status": "success",
-        "data": {**MOCK_PLAYER, **updated},
+        "data": player_view(player),
+    }
+
+
+@router.post("/save")
+async def save_player():
+    """保存玩家进度"""
+    ok = persist()
+    if not ok:
+        raise HTTPException(status_code=400, detail="保存失败")
+    return {
+        "status": "success",
+        "data": {"message": "进度已保存"},
     }

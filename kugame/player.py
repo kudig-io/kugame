@@ -13,6 +13,7 @@ import os
 
 # 导入装备系统
 from .equipment import Equipment, EquipmentType
+from .equipment_sets import calculate_set_bonuses
 
 # 导入每日签到系统
 from .daily_checkin import DailyCheckin
@@ -148,6 +149,8 @@ class Player:
     # Kubernetes学习进度
     kubectl_commands_mastered: List[str] = field(default_factory=list)
     challenges_completed: List[str] = field(default_factory=list)
+    # 命令掌握度三态模型：命令 -> learning/familiar/mastered
+    command_proficiency: Dict[str, str] = field(default_factory=dict)
 
     # 游戏统计数据
     streak: int = 0
@@ -172,6 +175,10 @@ class Player:
 
     # 答题系统
     wrong_commands: List[str] = field(default_factory=list)
+    # 题库错题本：答错的题库题目ID列表
+    wrong_question_ids: List[str] = field(default_factory=list)
+    # 错题复习进度：命令/题目ID -> 连续答对次数（答对2次才移出错题集）
+    wrong_review_progress: Dict[str, int] = field(default_factory=dict)
     
     # 装备系统
     equipped_weapon: Optional[Equipment] = None
@@ -186,6 +193,16 @@ class Player:
     # 副本系统
     dungeon_manager_data: Optional[Dict[str, Any]] = None
     tower_progress_data: Optional[Dict[str, Any]] = None
+    
+    # 宠物系统（延迟初始化）
+    pet_manager_data: Optional[Dict[str, Any]] = None
+    
+    # 宝石系统（延迟初始化）
+    gem_inventory_data: Optional[Dict[str, Any]] = None
+    gem_slots_data: Optional[List[Dict[str, Any]]] = None
+    
+    # 事件链系统（延迟初始化）
+    event_chain_data: Optional[Dict[str, Any]] = None
     
     # 体力系统
     stamina: int = 100
@@ -244,6 +261,12 @@ class Player:
 
         if not isinstance(self.wrong_commands, list):
             self.wrong_commands = []
+
+        if not isinstance(self.wrong_question_ids, list):
+            self.wrong_question_ids = []
+
+        if not isinstance(self.wrong_review_progress, dict):
+            self.wrong_review_progress = {}
 
         if not isinstance(self.streak, int) or self.streak < 0:
             self.streak = 0
@@ -748,7 +771,10 @@ class Player:
         if command not in self.kubectl_commands_mastered:
             self.kubectl_commands_mastered.append(command)
             self.gain_experience(50)  # 学习命令获得50经验值
+            self.command_proficiency[command] = "mastered"
             return True
+        # 已在掌握列表中，同步掌握度状态
+        self.command_proficiency[command] = "mastered"
         return False
 
     def complete_challenge(self, challenge_id: str) -> bool:
@@ -780,6 +806,7 @@ class Player:
             Dict[str, Any]: 玩家数据字典
         """
         return {
+            "save_version": 2,
             "name": self.name,
             "sect": self.sect.value,
             "level": self.level,
@@ -801,10 +828,14 @@ class Player:
             ],
             "current_chapter": self.current_chapter,
             "kubectl_commands_mastered": self.kubectl_commands_mastered,
+            "command_proficiency": self.command_proficiency,
             "challenges_completed": self.challenges_completed,
             "streak": self.streak,
             "total_correct": self.total_correct,
             "total_attempts": self.total_attempts,
+            "wrong_commands": self.wrong_commands,
+            "wrong_question_ids": self.wrong_question_ids,
+            "wrong_review_progress": self.wrong_review_progress,
             "custom_titles": self.custom_titles,
             "sect_bonus": self.sect_bonus,
             # 装备系统
@@ -818,6 +849,13 @@ class Player:
             # 副本系统
             "dungeon_manager_data": self.dungeon_manager_data,
             "tower_progress_data": self.tower_progress_data,
+            # 宠物系统
+            "pet_manager_data": self.pet_manager.to_dict() if hasattr(self, '_pet_manager') and self._pet_manager else self.pet_manager_data,
+            # 宝石系统
+            "gem_inventory_data": self.gem_inventory.to_dict() if hasattr(self, '_gem_inventory') and self._gem_inventory else self.gem_inventory_data,
+            "gem_slots_data": [s.to_dict() for s in self._gem_slots] if hasattr(self, '_gem_slots') and self._gem_slots else self.gem_slots_data,
+            # 事件链系统
+            "event_chain_data": self.event_manager.to_dict() if hasattr(self, '_event_manager') and self._event_manager else self.event_chain_data,
             # 体力系统
             "stamina": self.stamina,
             "max_stamina": self.max_stamina,
@@ -841,8 +879,22 @@ class Player:
             if directory and not os.path.exists(directory):
                 os.makedirs(directory)
 
-            with open(filepath, 'w', encoding='utf-8') as f:
+            # 原子写入：先写入临时文件，再原子替换，避免写入中断损坏存档
+            tmp_filepath = filepath + ".tmp"
+            with open(tmp_filepath, 'w', encoding='utf-8') as f:
                 json.dump(self.to_dict(), f, ensure_ascii=False, indent=2)
+                f.flush()
+                os.fsync(f.fileno())
+
+            # 保留上一版存档作为备份，用于损坏恢复
+            if os.path.exists(filepath):
+                backup_filepath = filepath + ".bak"
+                try:
+                    os.replace(filepath, backup_filepath)
+                except OSError:
+                    pass  # 备份失败不阻塞保存
+
+            os.replace(tmp_filepath, filepath)
             return True
         except Exception as e:
             print(f"保存玩家数据失败: {str(e)}")
@@ -912,8 +964,17 @@ class Player:
             if not os.path.exists(filepath):
                 return None
 
-            with open(filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                # 主存档损坏，尝试从备份恢复
+                backup_filepath = filepath + ".bak"
+                if not os.path.exists(backup_filepath):
+                    raise
+                print(f"存档损坏，已从备份恢复: {backup_filepath}")
+                with open(backup_filepath, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
 
             # 验证必要字段
             required_fields = ["name", "sect", "level", "experience"]
@@ -940,10 +1001,14 @@ class Player:
                 achievements=data.get("achievements", []),
                 current_chapter=data.get("current_chapter", "序章"),
                 kubectl_commands_mastered=data.get("kubectl_commands_mastered", []),
+                command_proficiency=data.get("command_proficiency", {}),
                 challenges_completed=data.get("challenges_completed", []),
                 streak=data.get("streak", 0),
                 total_correct=data.get("total_correct", 0),
                 total_attempts=data.get("total_attempts", 0),
+                wrong_commands=data.get("wrong_commands", []),
+                wrong_question_ids=data.get("wrong_question_ids", []),
+                wrong_review_progress=data.get("wrong_review_progress", {}),
                 custom_titles=data.get("custom_titles", []),
                 sect_bonus=data.get("sect_bonus", 1.0),
                 # 装备系统
@@ -957,6 +1022,13 @@ class Player:
                 # 副本系统
                 dungeon_manager_data=data.get("dungeon_manager_data"),
                 tower_progress_data=data.get("tower_progress_data"),
+                # 宠物系统
+                pet_manager_data=data.get("pet_manager_data"),
+                # 宝石系统
+                gem_inventory_data=data.get("gem_inventory_data"),
+                gem_slots_data=data.get("gem_slots_data"),
+                # 事件链系统
+                event_chain_data=data.get("event_chain_data"),
                 # 体力系统
                 stamina=data.get("stamina", 100),
                 max_stamina=data.get("max_stamina", 100),
@@ -1020,6 +1092,66 @@ class Player:
         """
         return command in self.kubectl_commands_mastered
 
+    # 掌握度等级递进顺序
+    _PROFICIENCY_ORDER = ["learning", "familiar", "mastered"]
+
+    def record_command_attempt(self, command: str, success: bool) -> str:
+        """记录一次命令练习/挑战结果，推进掌握度三态模型
+
+        规则：
+        - 成功：未接触/learning → familiar；familiar → mastered；mastered 保持
+        - 失败：未接触 → learning；familiar → learning（生疏降级）；learning/mastered 保持
+        - 达到 mastered 时同步写入掌握列表（兼容成就/练习池）
+
+        Args:
+            command: 命令名称
+            success: 本次是否成功
+
+        Returns:
+            str: 更新后的掌握度等级
+        """
+        if not isinstance(command, str) or not command:
+            raise ValueError("命令必须是非空字符串")
+
+        current = self.command_proficiency.get(command)
+
+        if success:
+            if current in (None, "learning"):
+                new_level = "familiar"
+            else:  # familiar / mastered
+                new_level = "mastered"
+        else:
+            if current is None:
+                new_level = "learning"
+            elif current == "familiar":
+                new_level = "learning"
+            else:  # learning / mastered 保持
+                new_level = current
+
+        self.command_proficiency[command] = new_level
+
+        # 达到 mastered 时同步掌握列表（learn_command 内部去重并给予经验）
+        if new_level == "mastered" and command not in self.kubectl_commands_mastered:
+            self.learn_command(command)
+
+        return new_level
+
+    def get_command_proficiency(self, command: str) -> Optional[str]:
+        """获取命令的掌握度等级（未接触返回None）"""
+        return self.command_proficiency.get(command)
+
+    def get_proficiency_summary(self) -> Dict[str, int]:
+        """统计各掌握度等级的命令数量
+
+        Returns:
+            Dict: {learning, familiar, mastered}
+        """
+        summary = {"learning": 0, "familiar": 0, "mastered": 0}
+        for level in self.command_proficiency.values():
+            if level in summary:
+                summary[level] += 1
+        return summary
+
     def has_completed_challenge(self, challenge_id: str) -> bool:
         """检查是否已完成挑战
 
@@ -1049,9 +1181,26 @@ class Player:
 
     # ==================== 装备系统方法 ====================
     
+    def _equipped_names(self) -> List[str]:
+        """获取已装备物品的名称列表（用于套装判定）"""
+        return [
+            item.name
+            for item in (self.equipped_weapon, self.equipped_armor, self.equipped_accessory)
+            if item
+        ]
+    
+    @property
+    def set_bonuses(self) -> Dict[str, Any]:
+        """当前已装备物品激活的套装加成
+        
+        Returns:
+            Dict: {"bonuses": 各项加成数值, "active_sets": 已激活套装列表}
+        """
+        return calculate_set_bonuses(self._equipped_names())
+    
     @property
     def total_attack(self) -> int:
-        """计算总攻击力（基础属性 + 装备加成）
+        """计算总攻击力（基础属性 + 装备加成 + 套装加成 + 宝石加成）
         
         Returns:
             int: 总攻击力
@@ -1061,11 +1210,13 @@ class Player:
             equipment_bonus += self.equipped_weapon.total_attack
         if self.equipped_accessory:
             equipment_bonus += self.equipped_accessory.total_attack
-        return self.attack + equipment_bonus
+        set_bonus = int(self.set_bonuses["bonuses"]["attack"])
+        gem_bonus = int(self.gem_bonuses["attack"])
+        return self.attack + equipment_bonus + set_bonus + gem_bonus
     
     @property
     def total_defense(self) -> int:
-        """计算总防御力（基础属性 + 装备加成）
+        """计算总防御力（基础属性 + 装备加成 + 套装加成 + 宝石加成）
         
         Returns:
             int: 总防御力
@@ -1075,11 +1226,13 @@ class Player:
             equipment_bonus += self.equipped_armor.total_defense
         if self.equipped_accessory:
             equipment_bonus += self.equipped_accessory.total_defense
-        return self.defense + equipment_bonus
+        set_bonus = int(self.set_bonuses["bonuses"]["defense"])
+        gem_bonus = int(self.gem_bonuses["defense"])
+        return self.defense + equipment_bonus + set_bonus + gem_bonus
     
     @property
     def total_max_health(self) -> int:
-        """计算最大生命值（基础属性 + 装备加成）
+        """计算最大生命值（基础属性 + 装备加成 + 套装加成 + 宝石加成）
         
         Returns:
             int: 最大生命值
@@ -1089,11 +1242,13 @@ class Player:
             equipment_bonus += self.equipped_armor.total_health
         if self.equipped_accessory:
             equipment_bonus += self.equipped_accessory.total_health
-        return self.max_health + equipment_bonus
+        set_bonus = int(self.set_bonuses["bonuses"]["health"])
+        gem_bonus = int(self.gem_bonuses["health"])
+        return self.max_health + equipment_bonus + set_bonus + gem_bonus
     
     @property
     def exp_bonus(self) -> float:
-        """计算经验值加成
+        """计算经验值加成（装备 + 套装 + 宝石）
         
         Returns:
             float: 经验值加成百分比
@@ -1105,11 +1260,13 @@ class Player:
             bonus += self.equipped_armor.exp_bonus
         if self.equipped_accessory:
             bonus += self.equipped_accessory.exp_bonus
+        bonus += self.set_bonuses["bonuses"]["exp_bonus"]
+        bonus += self.gem_bonuses["exp"]
         return bonus
     
     @property
     def streak_bonus(self) -> float:
-        """计算连击加成
+        """计算连击加成（装备 + 套装 + 宝石）
         
         Returns:
             float: 连击加成百分比
@@ -1121,6 +1278,8 @@ class Player:
             bonus += self.equipped_armor.streak_bonus
         if self.equipped_accessory:
             bonus += self.equipped_accessory.streak_bonus
+        bonus += self.set_bonuses["bonuses"]["streak_bonus"]
+        bonus += self.gem_bonuses["streak"]
         return bonus
     
     def equip_item(self, equipment: Equipment) -> bool:
@@ -1134,6 +1293,9 @@ class Player:
         Returns:
             bool: 装备成功返回True
         """
+        # 记录装备前的总生命上限，用于按比例调整当前生命值
+        old_total_max_health = self.total_max_health
+        
         # 从背包中移除
         if equipment in self.inventory:
             self.inventory.remove(equipment)
@@ -1157,11 +1319,11 @@ class Player:
             self.equipped_accessory = equipment
             equipment.equipped = True
         
-        # 更新生命值上限
-        new_max_health = self.total_max_health
-        health_ratio = self.health / self.max_health if self.max_health > 0 else 1
-        self.max_health = new_max_health
-        self.health = int(self.max_health * health_ratio)
+        # 按比例调整当前生命值（不改写基础 max_health，避免装备/套装加成被重复计算）
+        new_total_max_health = self.total_max_health
+        if old_total_max_health > 0 and new_total_max_health != old_total_max_health:
+            health_ratio = self.health / old_total_max_health
+            self.health = int(new_total_max_health * health_ratio)
         
         return True
     
@@ -1272,6 +1434,92 @@ class Player:
         if not hasattr(self, '_talent_tree') or self._talent_tree is None:
             self._initialize_talent_tree()
         return self._talent_tree
+    
+    def _initialize_pet_manager(self) -> None:
+        """初始化宠物管理器"""
+        if not hasattr(self, '_pet_manager'):
+            from .pet_system import PetManager
+            if self.pet_manager_data:
+                self._pet_manager = PetManager.from_dict(self.pet_manager_data)
+            else:
+                self._pet_manager = PetManager()
+    
+    @property
+    def pet_manager(self):
+        """获取宠物管理器"""
+        if not hasattr(self, '_pet_manager') or self._pet_manager is None:
+            self._initialize_pet_manager()
+        return self._pet_manager
+    
+    # 宝石镶嵌槽位配置：(槽位ID, 解锁等级)
+    GEM_SLOT_CONFIG = [(1, 1), (2, 10), (3, 20), (4, 30)]
+    
+    def _initialize_gem_system(self) -> None:
+        """初始化宝石背包与镶嵌槽位"""
+        from .gem_system import GemInventory, GemSlot
+        if not hasattr(self, '_gem_inventory'):
+            if self.gem_inventory_data:
+                self._gem_inventory = GemInventory.from_dict(self.gem_inventory_data)
+            else:
+                self._gem_inventory = GemInventory()
+        if not hasattr(self, '_gem_slots'):
+            if self.gem_slots_data:
+                self._gem_slots = [GemSlot.from_dict(s) for s in self.gem_slots_data]
+            else:
+                self._gem_slots = [
+                    GemSlot(slot_id=sid, unlock_level=lvl)
+                    for sid, lvl in self.GEM_SLOT_CONFIG
+                ]
+    
+    @property
+    def gem_inventory(self):
+        """获取宝石背包"""
+        if not hasattr(self, '_gem_inventory') or self._gem_inventory is None:
+            self._initialize_gem_system()
+        return self._gem_inventory
+    
+    @property
+    def gem_slots(self):
+        """获取镶嵌槽位列表（按玩家等级刷新锁定状态）"""
+        if not hasattr(self, '_gem_slots') or self._gem_slots is None:
+            self._initialize_gem_system()
+        for slot in self._gem_slots:
+            slot.is_locked = self.level < slot.unlock_level
+        return self._gem_slots
+    
+    @property
+    def gem_bonuses(self) -> Dict[str, float]:
+        """已镶嵌宝石提供的属性加成汇总
+        
+        Returns:
+            Dict: {attack, defense, health, exp, streak, crit}
+        """
+        bonuses = {"attack": 0.0, "defense": 0.0, "health": 0.0,
+                   "exp": 0.0, "streak": 0.0, "crit": 0.0}
+        # 未初始化且无存档数据时直接返回零加成，避免不必要的初始化
+        if not hasattr(self, '_gem_slots') and not self.gem_slots_data:
+            return bonuses
+        for slot in self.gem_slots:
+            gem = slot.equipped_gem
+            if gem and not slot.is_locked:
+                bonuses[gem.gem_type.value] += gem.total_value
+        return bonuses
+    
+    def _initialize_event_manager(self) -> None:
+        """初始化事件链管理器"""
+        if not hasattr(self, '_event_manager'):
+            from .event_chains import EventChainManager
+            if self.event_chain_data:
+                self._event_manager = EventChainManager.from_dict(self.event_chain_data)
+            else:
+                self._event_manager = EventChainManager()
+    
+    @property
+    def event_manager(self):
+        """获取事件链管理器"""
+        if not hasattr(self, '_event_manager') or self._event_manager is None:
+            self._initialize_event_manager()
+        return self._event_manager
     
     def get_skill_bonuses(self) -> Dict[str, float]:
         """获取技能加成

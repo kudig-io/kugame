@@ -128,6 +128,11 @@ class Player:
     skill_manager_data, talent_tree_data
     dungeon_manager_data, tower_progress_data
     
+    # 答题与错题本
+    wrong_commands: List[str]
+    wrong_question_ids: List[str]
+    wrong_review_progress: Dict[str, int]  # 连续答对2次才移出错题集
+
     # 体力系统
     stamina, max_stamina
 ```
@@ -228,9 +233,52 @@ class Player:
 - `CommandCategory`: 命令分类枚举
 
 **数据**:
-- 90+ Kubernetes命令
+- 80个 Kubernetes 命令（以 `KubernetesCommandManager` 实际加载为准）
 - 12个功能分类
 - 难度评级（1-5星）
+
+### 11. 题库系统 (question_bank.py)
+
+**职责**: 结构化题目的存储、检索与判题
+
+**核心类**:
+- `QuestionBank`: 题库管理器（导入/检索/统计）
+- `Question`: 题目数据类（含 `check_answer` 判题）
+- `QuestionType`: 6种题型（单选/多选/判断/填空/简答/命令补全）
+- `QuestionDifficulty`: 5级难度
+- `K8sCategory`: 14个知识分类
+
+**数据**:
+- `complete_question_bank.json`: 658道题目，100%含解析（难度分布：1×34 / 2×111 / 3×428 / 4×60 / 5×25）
+
+**集成方式**:
+- 引擎启动时自动加载题库（`GameEngine._load_question_bank`）
+- 按章节知识点出题（`CHAPTER_CATEGORY_MAP` 章节→分类映射）
+- CLI 知识问答菜单接入（`generate_bank_question` / `check_bank_answer`）
+- 错题本闭环：答错记入 `wrong_question_ids`，连续答对2次移出
+- Web 端通过 `web/backend/api/questions.py` 复用同一题库
+
+## 模块集成状态
+
+| 模块 | 状态 |
+|------|------|
+| player / story / kubernetes_commands / equipment / skills / talent_tree / dungeon / tower / question_bank | ✅ 已接入主循环 |
+| daily_checkin / quest_system | ✅ 已接入 |
+| arena / equipment_sets / pet_system / gem_system / event_chains | ✅ 已接入（CLI 菜单 + 引擎方法 + 集成测试）|
+| leaderboard / extended_questions | ⚠️ 待接入（已实现未在 CLI 主循环中暴露）|
+
+### 命令掌握度三态模型
+
+`Player.record_command_attempt()` 实现 `learning → familiar → mastered` 三态演进：
+- 首次答对进入 `learning`，连续答对推进至 `familiar`，再验证通过才写入 `kubectl_commands_mastered`（`mastered`）；
+- 答错可能使命令生疏降级；掌握度通过 `get_command_proficiency()` / `get_proficiency_summary()` 查询，CLI 命令手册与 Web `/api/k8s/commands` 均展示该状态。
+
+### Web 后端（封装 kugame 核心包）
+
+`web/backend` 已从平行 mock 实现迁移为封装 `kugame` 核心包：
+- `api/deps.py` 提供进程级单例 `GameEngine` 与默认玩家（`get_engine` / `get_player` / `persist`）；
+- player / inventory / shop / k8s / game / combat 六组路由均调用真实引擎逻辑（装备/商店/题库答题/战斗/进度），仅 questions 出题接口不泄露答案；
+- 商店货架按玩家等级缓存以保证商品 ID 稳定；战斗采用“答题驱动攻击”模式。
 
 ## 数据流
 
@@ -287,8 +335,12 @@ class Player:
 
 ## 存档格式
 
+存档采用原子写入（临时文件 + `os.replace`），写入前自动将上一版转存为 `.bak` 备份；
+主存档损坏时加载会自动从备份恢复。存档包含 `save_version` 版本号（当前为 2）。
+
 ```json
 {
+  "save_version": 2,
   "name": "玩家名称",
   "sect": "青云宗",
   "level": 25,
@@ -316,7 +368,11 @@ class Player:
   
   "stamina": 85,
   "max_stamina": 100,
-  "last_stamina_refresh": "2026-04-01T12:00:00"
+  "last_stamina_refresh": "2026-04-01T12:00:00",
+
+  "wrong_commands": ["kubectl get pods"],
+  "wrong_question_ids": ["pod_004"],
+  "wrong_review_progress": {"pod_004": 1}
 }
 ```
 
@@ -348,8 +404,9 @@ class Player:
 ## 安全考虑
 
 1. **存档验证**: 加载时检查必要字段
-2. **数值校验**: 防止负数/超界值
-3. **作弊防范**: 关键计算在服务端（单机版不适用）
+2. **原子存档**: 临时文件+原子替换，避免写入中断损坏存档；`.bak` 备份支持损坏恢复
+3. **数值校验**: 防止负数/超界值
+4. **作弊防范**: 关键计算在服务端（单机版不适用）
 
 ## 测试策略
 

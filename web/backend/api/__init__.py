@@ -5,6 +5,7 @@ from .combat import router as combat_router
 from .shop import router as shop_router
 from .inventory import router as inventory_router
 from .k8s import router as k8s_router
+from .questions import router as questions_router
 
 __all__ = [
     "player_router",
@@ -13,4 +14,5 @@ __all__ = [
     "shop_router",
     "inventory_router",
     "k8s_router",
+    "questions_router",
 ]

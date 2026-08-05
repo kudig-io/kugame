@@ -10,6 +10,7 @@ from api import (
     shop_router,
     inventory_router,
     k8s_router,
+    questions_router,
 )
 
 
@@ -46,6 +47,7 @@ app.include_router(combat_router)
 app.include_router(shop_router)
 app.include_router(inventory_router)
 app.include_router(k8s_router)
+app.include_router(questions_router)
 
 # WebSocket connection manager
 class ConnectionManager:

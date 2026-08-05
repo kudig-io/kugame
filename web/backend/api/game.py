@@ -1,81 +1,99 @@
-"""Game API Routes"""
-from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any, Optional
+"""Game API Routes（封装 kugame 核心题库答题与进度系统）"""
+from typing import Any, Optional
+
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+
+from .deps import get_engine, persist
 
 router = APIRouter(prefix="/api/game", tags=["game"])
 
 
-class ActionRequest(BaseModel):
-    action: str
-    data: Optional[Dict[str, Any]] = None
+class AnswerRequest(BaseModel):
+    question_id: str
+    answer: Any
 
 
-@router.post("/explore")
-async def explore():
-    """探索世界"""
+def _public_question(question: Any) -> dict:
+    """题目公开视图（不含答案与解析）"""
+    return {
+        "id": question.id,
+        "type": question.type.value,
+        "difficulty": question.difficulty.level,
+        "category": question.category.value,
+        "question": question.question,
+        "options": question.options,
+        "tags": question.tags,
+    }
+
+
+@router.get("/question")
+async def get_question(use_wrong_only: bool = False):
+    """从题库抽取一道题目（默认结合当前章节/错题本）"""
+    engine = get_engine()
+    question = engine.generate_bank_question(use_wrong_only=use_wrong_only)
+    if not question:
+        raise HTTPException(status_code=404, detail="没有可用的题目")
+    return {
+        "status": "success",
+        "data": _public_question(question),
+    }
+
+
+@router.post("/answer")
+async def answer_question(request: AnswerRequest):
+    """判题并更新玩家学习数据（经验/连击/错题本/成就）"""
+    engine = get_engine()
+    question = engine.question_bank.get_question(request.question_id)
+    if not question:
+        raise HTTPException(status_code=404, detail="题目不存在")
+
+    result = engine.check_bank_answer(question, request.answer)
+    persist()
+
     return {
         "status": "success",
         "data": {
-            "location": "青云山脉",
-            "events": ["发现灵草", "遭遇妖兽"],
-            "rewards": {"exp": 50, "spirit_stones": 10},
+            **result,
+            "correct_answer": question.correct_answer,
         },
     }
 
 
-@router.post("/cultivate")
-async def cultivate():
-    """修炼"""
+@router.get("/story")
+async def get_story():
+    """获取当前故事章节内容"""
+    engine = get_engine()
+    return {
+        "status": "success",
+        "data": engine.get_story_content(),
+    }
+
+
+@router.post("/story/advance")
+async def advance_story():
+    """推进到下一章节"""
+    engine = get_engine()
+    advanced = engine.advance_chapter()
+    persist()
     return {
         "status": "success",
         "data": {
-            "cultivation_gain": 100,
-            "exp": 20,
-            "message": "修炼了一周天，修为有所提升",
+            "advanced": advanced,
+            "message": "已推进到下一章节" if advanced else "当前已是最新章节",
         },
     }
 
 
-@router.post("/rest")
-async def rest():
-    """休息恢复"""
+@router.get("/progress")
+async def get_progress():
+    """获取完整游戏进度"""
+    engine = get_engine()
+    try:
+        progress = engine.get_progress()
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {
         "status": "success",
-        "data": {
-            "hp_restored": 50,
-            "mp_restored": 30,
-            "message": "休息片刻，精神恢复",
-        },
-    }
-
-
-@router.get("/locations")
-async def get_locations():
-    """获取可探索地点"""
-    return {
-        "status": "success",
-        "data": [
-            {"id": "qingyun", "name": "青云山脉", "level": 1, "danger": "low"},
-            {"id": "forbidden", "name": "禁地森林", "level": 10, "danger": "high"},
-            {"id": "ancient", "name": "古修遗迹", "level": 20, "danger": "extreme"},
-        ],
-    }
-
-
-@router.get("/events")
-async def get_random_events():
-    """获取随机事件"""
-    import random
-    
-    events = [
-        {"type": "treasure", "message": "发现宝箱", "reward": "随机道具"},
-        {"type": "combat", "message": "遭遇敌人", "enemy": "wild_beast"},
-        {"type": "blessing", "message": "灵气充沛", "buff": "cultivation_speed_up"},
-        {"type": "npc", "message": "遇到神秘修士", "action": "trade"},
-    ]
-    
-    return {
-        "status": "success",
-        "data": random.sample(events, k=min(3, len(events))),
+        "data": progress,
     }
